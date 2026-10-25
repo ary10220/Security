@@ -11,8 +11,15 @@ instrucciones de abajo.
 ```
 data/
 ├── raw/          # Videos originales, sin modificar. NO commitear.
+│   ├── rwf2000/
+│   ├── real_life/
+│   └── hockey/   # solo si se usa para pruebas iniciales
 └── processed/    # Frames y tensores precomputados. NO commitear.
 ```
+
+La copia compartida del grupo vive en el Drive, en `datasets/` (con las
+mismas subcarpetas `rwf2000/` y `real_life/`). Es una ubicación distinta de
+`data/raw/`, que es la copia local de cada integrante.
 
 ### `raw/`
 
@@ -20,18 +27,6 @@ Videos originales tal cual se descargaron de la fuente. **No modificar
 estos archivos**: el pipeline de preprocesamiento siempre arranca desde
 aquí, por lo que si se corrompen o se editan a mano, los resultados dejan
 de ser reproducibles.
-
-Convención de nombres sugerida:
-
-```
-raw/
-├── fights/                # Clase: pelea / forcejeo
-│   ├── fight_0001.mp4
-│   └── fight_0002.mp4
-└── normal/                # Clase: comportamiento normal
-    ├── normal_0001.mp4
-    └── normal_0002.mp4
-```
 
 ### `processed/`
 
@@ -43,17 +38,78 @@ Esta carpeta se regenera corriendo el pipeline, no se versiona.
 
 ## Fuentes de datos
 
-Pendiente de definir con el equipo. Candidatos iniciales:
+### RWF-2000 (dataset principal)
 
-- **UCF Crime Dataset** — vigilancia real, con y sin eventos violentos.
-- **RWF-2000** — 2000 clips cortos balanceados fight/no-fight.
-- **Hockey Fight Dataset** — baseline chico para pruebas rápidas.
+- **Contenido:** 2000 clips de 5 s de cámaras de vigilancia.
+- **Fuente de descarga usada:** Zenodo, https://zenodo.org/records/15687512
+  (registro a nombre de Ming Cheng, Duke Kunshan University, uno de los
+  autores). El repo de GitHub original no incluye los videos y el
+  formulario de solicitud no se responde.
+- **Licencia del registro de Zenodo:** CC BY 4.0.
+- **Tamaño real:** ~9.4 GB comprimido, ~12 GB extraído (no ~2 GB).
+- **Verificación:** los 13 archivos coinciden con los MD5 publicados; no hay
+  videos corruptos ni vacíos.
+- **Estructura real** (distinta de `Fight/NonFight` que asumía el plan):
 
-Cuando se decida cuál usar, agregar aquí el link oficial, el checksum del
-archivo descargado y una línea con la licencia.
+  | Carpeta | Videos |
+  |---|---|
+  | `train/Train_Fight` | 800 |
+  | `train/Train_NonFight` | 800 |
+  | `val/Val_Fight` | 200 |
+  | `val/Val_NonFight` | 200 |
+
+- **Nota:** 24 videos de `Train_Fight` tenían nombres en chino de más de
+  255 bytes, que Linux no admite. Se renombraron como
+  `longname_NN_urlgot_XXX.avi`; el contenido es el original.
+- **Cita:** Cheng et al., "RWF-2000: An Open Large Scale Video Database for
+  Violence Detection", ICPR 2020.
+
+### Real Life Violence Situations (complemento de diversidad)
+
+- **Fuente:** Kaggle,
+  https://www.kaggle.com/datasets/mohamedmustafa/real-life-violence-situations-dataset
+  (autor del dataset en Kaggle: Mohamed Mustafa).
+- **Licencia mostrada por Kaggle:** "Data files © Original Authors". No es
+  una licencia abierta: uso académico con cita obligatoria. No
+  redistribuir fuera del grupo.
+- **Cita solicitada por los autores:** M. Soliman, M. Kamal, M. Nashed,
+  Y. Mostafa, B. Chawky, D. Khattab, "Violence Recognition from Videos using
+  Deep Learning Techniques", Proc. 9th International Conference on
+  Intelligent Computing and Information Systems (ICICIS'19), El Cairo,
+  pp. 79-84, 2019.
+- **Contenido verificado** (descarga del 25/10/2026):
+
+  | Carpeta | Videos | Tamaño | Formato |
+  |---|---|---|---|
+  | `Violence` | 1000 | 1.01 GB | 1000 `.mp4` |
+  | `NonViolence` | 1000 | 0.80 GB | 951 `.mp4` + 49 `.avi` |
+
+  Total: 2000 videos, 1.81 GB. Todos se abren y se leen con OpenCV; ninguno
+  está vacío.
+- **El zip de Kaggle pesa 4 GB** porque trae el dataset **duplicado** (la
+  misma estructura aparece dos veces, con MD5 idénticos). Solo se subió una
+  copia: la carpeta `Real Life Violence Dataset`.
+- **Los videos no son uniformes:** la duración mediana es 5 s, pero hay
+  clips desde 1 s hasta ~376 s; las resoluciones van desde 136x240 hasta
+  1080x1920 y los fps varían. El preprocesador (16 frames uniformes,
+  224x224) debe tolerarlo; esto se analiza en el EDA.
+- **Estructura prevista en local:** `data/raw/real_life/Violence/` y
+  `data/raw/real_life/NonViolence/`.
+
+### Hockey Fight (pruebas iniciales del pipeline)
+
+- **Contenido:** ~1000 clips cortos de peleas en partidos de hockey
+  (~500 MB según el plan; confirmar al descargarlo).
+- **Uso:** conjunto pequeño para probar el pipeline, no sustituye a los
+  datasets principales.
+- **Cita:** Nievas et al., 2011.
 
 ## Cómo descargar
 
-(A completar cuando se elija el dataset.) La idea es un script en
-`scripts/download_data.sh` o un notebook que haga la descarga + verificación
-de hash, de forma que cualquier integrante pueda replicar el entorno.
+Pendiente: el plan propone un script `data/download_data.sh` que copie los
+datos desde el Drive del grupo con `gdown`. Mientras tanto, pedir acceso a la
+carpeta `datasets/` del Drive y copiar cada dataset a su subcarpeta de
+`data/raw/`.
+
+No subir videos al repositorio ni credenciales de Kaggle (`kaggle.json`,
+tokens) a ningún lugar compartido.
