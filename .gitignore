@@ -218,3 +218,21 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# --- Reglas especificas del proyecto ---
+
+# Modelos entrenados: pesados, se versionan con DVC o un bucket externo,
+# no en git. Pueden regenerarse ejecutando el pipeline de entrenamiento.
+artifacts/*.pt
+artifacts/*.pth
+
+# Datasets: los videos crudos no se suben al repo (son privados, pesan GB
+# y legalmente no corresponde redistribuir). Cada integrante los descarga
+# segun data/README.md. Lo mismo con la version procesada en frames.
+data/raw/
+data/processed/
+
+# Frontend (Vue/Vite): dependencias instaladas localmente, se reconstruyen
+# con npm install a partir de package-lock.json.
+node_modules/
+

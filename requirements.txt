@@ -1,0 +1,24 @@
+# Dependencias del proyecto - Deteccion de comportamiento sospechoso
+# Compatible con Python 3.10+
+#
+# IMPORTANTE: numpy se fija en 1.26.x porque numpy 2.x rompe compatibilidad
+# binaria con torch 2.3.x. Si se sube torch >= 2.4, puede subirse numpy.
+
+# Modelo y vision por computador
+torch==2.3.1
+torchvision==0.18.1
+opencv-python==4.10.0.84
+numpy==1.26.4
+
+# Backend
+fastapi==0.111.0
+uvicorn[standard]==0.30.1
+python-multipart==0.0.9
+
+# Testing
+pytest==8.2.2
+
+# Notebooks y visualizacion
+jupyter==1.0.0
+matplotlib==3.9.0
+seaborn==0.13.2
