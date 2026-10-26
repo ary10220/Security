@@ -91,8 +91,15 @@ def normalize_frames(frames: np.ndarray) -> np.ndarray:
     Returns:
         Arreglo float32 (T, size, size, 3) normalizado.
     """
-    # TODO (Diego): dividir por 255, restar IMAGENET_MEAN, dividir por IMAGENET_STD.
-    raise NotImplementedError
+    # Se trabaja en float32: con uint8 la resta de la media se desbordaria.
+    mean = np.array(IMAGENET_MEAN, dtype=np.float32)
+    std = np.array(IMAGENET_STD, dtype=np.float32)
+
+    # Primero a rango [0, 1] y luego se centra y escala con las estadisticas
+    # de ImageNet. Es obligatorio: el backbone se pre-entreno asi y, sin esto,
+    # el modelo da predicciones aleatorias. Se aplica por canal (broadcasting).
+    frames = frames.astype(np.float32) / 255.0
+    return (frames - mean) / std
 
 
 def augment_frames(frames: torch.Tensor) -> torch.Tensor:
