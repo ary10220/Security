@@ -13,6 +13,7 @@ Pasos (ver seccion 3 del plan):
     3.6 VideoPreprocessor     -> encadena todo
 """
 
+import cv2
 import numpy as np
 import torch
 
@@ -35,8 +36,36 @@ def extract_frames(video_path: str, n_frames: int = N_FRAMES) -> np.ndarray:
     Returns:
         Arreglo de forma (n_frames, alto, ancho, 3) en formato BGR.
     """
-    # TODO (Diego): cv2.VideoCapture + np.linspace sobre el total de frames.
-    raise NotImplementedError
+    cap = cv2.VideoCapture(video_path)
+    if not cap.isOpened():
+        raise ValueError(f"No se pudo abrir el video: {video_path}")
+
+    total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    if total <= 0:
+        cap.release()
+        raise ValueError(f"El video no tiene frames legibles: {video_path}")
+
+    # linspace reparte los indices parejo de principio a fin del clip, asi
+    # los 16 frames cubren todo el movimiento y no solo el comienzo.
+    indices = np.linspace(0, total - 1, n_frames, dtype=int)
+
+    frames = []
+    for i in indices:
+        cap.set(cv2.CAP_PROP_POS_FRAMES, int(i))
+        ok, frame = cap.read()
+        if ok:
+            frames.append(frame)
+    cap.release()
+
+    if not frames:
+        raise ValueError(f"No se pudo leer ningun frame de: {video_path}")
+
+    # Si algun frame falla al leerse, se repite el ultimo valido para
+    # conservar siempre n_frames (el LSTM espera una secuencia de largo fijo).
+    while len(frames) < n_frames:
+        frames.append(frames[-1])
+
+    return np.array(frames)  # forma (n_frames, alto, ancho, 3) en BGR
 
 
 def resize_and_convert(frames: np.ndarray, size: int = IMAGE_SIZE) -> np.ndarray:
