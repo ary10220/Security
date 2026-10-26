@@ -127,8 +127,10 @@ def to_tensor(frames: np.ndarray) -> torch.Tensor:
     Returns:
         Tensor float32 de forma (T, C, H, W).
     """
-    # TODO (Diego): torch.from_numpy(...).permute(0, 3, 1, 2).float()
-    raise NotImplementedError
+    # OpenCV/NumPy guardan (T, H, W, C), pero PyTorch espera los canales
+    # antes del alto y ancho: (T, C, H, W). permute reordena los ejes sin
+    # copiar datos; .float() asegura float32, el tipo que usan los pesos.
+    return torch.from_numpy(frames).permute(0, 3, 1, 2).float()
 
 
 class VideoPreprocessor:
