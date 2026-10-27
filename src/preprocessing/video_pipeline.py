@@ -16,6 +16,7 @@ Pasos (ver seccion 3 del plan):
 import cv2
 import numpy as np
 import torch
+import torch.nn.functional as F
 
 # Estadisticas de ImageNet: el backbone se pre-entreno con ellas, asi que
 # hay que normalizar igual o las predicciones se vuelven aleatorias.
@@ -112,20 +113,65 @@ def normalize_frames(frames: np.ndarray) -> np.ndarray:
     return (frames - mean) / std
 
 
-def augment_frames(frames: torch.Tensor) -> torch.Tensor:
+def augment_frames(frames: torch.Tensor,
+                   generator: torch.Generator | None = None) -> torch.Tensor:
     """Aplica data augmentation igual a los 16 frames del clip (paso 3.4).
 
     Solo se usa al entrenar. El mismo flip/crop debe aplicarse a todos los
     frames del clip, o se rompe la coherencia temporal.
 
+    Transformaciones, cada una sorteada una sola vez por clip:
+        - flip horizontal con probabilidad 0.5;
+        - recorte aleatorio del 80-100 % del area, reescalado al tamano original;
+        - color jitter leve: brillo y contraste en [0.8, 1.2].
+
     Args:
         frames: tensor (T, C, H, W) ya normalizado.
+        generator: generador aleatorio de torch. Con una semilla fija el
+            resultado es reproducible; si es None se usa el global.
 
     Returns:
-        Tensor (T, C, H, W) aumentado.
+        Tensor (T, C, H, W) aumentado. La entrada no se modifica.
     """
-    # TODO (Ariany): flip horizontal (p=0.5), random crop + resize, color jitter leve.
-    raise NotImplementedError
+    _, _, height, width = frames.shape
+
+    def uniform(low: float, high: float) -> float:
+        # Un solo sorteo por clip: todos los frames reciben el mismo valor.
+        return low + (high - low) * torch.rand(1, generator=generator).item()
+
+    # Flip horizontal: una pelea es igual de violenta vista en espejo, asi
+    # que duplica las posiciones de los participantes sin cambiar la etiqueta.
+    if uniform(0.0, 1.0) < 0.5:
+        frames = frames.flip(-1)
+
+    # Recorte aleatorio + resize: simula camaras con distinto encuadre o zoom.
+    # Se conserva al menos el 80 % del area para no recortar la accion, y la
+    # misma proporcion alto/ancho para no deformar a las personas.
+    side_scale = uniform(0.8, 1.0) ** 0.5
+    crop_h = max(1, round(height * side_scale))
+    crop_w = max(1, round(width * side_scale))
+    top = int(torch.randint(0, height - crop_h + 1, (1,), generator=generator))
+    left = int(torch.randint(0, width - crop_w + 1, (1,), generator=generator))
+    frames = frames[:, :, top:top + crop_h, left:left + crop_w]
+    frames = F.interpolate(frames, size=(height, width), mode="bilinear",
+                           align_corners=False)
+
+    # El jitter se aplica en el espacio de pixeles [0, 1], no sobre el tensor
+    # normalizado: asi "brillo x1.2" significa lo mismo en los tres canales y
+    # el clamp evita valores imposibles. Despues se vuelve a normalizar.
+    mean = torch.tensor(IMAGENET_MEAN).view(1, 3, 1, 1)
+    std = torch.tensor(IMAGENET_STD).view(1, 3, 1, 1)
+    pixels = frames * std + mean
+
+    # Jitter leve (+-20 %): imita cambios de iluminacion entre camaras sin
+    # borrar detalles. El contraste usa la media de todo el clip para que
+    # todos los frames se ajusten igual.
+    pixels = pixels * uniform(0.8, 1.2)
+    clip_mean = pixels.mean()
+    pixels = (pixels - clip_mean) * uniform(0.8, 1.2) + clip_mean
+    pixels = pixels.clamp(0.0, 1.0)
+
+    return ((pixels - mean) / std).float()
 
 
 def to_tensor(frames: np.ndarray) -> torch.Tensor:

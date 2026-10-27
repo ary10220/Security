@@ -19,6 +19,7 @@ from src.preprocessing import (
     IMAGENET_MEAN,
     IMAGENET_STD,
     VideoPreprocessor,
+    augment_frames,
     extract_frames,
     normalize_frames,
     resize_and_convert,
@@ -172,6 +173,71 @@ def test_normalize_uses_imagenet_stats() -> None:
 
 
 # -----------------------------------------------------------------------------
+# augment_frames
+# -----------------------------------------------------------------------------
+
+def _random_clip(seed: int = 0) -> torch.Tensor:
+    """Clip (T=16, C=3, H=32, W=32) ya normalizado, como sale de to_tensor."""
+    rng = np.random.default_rng(seed)
+    frames = rng.integers(0, 256, size=(16, 32, 32, 3), dtype=np.uint8)
+    normalized = normalize_frames(frames)
+    return torch.from_numpy(normalized).permute(0, 3, 1, 2).float()
+
+
+def test_augment_preserves_shape_and_dtype() -> None:
+    """El modelo espera (T, C, H, W) float32: la augmentation no lo cambia."""
+    clip = _random_clip()
+    out = augment_frames(clip, generator=torch.Generator().manual_seed(0))
+    assert out.shape == clip.shape
+    assert out.dtype == torch.float32
+
+
+def test_augment_applies_same_transform_to_every_frame() -> None:
+    """Si los 16 frames son iguales, despues de aumentar siguen iguales.
+
+    Es el test de coherencia temporal: si flip, crop o jitter se sortearan
+    por frame, la secuencia tendria saltos que el LSTM leeria como movimiento.
+    """
+    frame = _random_clip()[0:1]
+    clip = frame.repeat(16, 1, 1, 1)
+    for seed in range(10):
+        out = augment_frames(clip, generator=torch.Generator().manual_seed(seed))
+        assert torch.allclose(out, out[0:1].expand_as(out)), f"semilla {seed}"
+
+
+def test_augment_changes_the_clip() -> None:
+    """Con una semilla dada el clip sale modificado (no es la identidad)."""
+    clip = _random_clip()
+    out = augment_frames(clip, generator=torch.Generator().manual_seed(0))
+    assert not torch.allclose(out, clip)
+
+
+def test_augment_is_reproducible_with_same_seed() -> None:
+    """Misma semilla, mismo resultado: necesario para repetir experimentos."""
+    clip = _random_clip()
+    out_a = augment_frames(clip, generator=torch.Generator().manual_seed(7))
+    out_b = augment_frames(clip, generator=torch.Generator().manual_seed(7))
+    assert torch.equal(out_a, out_b)
+
+
+def test_augment_does_not_modify_input() -> None:
+    """La entrada no se modifica in-place (el llamador puede reutilizarla)."""
+    clip = _random_clip()
+    original = clip.clone()
+    augment_frames(clip, generator=torch.Generator().manual_seed(0))
+    assert torch.equal(clip, original)
+
+
+def test_augment_keeps_imagenet_range() -> None:
+    """El jitter no saca los valores del rango posible tras normalizar."""
+    clip = _random_clip()
+    for seed in range(10):
+        out = augment_frames(clip, generator=torch.Generator().manual_seed(seed))
+        assert out.min().item() >= -2.5
+        assert out.max().item() <= 2.7
+
+
+# -----------------------------------------------------------------------------
 # VideoPreprocessor (integracion)
 # -----------------------------------------------------------------------------
 
@@ -185,6 +251,18 @@ def test_video_preprocessor_integration_with_real_video() -> None:
     assert tensor.shape == (16, 3, 224, 224)
     assert tensor.dtype == torch.float32
     # Mismo rango teorico que normalize_frames.
+    assert tensor.min().item() >= -2.5
+    assert tensor.max().item() <= 2.7
+
+
+def test_video_preprocessor_train_mode_applies_augmentation() -> None:
+    """Con train=True el pipeline completo corre y devuelve el mismo formato."""
+    _require_fixture(SAMPLE_VIDEO)
+    preprocessor = VideoPreprocessor(n_frames=16, size=224, train=True)
+    tensor = preprocessor(str(SAMPLE_VIDEO))
+
+    assert tensor.shape == (16, 3, 224, 224)
+    assert tensor.dtype == torch.float32
     assert tensor.min().item() >= -2.5
     assert tensor.max().item() <= 2.7
 
