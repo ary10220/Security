@@ -167,5 +167,18 @@ class VideoPreprocessor:
         Returns:
             Tensor (n_frames, 3, size, size) listo para el modelo.
         """
-        # TODO (ambos, al final): encadenar los pasos 3.1 a 3.5.
-        raise NotImplementedError
+        # Orden fijo del plan: extraer -> redimensionar/RGB -> normalizar
+        # -> tensorizar -> (augmentar si entrena). Se mantiene identico en
+        # train y en inferencia; la API importa esta clase tal cual y nunca
+        # replica estos pasos (regla del CLAUDE.md).
+        frames_bgr = extract_frames(video_path, n_frames=self.n_frames)
+        frames_rgb = resize_and_convert(frames_bgr, size=self.size)
+        frames_norm = normalize_frames(frames_rgb)
+        tensor = to_tensor(frames_norm)
+
+        # La augmentation se aplica DESPUES de normalizar y tensorizar
+        # porque opera sobre (T, C, H, W) float; ademas asi flip/crop no
+        # alteran la media/std fijadas de ImageNet. Solo en entrenamiento.
+        if self.train:
+            tensor = augment_frames(tensor)
+        return tensor
