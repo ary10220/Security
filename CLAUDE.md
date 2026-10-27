@@ -77,18 +77,16 @@ si algo cambia, actualizar esta sección en el mismo PR.
   fue descargado por Diego. Detalle, licencias y estructura real en
   [`data/README.md`](data/README.md).
 - **Preprocesamiento:** `src/preprocessing/video_pipeline.py` implementa los
-  pasos 1, 2, 3, 5 y 6 (extraer 16 frames, resize+RGB, normalizar, tensor
-  `(16, 3, 224, 224)`, clase `VideoPreprocessor`), con tests en
-  `tests/test_preprocessing.py`.
+  6 pasos (extraer 16 frames, resize+RGB, normalizar, augmentation solo con
+  `train=True`, tensor `(16, 3, 224, 224)`, clase `VideoPreprocessor`), con
+  tests en `tests/test_preprocessing.py`. `augment_frames` (Diego) sortea
+  flip, recorte y jitter una vez por clip.
 - **EDA (Grageda):** `src/preprocessing/dataset_metadata.py` (metadatos de
   videos y `threshold_shortcut`), `notebooks/02_eda_datasets.ipynb` y
   `notebooks/03_comparar_frames.ipynb`. La parte de Lorgio (revisar y
   complementar) sigue pendiente.
 
 ### Pendiente
-- `augment_frames` (paso 3.4) sigue como stub (`NotImplementedError`). Hay
-  contradicción sobre quién lo hace (el plan dice Ariany + Diego; una nota en
-  `CONTRIBUCIONES.md` dice Grageda): confirmar antes de implementarlo.
 - `src/models/` (modelo MobileNetV2 + BiLSTM), entrenamiento (`train.py`,
   métricas, matriz de confusión, curva PR), `api/` y `frontend/`: sin empezar.
 - Comparación de **exactitud** entre 8, 16 y 32 frames: requiere entrenar con
@@ -117,7 +115,8 @@ si algo cambia, actualizar esta sección en el mismo PR.
    pero no en exactitud.
 3. ¿Cómo se parte Real Life en train/val/test y cómo se reportan los
    resultados por dataset (RWF-2000 y Real Life por separado)?
-4. ¿Quién implementa `augment_frames`?
+4. ~~¿Quién implementa `augment_frames`?~~ Resuelto: lo hizo Diego, según el
+   plan (día 4).
 5. Duración del segmento de análisis (el plan menciona 2 s y 3 s).
 6. Versión de Python del equipo: `requirements.txt` fija `torch==2.3.1`
    (Python 3.10–3.12).
