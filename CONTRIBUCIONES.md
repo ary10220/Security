@@ -96,10 +96,12 @@ Fase de pipeline (días 3-4, en pareja con Ariany, que completó
   reescalado al tamaño original y jitter leve de brillo/contraste (±20 %),
   sorteados una sola vez por clip para no romper la coherencia temporal. El
   jitter se aplica en espacio de píxeles `[0, 1]` y se vuelve a normalizar.
-  Acepta un `torch.Generator` para resultados reproducibles. 7 tests nuevos en
+  Acepta un `torch.Generator` para resultados reproducibles y funciona con
+  clips en CPU o GPU (commit `c6b3a0e`). 8 tests nuevos en
   `tests/test_preprocessing.py` (forma, mismo cambio en todos los frames,
-  reproducibilidad, no modifica la entrada, rango ImageNet y pipeline con
-  `train=True`). Validado sobre un `.avi` real de Hockey Fight.
+  reproducibilidad, no modifica la entrada, rango ImageNet, GPU y pipeline con
+  `train=True` comparado contra la salida sin augmentation). Validado sobre un
+  `.avi` real de Hockey Fight.
 
 Pendiente de mi parte según el plan: `model.py` (con Lorgio) y frontend (con
 Grageda). Se registrará aquí cuando se haga.
