@@ -25,7 +25,24 @@ Reglas:
 
 ## P3 — Diego
 
-- (pendiente)
+Fase de datos (en pareja con Grageda, que se encargó de Real Life Violence):
+
+- **RWF-2000:** descarga completa desde Zenodo
+  (https://zenodo.org/records/15687512). Verificación local: los 13 archivos
+  coinciden con los MD5 publicados, 2000 clips (800 + 800 en `train`,
+  200 + 200 en `val`), sin archivos vacíos. Clips MJPEG de 5 s a 30 fps.
+- **Nombres demasiado largos:** 24 videos de `Train_Fight` tenían nombres de
+  más de 255 bytes, que Linux no admite. Se renombraron como
+  `longname_NN_urlgot_XXX.avi`; el contenido es el original.
+- **Subida al Drive del grupo** en `datasets/rwf2000/RWF-2000/`, conservando
+  la estructura real (`train/` y `val/`).
+- **Hockey Fight:** descargado de Kaggle (1000 clips `.avi`, 500 pelea y 500
+  no pelea) para probar el pipeline antes de usar RWF-2000.
+- Los videos no se versionan; viven en el Drive y en mi copia local.
+
+Pendiente de mi parte según el plan: `video_pipeline.py` (con Ariany),
+`model.py` (con Lorgio) y frontend (con Grageda). Se registrará aquí cuando
+se haga.
 
 ## P4 — Grageda
 
