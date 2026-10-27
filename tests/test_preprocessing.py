@@ -256,15 +256,30 @@ def test_video_preprocessor_integration_with_real_video() -> None:
 
 
 def test_video_preprocessor_train_mode_applies_augmentation() -> None:
-    """Con train=True el pipeline completo corre y devuelve el mismo formato."""
+    """Con train=True el pipeline aumenta el clip; con train=False no.
+
+    Se compara contra la salida de inferencia del mismo video: si alguien
+    desconecta augment_frames del pipeline, ambas salidas serian iguales.
+    """
     _require_fixture(SAMPLE_VIDEO)
-    preprocessor = VideoPreprocessor(n_frames=16, size=224, train=True)
-    tensor = preprocessor(str(SAMPLE_VIDEO))
+    plain = VideoPreprocessor(n_frames=16, size=224, train=False)(str(SAMPLE_VIDEO))
+
+    torch.manual_seed(0)
+    tensor = VideoPreprocessor(n_frames=16, size=224, train=True)(str(SAMPLE_VIDEO))
 
     assert tensor.shape == (16, 3, 224, 224)
     assert tensor.dtype == torch.float32
     assert tensor.min().item() >= -2.5
     assert tensor.max().item() <= 2.7
+    assert not torch.allclose(tensor, plain)
+
+
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="Requiere GPU con CUDA.")
+def test_augment_works_on_gpu() -> None:
+    """Un clip en GPU se aumenta sin errores y el resultado queda en GPU."""
+    clip = _random_clip().to("cuda")
+    out = augment_frames(clip, generator=torch.Generator(device="cuda").manual_seed(0))
+    assert out.device.type == "cuda"
 
 
 HOCKEY_VIDEO_PATH = os.environ.get("HOCKEY_VIDEO_PATH")

@@ -127,17 +127,22 @@ def augment_frames(frames: torch.Tensor,
 
     Args:
         frames: tensor (T, C, H, W) ya normalizado.
-        generator: generador aleatorio de torch. Con una semilla fija el
-            resultado es reproducible; si es None se usa el global.
+        generator: generador aleatorio de torch, en el mismo dispositivo que
+            `frames`. Con una semilla fija el resultado es reproducible; si es
+            None se usa el global.
 
     Returns:
         Tensor (T, C, H, W) aumentado. La entrada no se modifica.
     """
     _, _, height, width = frames.shape
+    # Los sorteos se hacen en el dispositivo del clip: torch exige que el
+    # generator y el tensor que se sortea esten en el mismo (CPU o GPU).
+    device = frames.device
 
     def uniform(low: float, high: float) -> float:
         # Un solo sorteo por clip: todos los frames reciben el mismo valor.
-        return low + (high - low) * torch.rand(1, generator=generator).item()
+        sample = torch.rand(1, generator=generator, device=device).item()
+        return low + (high - low) * sample
 
     # Flip horizontal: una pelea es igual de violenta vista en espejo, asi
     # que duplica las posiciones de los participantes sin cambiar la etiqueta.
@@ -150,8 +155,10 @@ def augment_frames(frames: torch.Tensor,
     side_scale = uniform(0.8, 1.0) ** 0.5
     crop_h = max(1, round(height * side_scale))
     crop_w = max(1, round(width * side_scale))
-    top = int(torch.randint(0, height - crop_h + 1, (1,), generator=generator))
-    left = int(torch.randint(0, width - crop_w + 1, (1,), generator=generator))
+    top = int(torch.randint(0, height - crop_h + 1, (1,),
+                            generator=generator, device=device))
+    left = int(torch.randint(0, width - crop_w + 1, (1,),
+                             generator=generator, device=device))
     frames = frames[:, :, top:top + crop_h, left:left + crop_w]
     frames = F.interpolate(frames, size=(height, width), mode="bilinear",
                            align_corners=False)
@@ -159,8 +166,10 @@ def augment_frames(frames: torch.Tensor,
     # El jitter se aplica en el espacio de pixeles [0, 1], no sobre el tensor
     # normalizado: asi "brillo x1.2" significa lo mismo en los tres canales y
     # el clamp evita valores imposibles. Despues se vuelve a normalizar.
-    mean = torch.tensor(IMAGENET_MEAN).view(1, 3, 1, 1)
-    std = torch.tensor(IMAGENET_STD).view(1, 3, 1, 1)
+    # Se crean en el mismo dispositivo que los frames: si el clip ya esta en
+    # GPU, operar con tensores en CPU lanzaria un error.
+    mean = torch.tensor(IMAGENET_MEAN, device=device).view(1, 3, 1, 1)
+    std = torch.tensor(IMAGENET_STD, device=device).view(1, 3, 1, 1)
     pixels = frames * std + mean
 
     # Jitter leve (+-20 %): imita cambios de iluminacion entre camaras sin
