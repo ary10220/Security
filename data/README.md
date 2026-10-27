@@ -58,6 +58,19 @@ Esta carpeta se regenera corriendo el pipeline, no se versiona.
   | `val/Val_Fight` | 200 |
   | `val/Val_NonFight` | 200 |
 
+- **Contenido medido** (EDA en
+  [`notebooks/02_eda_datasets.ipynb`](../notebooks/02_eda_datasets.ipynb), sobre
+  la copia completa de 2000 videos bajada del Drive):
+  - Todos los clips son `.avi` de **5,0 s a 30 fps**; 0 ilegibles.
+  - La resolución **no es uniforme**: 700 clips de 320x240, 628 de 1280x720,
+    31 de 1920x1080 y muchas otras (4:3, 16:9, verticales).
+  - La resolución separa las clases con ~75 % de exactitud (los clips de
+    pelea tienden a ser más grandes), así que también hay un posible atajo
+    aquí. El fps y la duración no delatan la clase (50 %).
+  - Los 2000 clips salen de ~961 videos fuente (aproximado por el prefijo del
+    nombre `<id>_<n>.avi`). Ninguna fuente aparece en `train` y `val` a la
+    vez. **Si se hace otro split o validación cruzada, dividir por fuente, no
+    por clip.**
 - **Nota:** 24 videos de `Train_Fight` tenían nombres en chino de más de
   255 bytes, que Linux no admite. Se renombraron como
   `longname_NN_urlgot_XXX.avi`; el contenido es el original.
@@ -100,8 +113,11 @@ Esta carpeta se regenera corriendo el pipeline, no se versiona.
     pendiente decidir si se excluyen o se recortan.
   - Las clases difieren en características que no son el comportamiento:
     solo con la resolución (224x224 → no violencia) se acierta el 77,5 % y
-    solo con fps > 29, el 81,7 %. Por eso conviene evaluar también en
-    RWF-2000 y reportar ambos resultados por separado.
+    solo con fps > 29,4 (umbral elegido en una mitad y evaluado en la otra),
+    el 81,3 %. Por eso conviene evaluar también en RWF-2000 y reportar ambos
+    resultados por separado.
+  - No trae split ni identificador de fuente: una división al azar puede
+    mezclar clips muy parecidos entre train y test.
   - La muestra incluye deportes de contacto y tomas de transmisión, no solo
     cámaras de vigilancia.
 - **Estructura prevista en local:** `data/raw/real_life/Violence/` y
@@ -114,6 +130,31 @@ Esta carpeta se regenera corriendo el pipeline, no se versiona.
 - **Uso:** conjunto pequeño para probar el pipeline, no sustituye a los
   datasets principales.
 - **Cita:** Nievas et al., 2011.
+
+## Cómo dejar los datos en `data/raw/`
+
+Descargar `datasets/rwf2000/` y `datasets/real_life/` del Drive (si Drive lo
+entrega en varios `.zip` de ~2 GB, bajarlos **todos**). Extraer de modo que
+queden estas rutas, sin carpetas intermedias de más:
+
+```
+data/raw/rwf2000/train/Train_Fight/*.avi      (800)
+data/raw/rwf2000/train/Train_NonFight/*.avi   (800)
+data/raw/rwf2000/val/Val_Fight/*.avi          (200)
+data/raw/rwf2000/val/Val_NonFight/*.avi       (200)
+data/raw/real_life/Violence/*.mp4             (1000)
+data/raw/real_life/NonViolence/*.mp4 y .avi   (1000)
+```
+
+Comprobación rápida (PowerShell), debe dar 800/800/200/200:
+
+```powershell
+Get-ChildItem data\raw\rwf2000 -Recurse -File | Group-Object { $_.Directory.Name } | Select Name, Count
+```
+
+El notebook `02_eda_datasets.ipynb` escanea los videos y guarda la tabla de
+metadatos en `data/processed/metadata_*.csv` (tampoco se versiona); el
+notebook 03 la reutiliza.
 
 ## Cómo descargar
 
