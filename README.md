@@ -61,6 +61,14 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
+> **Versión de Python:** usar 3.10–3.12. `requirements.txt` fija
+> `torch==2.3.1`, que no tiene instalador para Python 3.13/3.14. Con una versión
+> más nueva de Python hay que instalar un torch más reciente (en la máquina de
+> Grageda, con Python 3.14 y torch 2.14 en CPU, los tests pasan).
+
+Para los notebooks de EDA hacen falta los videos en `data/raw/` (ver
+[`data/README.md`](data/README.md)) y ejecutarlos en orden: 02 y luego 03.
+
 ## Equipo
 
 Ver [`CONTRIBUCIONES.md`](CONTRIBUCIONES.md) para el detalle del aporte

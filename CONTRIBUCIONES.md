@@ -123,5 +123,25 @@ Fase de EDA (rama `feat/eda-dataset`):
 - Lo hice yo solo: la parte de Lorgio (revisar y complementar el EDA) queda
   pendiente y se registrará en su sección si la hace.
 
-Pendiente de mi parte según el plan: ejecutar el EDA con RWF-2000, entrenamiento
-(con Ariany) y frontend (con Diego). Se registrará aquí cuando se haga.
+Fase de EDA con RWF-2000 (rama `feat/eda-rwf2000`, apilada sobre `feat/eda-dataset`):
+
+- Bajé RWF-2000 del Drive (6 `.zip`), verifiqué integridad (CRC) y conteos
+  (800/800/200/200, 2000 videos únicos), y lo ordené en `data/raw/rwf2000/`.
+- **`src/preprocessing/dataset_metadata.py`** (commit `8f5b891`): agregué
+  `threshold_shortcut`, que mide cuánto separa las clases una sola característica
+  con un umbral elegido en un conjunto y evaluado en otro. Tests nuevos en
+  `tests/test_dataset_metadata.py`.
+- **`notebooks/02_eda_datasets.ipynb`** (commit `b2b84e4`): ahora cubre los dos
+  datasets. Hallazgos medidos: RWF-2000 es uniforme en duración y fps (5 s, 30
+  fps) pero no en resolución; la resolución lo separa ~75 % (atajo posible);
+  los clips salen de ~961 videos fuente y ninguno está en train y val a la vez.
+- **`notebooks/03_comparar_frames.ipynb`** (commit `b1b6ce2`): la comparación
+  8/16/32 se repitió con 160 clips (Real Life y RWF-2000); la conclusión de
+  mantener 16 se sostiene en ambos en costo y cobertura (no en exactitud).
+- **Documentación** (commit de docs de esta rama): estado del proyecto,
+  hallazgos y decisiones abiertas en `CLAUDE.md`; cómo dejar los datos en
+  `data/README.md`; nota de versión de Python en `README.md`.
+- Sigue pendiente la parte de Lorgio (revisar y complementar el EDA).
+
+Pendiente de mi parte según el plan: entrenamiento (con Ariany) y frontend (con
+Diego). Se registrará aquí cuando se haga.

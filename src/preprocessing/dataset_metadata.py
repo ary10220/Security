@@ -9,6 +9,7 @@ toma segundos.
 from pathlib import Path
 
 import cv2
+import numpy as np
 import pandas as pd
 
 VIDEO_EXTENSIONS = {".mp4", ".avi", ".mov"}
@@ -81,6 +82,53 @@ def read_video_info(video_path: Path) -> dict:
     # Si el fps viene en 0 (metadata rota) se evita dividir por cero.
     info["segundos"] = info["frames"] / info["fps"] if info["fps"] > 0 else 0.0
     return info
+
+
+def threshold_shortcut(
+    train_x: np.ndarray,
+    train_y: np.ndarray,
+    test_x: np.ndarray,
+    test_y: np.ndarray,
+) -> dict:
+    """Mide cuanto separa las clases una sola caracteristica con un umbral.
+
+    Busca en `train` el umbral (y el sentido: mayor o menor) que mejor
+    separa las clases y luego lo evalua en `test`. Si un dato que no es el
+    comportamiento (fps, resolucion, bitrate) separa bien las clases, el
+    modelo podria aprenderlo como atajo. Se evalua en datos distintos a los
+    usados para elegir el umbral para no sobreestimar la exactitud.
+
+    Args:
+        train_x: valores de la caracteristica para elegir el umbral.
+        train_y: etiquetas binarias (1 = violencia) de `train_x`.
+        test_x: valores de la caracteristica para evaluar.
+        test_y: etiquetas binarias de `test_x`.
+
+    Returns:
+        Diccionario con `umbral`, `sentido` (">" o "<=": la regla predice
+        violencia si x cumple la condicion), `acc_train` y `acc_test`.
+    """
+    train_x = np.asarray(train_x, dtype=float)
+    train_y = np.asarray(train_y, dtype=int)
+    test_x = np.asarray(test_x, dtype=float)
+    test_y = np.asarray(test_y, dtype=int)
+
+    # Se prueban como umbrales los puntos medios entre valores distintos
+    # consecutivos; basta con eso para cubrir todas las particiones posibles.
+    values = np.unique(train_x)
+    candidates = (values[:-1] + values[1:]) / 2 if len(values) > 1 else values
+
+    best = {"umbral": float(values[0]), "sentido": ">", "acc_train": 0.0}
+    for thr in candidates:
+        for direction in (">", "<="):
+            pred = (train_x > thr) if direction == ">" else (train_x <= thr)
+            acc = float((pred.astype(int) == train_y).mean())
+            if acc > best["acc_train"]:
+                best = {"umbral": float(thr), "sentido": direction, "acc_train": acc}
+
+    pred_test = (test_x > best["umbral"]) if best["sentido"] == ">" else (test_x <= best["umbral"])
+    best["acc_test"] = float((pred_test.astype(int) == test_y).mean())
+    return best
 
 
 def scan_dataset(root: str | Path, dataset: str) -> pd.DataFrame:
