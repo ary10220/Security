@@ -92,7 +92,18 @@ Esta carpeta se regenera corriendo el pipeline, no se versiona.
 - **Los videos no son uniformes:** la duración mediana es 5 s, pero hay
   clips desde 1 s hasta ~376 s; las resoluciones van desde 136x240 hasta
   1080x1920 y los fps varían. El preprocesador (16 frames uniformes,
-  224x224) debe tolerarlo; esto se analiza en el EDA.
+  224x224) debe tolerarlo; el análisis está en
+  [`notebooks/02_eda_datasets.ipynb`](../notebooks/02_eda_datasets.ipynb).
+- **Hallazgos del EDA** (medidos sobre estos 2000 videos):
+  - Solo 3 clips duran más de 30 s (`V_789` ≈ 376 s, `NV_992` ≈ 180 s,
+    `V_398` ≈ 137 s). Con 16 frames uniformes quedarían muy separados;
+    pendiente decidir si se excluyen o se recortan.
+  - Las clases difieren en características que no son el comportamiento:
+    solo con la resolución (224x224 → no violencia) se acierta el 77,5 % y
+    solo con fps > 29, el 81,7 %. Por eso conviene evaluar también en
+    RWF-2000 y reportar ambos resultados por separado.
+  - La muestra incluye deportes de contacto y tomas de transmisión, no solo
+    cámaras de vigilancia.
 - **Estructura prevista en local:** `data/raw/real_life/Violence/` y
   `data/raw/real_life/NonViolence/`.
 

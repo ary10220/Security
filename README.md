@@ -31,6 +31,14 @@ actividad normal.
 └── docs/              # Documentacion adicional
 ```
 
+## Notebooks
+
+| Notebook | Contenido |
+|---|---|
+| `01_explore_dataset.ipynb` | Metadatos de un video y muestreo de 16 frames. |
+| `02_eda_datasets.ipynb` | EDA de los datasets: clases, integridad, duración, fps, resolución. Necesita los videos en `data/raw/`. |
+| `03_comparar_frames.ipynb` | Comparación de 8, 16 y 32 frames (cobertura y costo). Lee la tabla que genera el 02 en `data/processed/`, así que se ejecuta después. |
+
 ## Instalación
 
 > _Pendiente de completar en la fase 2._

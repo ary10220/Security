@@ -105,5 +105,23 @@ Fase de datos (en pareja con Diego, que se encargó de RWF-2000):
 - Los videos y el manifiesto de verificación no se versionan; viven fuera
   del repo (Drive / copia local).
 
-Pendiente de mi parte según el plan: EDA (con Lorgio), entrenamiento (con
-Ariany) y frontend (con Diego). Se registrará aquí cuando se haga.
+Fase de EDA (rama `feat/eda-dataset`):
+
+- **`src/preprocessing/dataset_metadata.py`** (commit `d85c5de`): lee los metadatos de los videos
+  (duración, fps, resolución, bytes, clase y split deducidos de la carpeta)
+  sin decodificar el clip completo. Tests en `tests/test_dataset_metadata.py`.
+- **`notebooks/02_eda_datasets.ipynb`** (commit `a5e1e4e`): EDA de Real Life (balance, integridad,
+  duración, fps, resolución, muestra visual). Hallazgo: la clase se predice solo
+  con la resolución (77,5 %) o solo con fps (81,7 %), un posible atajo para el
+  modelo. La sección de RWF-2000 está lista pero no se ejecutó: falta tener esos
+  videos en `data/raw/rwf2000/`.
+- **`notebooks/03_comparar_frames.ipynb`** (commit `e7990b5`): comparación 8 vs 16 vs 32 frames con
+  80 clips de Real Life: separación temporal, redundancia y costo (extracción,
+  memoria, forward de MobileNetV2). No mide exactitud: eso queda para la fase
+  de entrenamiento.
+- Se agregó `pandas` a `requirements.txt` (commit `d85c5de`).
+- Lo hice yo solo: la parte de Lorgio (revisar y complementar el EDA) queda
+  pendiente y se registrará en su sección si la hace.
+
+Pendiente de mi parte según el plan: ejecutar el EDA con RWF-2000, entrenamiento
+(con Ariany) y frontend (con Diego). Se registrará aquí cuando se haga.
