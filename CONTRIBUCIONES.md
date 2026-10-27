@@ -17,7 +17,50 @@ Reglas:
 
 ## P1 — Ariany Claure
 
-- (pendiente)
+Fase de setup (días 1-2, PR #1):
+
+- **Rama `feat/setup-estructura-inicial`:** estructura inicial del repo
+  (carpetas `src/`, `api/`, `frontend/`, `tests/`, etc. con sus `__init__.py`
+  y `.gitkeep`), `requirements.txt` con versiones fijas compatibles con
+  Python 3.10+ (ojo con `numpy==1.26.4` para no romper torch 2.3), `.gitignore`
+  ampliado (`artifacts/*.pt`, `data/raw/`, `data/processed/`, `node_modules/`),
+  `data/README.md` inicial, `README.md` del proyecto, `CONTRIBUCIONES.md` y
+  `CLAUDE.md` con las reglas.
+- **Notebook `notebooks/01_explore_dataset.ipynb`:** exploración de un video
+  cualquiera con muestreo determinista de 16 frames via `np.linspace`, grilla
+  4x4 con matplotlib, impresión de metadatos (fps, duración, resolución).
+
+Fase de pipeline (día 3, en pareja con Diego, que dejó `extract_frames`,
+`normalize_frames`, `to_tensor`, constantes y esqueleto de la clase):
+
+- **Rama `feat/preprocess-completar-pipeline`:** completo los stubs
+  `NotImplementedError` que Diego dejó en `src/preprocessing/video_pipeline.py`.
+  - `resize_and_convert`: `cv2.resize` con `INTER_AREA` (menos aliasing al
+    achicar) + `cvtColor(BGR→RGB)`. Mantiene dtype `uint8` para que
+    `normalize_frames` arranque correctamente desde ahí.
+  - `VideoPreprocessor.__call__`: encadena extract → resize/convert →
+    normalize → to_tensor, llamando a `augment_frames` sólo cuando `train=True`
+    (Grageda rellena ese stub en la fase 4).
+  - `src/preprocessing/__init__.py`: expone la clase y las funciones públicas.
+- **Suite de tests `tests/test_preprocessing.py` (10 tests):** cubre cada paso
+  por separado y la integración completa — shape, dtype, rangos, conversión
+  BGR→RGB con pixel conocido, estadísticas ImageNet exactas con frame gris,
+  video más corto que `n_frames`, archivo faltante, video corrupto. 9 pasan
+  en verde sobre fixtures sintéticos; 1 opcional (`HOCKEY_VIDEO_PATH`) salta
+  si no se setea la env var.
+- **Fixtures sintéticos (`tests/fixtures/make_fixture.py`):** genera
+  `sample_video.mp4` (90 frames, 320x240), `short_video.mp4` (10 frames) y
+  `video_corrupto.mp4` (bytes aleatorios con semilla fija para
+  reproducibilidad). Los tres `.mp4` se commitean al repo (~84 KB en total)
+  para que los tests corran sin descargar datasets.
+- **`pytest.ini`:** `pythonpath = .` para que los tests resuelvan
+  `from src.preprocessing import ...` desde la raíz del repo.
+- **Validación manual** sobre un `.avi` real de RWF-2000 y un `.mp4` de
+  Real Life Violence: ambos devuelven shape `(16, 3, 224, 224)`, `float32`,
+  rango `[-2.12, +2.64]` — tocan los extremos teóricos de ImageNet.
+
+Pendiente de mi parte según el plan: entrenamiento (con Grageda) y `model.py`
+(con Lorgio). Se registrará aquí cuando se haga.
 
 ## P2 — Lorgio
 
