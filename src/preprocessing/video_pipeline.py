@@ -78,8 +78,18 @@ def resize_and_convert(frames: np.ndarray, size: int = IMAGE_SIZE) -> np.ndarray
     Returns:
         Arreglo (T, size, size, 3) en RGB.
     """
-    # TODO (Ariany): cv2.resize + cv2.cvtColor(COLOR_BGR2RGB).
-    raise NotImplementedError
+    # Interpolacion AREA al achicar (lo tipico en videos de vigilancia) da
+    # menos aliasing que BILINEAR; para agrandar OpenCV igual se maneja bien
+    # porque los videos del dataset ya vienen a 240p o mas.
+    resized = np.empty((frames.shape[0], size, size, 3), dtype=frames.dtype)
+    for i, frame in enumerate(frames):
+        # cv2.resize espera (ancho, alto) en ese orden, no (alto, ancho).
+        bgr_resized = cv2.resize(frame, (size, size), interpolation=cv2.INTER_AREA)
+        # El modelo se pre-entreno con imagenes RGB; OpenCV las entrega BGR
+        # por herencia historica. Sin esta conversion, los canales rojo y
+        # azul quedan invertidos y la red predice basura.
+        resized[i] = cv2.cvtColor(bgr_resized, cv2.COLOR_BGR2RGB)
+    return resized
 
 
 def normalize_frames(frames: np.ndarray) -> np.ndarray:
@@ -157,5 +167,18 @@ class VideoPreprocessor:
         Returns:
             Tensor (n_frames, 3, size, size) listo para el modelo.
         """
-        # TODO (ambos, al final): encadenar los pasos 3.1 a 3.5.
-        raise NotImplementedError
+        # Orden fijo del plan: extraer -> redimensionar/RGB -> normalizar
+        # -> tensorizar -> (augmentar si entrena). Se mantiene identico en
+        # train y en inferencia; la API importa esta clase tal cual y nunca
+        # replica estos pasos (regla del CLAUDE.md).
+        frames_bgr = extract_frames(video_path, n_frames=self.n_frames)
+        frames_rgb = resize_and_convert(frames_bgr, size=self.size)
+        frames_norm = normalize_frames(frames_rgb)
+        tensor = to_tensor(frames_norm)
+
+        # La augmentation se aplica DESPUES de normalizar y tensorizar
+        # porque opera sobre (T, C, H, W) float; ademas asi flip/crop no
+        # alteran la media/std fijadas de ImageNet. Solo en entrenamiento.
+        if self.train:
+            tensor = augment_frames(tensor)
+        return tensor
