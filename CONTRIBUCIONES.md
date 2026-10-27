@@ -83,9 +83,26 @@ Fase de datos (en pareja con Grageda, que se encargó de Real Life Violence):
   no pelea) para probar el pipeline antes de usar RWF-2000.
 - Los videos no se versionan; viven en el Drive y en mi copia local.
 
-Pendiente de mi parte según el plan: `video_pipeline.py` (con Ariany),
-`model.py` (con Lorgio) y frontend (con Grageda). Se registrará aquí cuando
-se haga.
+Fase de pipeline (días 3-4, en pareja con Ariany, que completó
+`resize_and_convert`, el encadenado de `VideoPreprocessor` y la suite base):
+
+- **Rama `feat/preprocess-frames` (PR #6):** esqueleto de
+  `src/preprocessing/video_pipeline.py` con constantes y stubs (commit
+  `8c891ab`), `extract_frames` con 16 frames uniformes vía OpenCV y relleno
+  con el último frame si el video es corto (`394939f`), `normalize_frames` con
+  media/std de ImageNet (`01d9257`) y `to_tensor` a `(T, C, H, W)` (`f649286`).
+- **Rama `feat/preprocess-augment`:** `augment_frames` (paso 3.4, commit
+  `d4b70aa`). Flip horizontal (p=0.5), recorte aleatorio del 80-100 % del área
+  reescalado al tamaño original y jitter leve de brillo/contraste (±20 %),
+  sorteados una sola vez por clip para no romper la coherencia temporal. El
+  jitter se aplica en espacio de píxeles `[0, 1]` y se vuelve a normalizar.
+  Acepta un `torch.Generator` para resultados reproducibles. 7 tests nuevos en
+  `tests/test_preprocessing.py` (forma, mismo cambio en todos los frames,
+  reproducibilidad, no modifica la entrada, rango ImageNet y pipeline con
+  `train=True`). Validado sobre un `.avi` real de Hockey Fight.
+
+Pendiente de mi parte según el plan: `model.py` (con Lorgio) y frontend (con
+Grageda). Se registrará aquí cuando se haga.
 
 ## P4 — Grageda
 
