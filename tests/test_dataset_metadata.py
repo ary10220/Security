@@ -3,6 +3,7 @@
 import shutil
 from pathlib import Path
 
+import numpy as np
 import pytest
 
 from src.preprocessing.dataset_metadata import (
@@ -10,6 +11,7 @@ from src.preprocessing.dataset_metadata import (
     read_video_info,
     scan_dataset,
     split_from_path,
+    threshold_shortcut,
 )
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -50,6 +52,33 @@ def test_read_video_info_fixture() -> None:
 
 def test_read_video_info_corrupto() -> None:
     assert not read_video_info(FIXTURES / "video_corrupto.mp4")["legible"]
+
+
+def test_threshold_shortcut_separable() -> None:
+    # fps 30 -> violencia y fps 24 -> no violencia: separables con un umbral.
+    train_x, train_y = np.array([24, 24, 25, 30, 30, 31]), np.array([0, 0, 0, 1, 1, 1])
+    res = threshold_shortcut(train_x, train_y, np.array([24, 30]), np.array([0, 1]))
+    assert res["acc_train"] == 1.0
+    assert res["acc_test"] == 1.0
+    assert res["sentido"] == ">"
+    assert 25 <= res["umbral"] <= 30
+
+
+def test_threshold_shortcut_sin_senal() -> None:
+    # La caracteristica es constante: no puede superar el azar (0.5 aqui).
+    x, y = np.full(10, 30.0), np.array([0, 1] * 5)
+    res = threshold_shortcut(x, y, x, y)
+    assert res["acc_test"] == pytest.approx(0.5)
+
+
+def test_threshold_shortcut_evalua_en_test() -> None:
+    # El umbral se elige en train; en test la relacion esta invertida.
+    res = threshold_shortcut(
+        np.array([1, 1, 9, 9]), np.array([0, 0, 1, 1]),
+        np.array([1, 1, 9, 9]), np.array([1, 1, 0, 0]),
+    )
+    assert res["acc_train"] == 1.0
+    assert res["acc_test"] == 0.0
 
 
 def test_scan_dataset(tmp_path: Path) -> None:
