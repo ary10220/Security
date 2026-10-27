@@ -78,8 +78,18 @@ def resize_and_convert(frames: np.ndarray, size: int = IMAGE_SIZE) -> np.ndarray
     Returns:
         Arreglo (T, size, size, 3) en RGB.
     """
-    # TODO (Ariany): cv2.resize + cv2.cvtColor(COLOR_BGR2RGB).
-    raise NotImplementedError
+    # Interpolacion AREA al achicar (lo tipico en videos de vigilancia) da
+    # menos aliasing que BILINEAR; para agrandar OpenCV igual se maneja bien
+    # porque los videos del dataset ya vienen a 240p o mas.
+    resized = np.empty((frames.shape[0], size, size, 3), dtype=frames.dtype)
+    for i, frame in enumerate(frames):
+        # cv2.resize espera (ancho, alto) en ese orden, no (alto, ancho).
+        bgr_resized = cv2.resize(frame, (size, size), interpolation=cv2.INTER_AREA)
+        # El modelo se pre-entreno con imagenes RGB; OpenCV las entrega BGR
+        # por herencia historica. Sin esta conversion, los canales rojo y
+        # azul quedan invertidos y la red predice basura.
+        resized[i] = cv2.cvtColor(bgr_resized, cv2.COLOR_BGR2RGB)
+    return resized
 
 
 def normalize_frames(frames: np.ndarray) -> np.ndarray:
