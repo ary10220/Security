@@ -117,3 +117,134 @@ class ViolenceDetector(nn.Module):
         # direccion hacia atras solo vio un frame, asi que resumiria casi nada.
         summary = torch.cat([h_n[-2], h_n[-1]], dim=1)  # (B, 2 * hidden_size)
         return self.classifier(summary)
+
+
+# ---------------------------------------------------------------------------
+# PARTE DE LORGIO (fase 3 del plan). Diego dejo la estructura y los stubs;
+# cada TODO(Lorgio) dice que falta y como probarlo. Los tests que lo cubren
+# estan en tests/test_model.py marcados con skip: al terminar cada pieza,
+# quitar el skip y verificar que pasa.
+# ---------------------------------------------------------------------------
+
+# Nombres validos para train.py --model (seccion 4 del plan). Ariany y
+# Grageda eligen el modelo con este argumento, asi que no cambiar los nombres.
+MODEL_NAMES = ("mobilenet_lstm", "resnet_lstm", "mobilenet_baseline")
+
+# TODO(Lorgio): confirmar o ajustar estos valores (tabla "Hiperparametros de
+# entrenamiento" del plan). Se dejan los del plan para que train.py pueda
+# arrancar; si cambias alguno, anota el por que en CONTRIBUCIONES.md.
+DEFAULT_HYPERPARAMS = {
+    "optimizer": "Adam",
+    "lr": 1e-4,  # bajo porque la LSTM es la que aprende; backbone congelado
+    "batch_size": 8,  # lo que entra en memoria con 16 x 224 x 224 x 3
+    "epochs": 15,  # el plan dice 15-20; mas satura y sobreajusta
+    "scheduler": "ReduceLROnPlateau",
+    "early_stopping_patience": 5,
+}
+
+
+class FrameBaseline(nn.Module):
+    """Baseline de 1 frame: MobileNetV2 + Linear, sin LSTM.
+
+    Responde la pregunta "vale la pena modelar la secuencia temporal?". Si
+    este modelo rinde parecido a ViolenceDetector, no hace falta la LSTM.
+
+    TODO(Lorgio): implementar.
+        - Mismo backbone MobileNetV2 congelado y el mismo pool que
+          ViolenceDetector (reutilizar, no copiar con otra forma).
+        - forward recibe (B, T, 3, 224, 224) como los demas modelos pero usa
+          solo el frame del medio, x[:, T // 2]. Asi train.py no cambia.
+        - Cabeza: Linear(FEATURE_DIM, num_classes).
+        - Devuelve logits (B, num_classes).
+    """
+
+    def __init__(self, num_classes: int = NUM_CLASSES, pretrained: bool = True) -> None:
+        """Construye el baseline (pendiente)."""
+        super().__init__()
+        raise NotImplementedError("TODO(Lorgio): implementar FrameBaseline")
+
+
+class ResNetDetector(nn.Module):
+    """ResNet50 + BiLSTM: el backbone 5x mas pesado de la comparacion.
+
+    TODO(Lorgio): implementar.
+        - torchvision.models.resnet50 con ResNet50_Weights.IMAGENET1K_V2,
+          quitando la capa fc (la salida de avgpool son 2048 dim por frame,
+          no 1280: ajustar el input_size de la LSTM).
+        - Congelar el backbone igual que ViolenceDetector, incluido el
+          override de train() para no actualizar BatchNorm.
+        - Misma LSTM bidireccional, mismo resumen con h_n y misma cabeza.
+        - Pista: si queda casi igual que ViolenceDetector, extraer el
+          cuerpo comun a una clase base en vez de duplicarlo.
+    """
+
+    def __init__(
+        self,
+        hidden_size: int = 128,
+        num_classes: int = NUM_CLASSES,
+        freeze_backbone: bool = True,
+        pretrained: bool = True,
+    ) -> None:
+        """Construye el modelo con backbone ResNet50 (pendiente)."""
+        super().__init__()
+        raise NotImplementedError("TODO(Lorgio): implementar ResNetDetector")
+
+
+def build_model(name: str, pretrained: bool = True) -> nn.Module:
+    """Crea un modelo por nombre, para que train.py use --model <nombre>.
+
+    Args:
+        name: uno de MODEL_NAMES.
+        pretrained: si carga los pesos de ImageNet.
+
+    Returns:
+        El modelo listo para entrenar.
+
+    Raises:
+        ValueError: si el nombre no esta en MODEL_NAMES.
+    """
+    if name == "mobilenet_lstm":
+        return ViolenceDetector(pretrained=pretrained)
+    if name == "resnet_lstm":
+        return ResNetDetector(pretrained=pretrained)
+    if name == "mobilenet_baseline":
+        return FrameBaseline(pretrained=pretrained)
+    raise ValueError(f"Modelo desconocido: {name!r}. Opciones: {MODEL_NAMES}")
+
+
+def save_checkpoint(model: nn.Module, name: str, path: str) -> None:
+    """Guarda los pesos del modelo con lo necesario para recargarlo.
+
+    TODO(Lorgio): implementar (serializacion, seccion 4 del plan).
+        - torch.save de un dict con "model_name" (uno de MODEL_NAMES) y
+          "state_dict". Guardar el nombre evita que la API tenga que
+          adivinar que arquitectura corresponde al archivo.
+        - La API lo carga como artifacts/model.pt; esa carpeta esta en
+          .gitignore, no commitear pesos.
+
+    Args:
+        model: modelo entrenado.
+        name: nombre con el que se creo (uno de MODEL_NAMES).
+        path: archivo destino, por ejemplo artifacts/model.pt.
+    """
+    raise NotImplementedError("TODO(Lorgio): implementar save_checkpoint")
+
+
+def load_checkpoint(path: str, device: str = "cpu") -> nn.Module:
+    """Reconstruye un modelo desde un checkpoint de save_checkpoint.
+
+    TODO(Lorgio): implementar.
+        - Leer "model_name", crear el modelo con build_model(name,
+          pretrained=False) (los pesos reales vienen del state_dict, no hace
+          falta descargar ImageNet) y cargar el state_dict.
+        - Devolverlo en eval() y en el device pedido. Lo usan evaluate.py y
+          la API (api/main.py), asi que no debe depender de train.py.
+
+    Args:
+        path: archivo creado por save_checkpoint.
+        device: "cpu" o "cuda".
+
+    Returns:
+        El modelo en modo evaluacion.
+    """
+    raise NotImplementedError("TODO(Lorgio): implementar load_checkpoint")

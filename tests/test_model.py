@@ -8,7 +8,15 @@ solo cambian los valores iniciales de los pesos.
 import pytest
 import torch
 
-from src.models import ViolenceDetector
+from src.models import (
+    MODEL_NAMES,
+    FrameBaseline,
+    ResNetDetector,
+    ViolenceDetector,
+    build_model,
+    load_checkpoint,
+    save_checkpoint,
+)
 
 
 def _clip(batch: int = 2, frames: int = 16) -> torch.Tensor:
@@ -81,3 +89,74 @@ def test_rechaza_entrada_con_forma_incorrecta() -> None:
     model = ViolenceDetector(pretrained=False).eval()
     with pytest.raises(ValueError, match="B, T, C, H, W"):
         model(torch.randn(16, 3, 224, 224))
+
+
+# ---------------------------------------------------------------------------
+# Fabrica de modelos (la parte de mobilenet_lstm ya funciona)
+# ---------------------------------------------------------------------------
+
+
+def test_build_model_crea_el_detector_principal() -> None:
+    """build_model("mobilenet_lstm") devuelve ViolenceDetector."""
+    assert isinstance(build_model("mobilenet_lstm", pretrained=False), ViolenceDetector)
+
+
+def test_build_model_rechaza_nombre_desconocido() -> None:
+    """Un nombre fuera de MODEL_NAMES falla y lista las opciones validas."""
+    with pytest.raises(ValueError, match="mobilenet_lstm"):
+        build_model("vit_video")
+
+
+# ---------------------------------------------------------------------------
+# TODO(Lorgio): quitar cada skip cuando implementes la pieza correspondiente.
+# Los cuerpos ya describen el comportamiento esperado.
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.skip(reason="TODO(Lorgio): implementar FrameBaseline")
+def test_baseline_usa_solo_el_frame_del_medio() -> None:
+    """El baseline ignora los demas frames: cambiarlos no altera la salida."""
+    model = FrameBaseline(pretrained=False).eval()
+    x = _clip(batch=1, frames=16)
+    y = x.clone()
+    y[:, 0] = torch.randn_like(y[:, 0])  # cambia un frame que no es el del medio
+    with torch.no_grad():
+        assert model(x).shape == (1, 2)
+        assert torch.equal(model(x), model(y))
+
+
+@pytest.mark.skip(reason="TODO(Lorgio): implementar ResNetDetector")
+def test_resnet_devuelve_logits_por_clase() -> None:
+    """ResNetDetector cumple el mismo contrato que ViolenceDetector."""
+    model = ResNetDetector(pretrained=False).eval()
+    with torch.no_grad():
+        assert model(_clip(batch=1, frames=4)).shape == (1, 2)
+
+
+@pytest.mark.skip(reason="TODO(Lorgio): implementar ResNetDetector")
+def test_resnet_backbone_congelado_no_actualiza_batchnorm() -> None:
+    """Igual que en ViolenceDetector: train() deja el backbone en eval."""
+    model = ResNetDetector(pretrained=False).train()
+    assert not model.feature_extractor.training
+
+
+@pytest.mark.skip(reason="TODO(Lorgio): implementar build_model para todos")
+@pytest.mark.parametrize("name", MODEL_NAMES)
+def test_build_model_crea_todos_los_nombres(name: str) -> None:
+    """Cada nombre de MODEL_NAMES produce un modelo con salida (B, 2)."""
+    model = build_model(name, pretrained=False).eval()
+    with torch.no_grad():
+        assert model(_clip(batch=1, frames=4)).shape == (1, 2)
+
+
+@pytest.mark.skip(reason="TODO(Lorgio): implementar save/load_checkpoint")
+def test_checkpoint_ida_y_vuelta(tmp_path) -> None:
+    """Guardar y cargar devuelve un modelo con la misma salida, en eval."""
+    model = build_model("mobilenet_lstm", pretrained=False).eval()
+    path = str(tmp_path / "model.pt")
+    save_checkpoint(model, "mobilenet_lstm", path)
+    loaded = load_checkpoint(path)
+    assert not loaded.training
+    x = _clip(batch=1, frames=4)
+    with torch.no_grad():
+        assert torch.allclose(model(x), loaded(x))

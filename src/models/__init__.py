@@ -1,5 +1,27 @@
 """Modelos de clasificacion de video."""
 
-from src.models.model import FEATURE_DIM, NUM_CLASSES, ViolenceDetector
+from src.models.model import (
+    DEFAULT_HYPERPARAMS,
+    FEATURE_DIM,
+    MODEL_NAMES,
+    NUM_CLASSES,
+    FrameBaseline,
+    ResNetDetector,
+    ViolenceDetector,
+    build_model,
+    load_checkpoint,
+    save_checkpoint,
+)
 
-__all__ = ["FEATURE_DIM", "NUM_CLASSES", "ViolenceDetector"]
+__all__ = [
+    "DEFAULT_HYPERPARAMS",
+    "FEATURE_DIM",
+    "MODEL_NAMES",
+    "NUM_CLASSES",
+    "FrameBaseline",
+    "ResNetDetector",
+    "ViolenceDetector",
+    "build_model",
+    "load_checkpoint",
+    "save_checkpoint",
+]
