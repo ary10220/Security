@@ -226,6 +226,11 @@ __marimo__/
 artifacts/*.pt
 artifacts/*.pth
 
+# Metricas por corrida (train.py las escribe en artifacts/metrics_<model>.json):
+# son resultados por ejecucion, no definen el repo. Los informes compartidos
+# van a docs/ o al PR como texto.
+artifacts/*.json
+
 # Datasets: los videos crudos no se suben al repo (son privados, pesan GB
 # y legalmente no corresponde redistribuir). Cada integrante los descarga
 # segun data/README.md. Lo mismo con la version procesada en frames.
