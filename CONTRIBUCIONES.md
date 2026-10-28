@@ -118,6 +118,11 @@ Fase de modelo (día 5, en pareja con Lorgio):
   escritos en `tests/test_model.py` con `skip`: al implementar cada pieza se
   quita el `skip`. Ariany y Grageda pueden empezar `train.py` ya con
   `mobilenet_lstm`.
+- **Importante para Lorgio:** los tests usan `pretrained=False` (sin internet),
+  pero nada se ha probado todavía con los pesos reales de ImageNet. Hay que
+  correr los 3 modelos con `pretrained=True` sobre un clip real (test
+  `test_pesos_imagenet_con_video_real`, con `HOCKEY_VIDEO_PATH`) y comprobar
+  logits finitos y checkpoint que recarga igual.
 
 Pendiente de mi parte según el plan: frontend (con Grageda). Se registrará
 aquí cuando se haga.

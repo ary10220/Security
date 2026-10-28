@@ -5,6 +5,8 @@ ImageNet (~14 MB) y poder correr sin internet. La arquitectura es identica;
 solo cambian los valores iniciales de los pesos.
 """
 
+import os
+
 import pytest
 import torch
 
@@ -160,3 +162,26 @@ def test_checkpoint_ida_y_vuelta(tmp_path) -> None:
     x = _clip(batch=1, frames=4)
     with torch.no_grad():
         assert torch.allclose(model(x), loaded(x))
+
+
+@pytest.mark.skip(reason="TODO(Lorgio): probar con pesos reales de ImageNet")
+@pytest.mark.parametrize("name", MODEL_NAMES)
+def test_pesos_imagenet_con_video_real(name: str) -> None:
+    """Con pretrained=True y un video real, la salida es finita y (1, 2).
+
+    Necesita internet la primera vez (descarga los pesos) y un video real en
+    la variable de entorno HOCKEY_VIDEO_PATH, igual que el test opcional de
+    tests/test_preprocessing.py. Al quitar el skip, que se salte solo si falta
+    la variable.
+    """
+    from src.preprocessing import VideoPreprocessor
+
+    video = os.environ.get("HOCKEY_VIDEO_PATH")
+    if not video:
+        pytest.skip("HOCKEY_VIDEO_PATH no esta definida")
+    clip = VideoPreprocessor()(video).unsqueeze(0)  # (1, 16, 3, 224, 224)
+    model = build_model(name, pretrained=True).eval()
+    with torch.no_grad():
+        out = model(clip)
+    assert out.shape == (1, 2)
+    assert torch.isfinite(out).all()
