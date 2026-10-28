@@ -103,8 +103,29 @@ Fase de pipeline (días 3-4, en pareja con Ariany, que completó
   `train=True` comparado contra la salida sin augmentation). Validado sobre un
   `.avi` real de Hockey Fight.
 
-Pendiente de mi parte según el plan: `model.py` (con Lorgio) y frontend (con
-Grageda). Se registrará aquí cuando se haga.
+Fase de modelo (día 5, en pareja con Lorgio):
+
+- **Rama `feat/model-violence-detector`:** `ViolenceDetector` en
+  `src/models/model.py` (MobileNetV2 congelado + BiLSTM, commit `2963dee`) con
+  8 tests en `tests/test_model.py`. Usa el estado final `h_n` de la BiLSTM y no
+  `out[:, -1]` (en ese paso la dirección hacia atrás solo vio un frame), y
+  `train()` deja el backbone congelado en `eval()` para que BatchNorm no
+  cambie sus estadísticas.
+- **Para Lorgio:** dejé la estructura y los stubs marcados con `TODO(Lorgio)`
+  en `src/models/model.py`: `FrameBaseline`, `ResNetDetector`, `build_model`
+  (ya despacha los 3 nombres de `train.py --model`), `save_checkpoint`,
+  `load_checkpoint` y confirmar `DEFAULT_HYPERPARAMS`. Sus tests ya están
+  escritos en `tests/test_model.py` con `skip`: al implementar cada pieza se
+  quita el `skip`. Ariany y Grageda pueden empezar `train.py` ya con
+  `mobilenet_lstm`.
+- **Importante para Lorgio:** los tests usan `pretrained=False` (sin internet),
+  pero nada se ha probado todavía con los pesos reales de ImageNet. Hay que
+  correr los 3 modelos con `pretrained=True` sobre un clip real (test
+  `test_pesos_imagenet_con_video_real`, con `HOCKEY_VIDEO_PATH`) y comprobar
+  logits finitos y checkpoint que recarga igual.
+
+Pendiente de mi parte según el plan: frontend (con Grageda). Se registrará
+aquí cuando se haga.
 
 ## P4 — Grageda
 
