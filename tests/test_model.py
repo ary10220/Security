@@ -1,0 +1,83 @@
+"""Tests de los modelos de clasificacion de video.
+
+Se usa pretrained=False en todos los tests para no descargar los pesos de
+ImageNet (~14 MB) y poder correr sin internet. La arquitectura es identica;
+solo cambian los valores iniciales de los pesos.
+"""
+
+import pytest
+import torch
+
+from src.models import ViolenceDetector
+
+
+def _clip(batch: int = 2, frames: int = 16) -> torch.Tensor:
+    """Genera un lote aleatorio con la forma que entrega el pipeline."""
+    return torch.randn(batch, frames, 3, 224, 224)
+
+
+def test_forward_devuelve_logits_por_clase() -> None:
+    """La salida es (B, 2): un logit por clase [Normal, Sospechoso]."""
+    model = ViolenceDetector(pretrained=False).eval()
+    with torch.no_grad():
+        out = model(_clip(batch=2))
+    assert out.shape == (2, 2)
+    assert out.dtype == torch.float32
+
+
+def test_acepta_otra_cantidad_de_frames() -> None:
+    """La LSTM no fija T: sirve para comparar 8, 16 y 32 frames."""
+    model = ViolenceDetector(pretrained=False).eval()
+    with torch.no_grad():
+        assert model(_clip(batch=1, frames=8)).shape == (1, 2)
+
+
+def test_backbone_congelado_por_defecto() -> None:
+    """Con freeze_backbone=True solo entrenan la LSTM y el clasificador."""
+    model = ViolenceDetector(pretrained=False)
+    assert not any(p.requires_grad for p in model.feature_extractor.parameters())
+    assert all(p.requires_grad for p in model.lstm.parameters())
+    assert all(p.requires_grad for p in model.classifier.parameters())
+
+
+def test_backbone_descongelado_entrena_todo() -> None:
+    """Con freeze_backbone=False el backbone tambien recibe gradiente."""
+    model = ViolenceDetector(pretrained=False, freeze_backbone=False)
+    assert all(p.requires_grad for p in model.feature_extractor.parameters())
+
+
+def test_backbone_congelado_no_actualiza_batchnorm() -> None:
+    """En train() el backbone congelado debe seguir en eval.
+
+    Si no, BatchNorm actualizaria sus estadisticas con cada lote aunque los
+    pesos esten congelados, y el backbone dejaria de ser el de ImageNet.
+    """
+    model = ViolenceDetector(pretrained=False).train()
+    assert not model.feature_extractor.training
+    assert model.lstm.training
+
+
+def test_gradiente_llega_solo_a_la_parte_entrenable() -> None:
+    """Un paso de backward deja gradiente en la LSTM y no en el backbone."""
+    model = ViolenceDetector(pretrained=False).train()
+    loss = torch.nn.functional.cross_entropy(
+        model(_clip(batch=2, frames=4)), torch.tensor([0, 1])
+    )
+    loss.backward()
+    assert all(p.grad is not None for p in model.lstm.parameters())
+    assert all(p.grad is None for p in model.feature_extractor.parameters())
+
+
+def test_forward_es_determinista_en_eval() -> None:
+    """En eval no hay dropout: la misma entrada da la misma salida."""
+    model = ViolenceDetector(pretrained=False).eval()
+    x = _clip(batch=1, frames=4)
+    with torch.no_grad():
+        assert torch.equal(model(x), model(x))
+
+
+def test_rechaza_entrada_con_forma_incorrecta() -> None:
+    """Un clip sin dimension de lote (T, C, H, W) debe fallar con claridad."""
+    model = ViolenceDetector(pretrained=False).eval()
+    with pytest.raises(ValueError, match="B, T, C, H, W"):
+        model(torch.randn(16, 3, 224, 224))
