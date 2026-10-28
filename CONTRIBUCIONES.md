@@ -59,8 +59,47 @@ Fase de pipeline (día 3, en pareja con Diego, que dejó `extract_frames`,
   Real Life Violence: ambos devuelven shape `(16, 3, 224, 224)`, `float32`,
   rango `[-2.12, +2.64]` — tocan los extremos teóricos de ImageNet.
 
-Pendiente de mi parte según el plan: entrenamiento (con Grageda) y `model.py`
-(con Lorgio). Se registrará aquí cuando se haga.
+Fase de entrenamiento (día 6, rama `feat/model-train-loop`, en pareja con
+Grageda que se suma al bucle de entrenamiento):
+
+- **`src/models/dataset.py`** (`VideoDataset`): lee carpetas con la
+  estructura `<split>/<clase>/*.{mp4,avi}` (RWF-2000, Real Life, Hockey) y
+  autodetecta la etiqueta por el nombre de la carpeta (`fight`/`violence` → 1,
+  prefijo `non` → 0). Si un video no se puede abrir se loguea y se intenta
+  con otro vecino aleatorio hasta `MAX_RETRIES`, para que un `.mp4` corrupto
+  en 2000 no caiga el entrenamiento. Admite un `label_map` explícito para
+  nomenclaturas raras.
+- **`src/models/metrics.py`** (`compute_metrics`): accuracy, F1 macro, F1 /
+  precision / recall por clase y matriz de confusión 2x2 con `sklearn`. F1
+  macro es la métrica que elige el mejor checkpoint (con clases
+  desbalanceadas, accuracy sube siempre pero F1 macro baja si el modelo
+  ignora la clase chica).
+- **`src/models/train.py`**: script con `argparse` que llama
+  `build_model(args.model)` del `model.py` de Diego, por lo que ya soporta
+  los 3 modelos aunque los stubs de Lorgio (`resnet_lstm`,
+  `mobilenet_baseline`) todavía lanzan `NotImplementedError` — el script lo
+  captura y sale con warning. Loop train + val con `tqdm`, Adam sobre
+  params con `requires_grad=True` (backbone congelado), `ReduceLROnPlateau`
+  sobre F1 macro, guardado del mejor checkpoint y JSON de métricas con
+  historia por época. `--smoke-test` entrena 1 época con 10+5 videos
+  estratificados. `torch.save(state_dict)` directo hasta que Lorgio
+  implemente `save_checkpoint`.
+- **`scripts/make_mini_dataset.py`:** generador sintético de 16 `.mp4`
+  (`data/raw/mini/train/{Fight,NonFight}` y `.../val/...`) para correr el
+  smoke test sin bajar un dataset real. Los videos van bajo `data/raw/` por
+  lo que no se commitean.
+- **`requirements.txt`:** agregué `scikit-learn==1.5.0`, `scipy==1.13.1`
+  (clave: scipy ≥ 1.14 exige numpy ≥ 2 y rompería `torch==2.3.1`) y
+  `tqdm==4.66.4`. También `.gitignore` para `artifacts/*.json`.
+- **Smoke test en CPU** con `mobilenet_lstm`: 1 época, 10 train + 5 val,
+  6.7 s. Checkpoint de 14.3 MB y `metrics_mobilenet_lstm.json` escritos
+  correctamente. Las métricas son aleatorias como se esperaba (videos
+  sintéticos), lo importante es que DataLoader, forward, backward y
+  guardado funcionan de punta a punta.
+
+Pendiente de mi parte según el plan: entrenamiento serio con RWF-2000
+(epochs=15, dataset completo, GPU si consigo); frontend queda para la fase
+final. Se registrará aquí cuando se haga.
 
 ## P2 — Lorgio
 
