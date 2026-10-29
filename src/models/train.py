@@ -26,7 +26,7 @@ from torch.utils.data import DataLoader, Subset
 from tqdm import tqdm
 
 from src.models.dataset import VideoDataset
-from src.models.metrics import compute_metrics
+from src.models.metrics import compute_metrics, pr_curve
 from src.models.model import DEFAULT_HYPERPARAMS, MODEL_NAMES, build_model
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -115,11 +115,12 @@ def _run_epoch(
     optimizer: torch.optim.Optimizer | None,
     device: torch.device,
     desc: str,
-) -> tuple[float, list[int], list[int]]:
+) -> tuple[float, list[int], list[int], list[float]]:
     """Ejecuta una epoca de train (si hay optimizer) o val.
 
     Returns:
-        Tupla `(loss_promedio, y_true, y_pred)`.
+        Tupla `(loss_promedio, y_true, y_pred, y_score)`, donde `y_score` es
+        la probabilidad (softmax) de la clase 1, necesaria para la curva PR.
     """
     is_train = optimizer is not None
     model.train(is_train)
@@ -127,6 +128,7 @@ def _run_epoch(
     n_samples = 0
     y_true: list[int] = []
     y_pred: list[int] = []
+    y_score: list[float] = []
 
     # torch.enable_grad / no_grad segun fase: en val no gastamos memoria en
     # el grafo computacional.
@@ -151,9 +153,10 @@ def _run_epoch(
             n_samples += batch_size
             y_true.extend(labels.detach().cpu().tolist())
             y_pred.extend(logits.argmax(dim=1).detach().cpu().tolist())
+            y_score.extend(logits.softmax(dim=1)[:, 1].detach().cpu().tolist())
 
     avg_loss = total_loss / max(n_samples, 1)
-    return avg_loss, y_true, y_pred
+    return avg_loss, y_true, y_pred, y_score
 
 
 def main() -> int:
@@ -215,6 +218,8 @@ def main() -> int:
 
     class_names = train_dataset.classes
     best_f1 = -1.0
+    best_epoch = 0
+    best_pr_curve = None
     checkpoint_path = output_dir / f"model_{args.model}.pt"
     metrics_path = output_dir / f"metrics_{args.model}.json"
 
@@ -222,11 +227,11 @@ def main() -> int:
     t0 = time.time()
 
     for epoch in range(1, n_epochs + 1):
-        train_loss, _, _ = _run_epoch(
+        train_loss, _, _, _ = _run_epoch(
             model, train_loader, criterion, optimizer, device,
             desc=f"Epoch {epoch}/{n_epochs} train",
         )
-        val_loss, y_true, y_pred = _run_epoch(
+        val_loss, y_true, y_pred, y_score = _run_epoch(
             model, val_loader, criterion, None, device,
             desc=f"Epoch {epoch}/{n_epochs} val",
         )
@@ -250,6 +255,14 @@ def main() -> int:
         # por save_checkpoint(model, args.model, checkpoint_path).
         if epoch_metrics["f1_macro"] > best_f1:
             best_f1 = epoch_metrics["f1_macro"]
+            best_epoch = epoch
+            # La curva PR va con el checkpoint que se guarda, porque es el que
+            # usara la inferencia y el umbral solo tiene sentido para ese modelo.
+            try:
+                best_pr_curve = pr_curve(y_true, y_score)
+            except ValueError:
+                # Val sin ejemplos de la clase 1 (p.ej. smoke test muy chico).
+                best_pr_curve = None
             torch.save(model.state_dict(), checkpoint_path)
             logger.info("Nuevo mejor F1 macro: %.4f. Checkpoint en %s",
                         best_f1, checkpoint_path)
@@ -262,6 +275,8 @@ def main() -> int:
         "device": str(device),
         "epochs_run": len(history),
         "best_f1_macro": best_f1,
+        "best_epoch": best_epoch,
+        "pr_curve": best_pr_curve,
         "elapsed_seconds": elapsed,
         "final": final_metrics,
         "history": history,
