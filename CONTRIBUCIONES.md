@@ -228,9 +228,11 @@ Fase de entrenamiento (rama `feat/pr-curve`, parte de la pareja con Ariany):
   devuelve precisión, recall y umbrales de la clase sospechosa, el average
   precision y el umbral que maximiza F1. Recorta la curva a `max_points` para
   que el JSON no crezca. Tests en `tests/test_metrics.py`, con datos sintéticos.
-- `train.py` (de Ariany) todavía guarda solo `argmax`; para dibujar la curva
-  con un modelo real hace falta que también guarde la probabilidad de la clase
-  sospechosa. Pedido a Ariany, no modifiqué su archivo.
+- **`src/models/train.py`** (rama `feat/train-save-scores`, commit `36ae908`,
+  propuesta para revisión de Ariany, autora del archivo): `_run_epoch` ahora
+  devuelve también la probabilidad de la clase sospechosa y `metrics_*.json`
+  guarda la curva PR del mejor epoch (`pr_curve`, `best_epoch`). Probado con el
+  smoke test sintético; la curva de ese run no significa nada.
 
 Fase de frontend (rama `feat/frontend-vue`, en pareja con Diego):
 
