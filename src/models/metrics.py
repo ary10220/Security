@@ -11,8 +11,10 @@ from typing import Sequence
 import numpy as np
 from sklearn.metrics import (
     accuracy_score,
+    average_precision_score,
     confusion_matrix,
     f1_score,
+    precision_recall_curve,
     precision_score,
     recall_score,
 )
@@ -75,4 +77,67 @@ def compute_metrics(
         "precision_per_class": {n: float(v) for n, v in zip(class_names, precision_per)},
         "recall_per_class": {n: float(v) for n, v in zip(class_names, recall_per)},
         "confusion_matrix": cm.tolist(),
+    }
+
+
+def pr_curve(
+    y_true: Sequence[int],
+    y_score: Sequence[float],
+    max_points: int | None = 200,
+) -> dict:
+    """Curva precision-recall de la clase positiva (1 = sospechoso).
+
+    Sirve para el panel de metricas y para el slider de umbral: cada punto
+    dice que precision y recall se obtienen si se declara "sospechoso" todo
+    segmento con probabilidad >= umbral.
+
+    Args:
+        y_true: etiquetas verdaderas en {0, 1}.
+        y_score: probabilidad de la clase 1 (softmax de los logits), en [0, 1].
+        max_points: tope de puntos devueltos, para que el JSON no crezca con
+            cada clip de validacion. None devuelve todos.
+
+    Returns:
+        Diccionario con listas paralelas `precision`, `recall` y `thresholds`
+        (todas del mismo largo), el `average_precision` calculado con la
+        curva completa, y `best_f1_threshold` / `best_f1`: el umbral que
+        maximiza el F1 de la clase 1 (no es una recomendacion final: el
+        equipo decide el umbral segun cuanto pese el recall).
+    """
+    y_true_arr = np.asarray(y_true)
+    y_score_arr = np.asarray(y_score, dtype=float)
+    if y_true_arr.shape != y_score_arr.shape:
+        raise ValueError(
+            f"y_true {y_true_arr.shape} y y_score {y_score_arr.shape} "
+            "deben tener la misma forma"
+        )
+    if y_true_arr.size == 0 or not (y_true_arr == 1).any():
+        raise ValueError("pr_curve necesita al menos un ejemplo de la clase 1")
+
+    precision, recall, thresholds = precision_recall_curve(y_true_arr, y_score_arr)
+    # sklearn agrega un ultimo punto (precision=1, recall=0) sin umbral;
+    # se descarta para que las tres listas tengan el mismo largo.
+    precision, recall = precision[:-1], recall[:-1]
+
+    denom = precision + recall
+    f1 = np.divide(2 * precision * recall, denom,
+                   out=np.zeros_like(denom), where=denom > 0)
+    best = int(np.argmax(f1))
+    # Se fija antes de reducir los puntos: el maximo no debe depender del recorte.
+    best_threshold = float(thresholds[best])
+    best_f1 = float(f1[best])
+
+    ap = float(average_precision_score(y_true_arr, y_score_arr))
+
+    if max_points is not None and len(thresholds) > max_points:
+        idx = np.unique(np.linspace(0, len(thresholds) - 1, max_points).astype(int))
+        precision, recall, thresholds = precision[idx], recall[idx], thresholds[idx]
+
+    return {
+        "precision": [float(v) for v in precision],
+        "recall": [float(v) for v in recall],
+        "thresholds": [float(v) for v in thresholds],
+        "average_precision": ap,
+        "best_f1_threshold": best_threshold,
+        "best_f1": best_f1,
     }

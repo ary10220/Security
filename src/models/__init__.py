@@ -1,7 +1,7 @@
 """Modelos de clasificacion de video."""
 
 from src.models.dataset import VideoDataset
-from src.models.metrics import compute_metrics
+from src.models.metrics import compute_metrics, pr_curve
 from src.models.model import (
     DEFAULT_HYPERPARAMS,
     FEATURE_DIM,
@@ -27,5 +27,6 @@ __all__ = [
     "build_model",
     "compute_metrics",
     "load_checkpoint",
+    "pr_curve",
     "save_checkpoint",
 ]
