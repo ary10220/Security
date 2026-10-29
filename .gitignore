@@ -241,3 +241,6 @@ data/processed/
 # con npm install a partir de package-lock.json.
 node_modules/
 
+
+# El frontend tiene su propio src/lib (no es la carpeta lib/ de Python)
+!frontend/src/lib/
