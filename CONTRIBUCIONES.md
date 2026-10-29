@@ -222,5 +222,31 @@ Fase de EDA con RWF-2000 (rama `feat/eda-rwf2000`, apilada sobre `feat/eda-datas
   `data/README.md`; nota de versión de Python en `README.md`.
 - Sigue pendiente la parte de Lorgio (revisar y complementar el EDA).
 
-Pendiente de mi parte según el plan: entrenamiento (con Ariany) y frontend (con
-Diego). Se registrará aquí cuando se haga.
+Fase de entrenamiento (rama `feat/pr-curve`, parte de la pareja con Ariany):
+
+- **`src/models/metrics.py`** (commit `40ffb4f`): `pr_curve(y_true, y_score)`
+  devuelve precisión, recall y umbrales de la clase sospechosa, el average
+  precision y el umbral que maximiza F1. Recorta la curva a `max_points` para
+  que el JSON no crezca. Tests en `tests/test_metrics.py`, con datos sintéticos.
+- `train.py` (de Ariany) todavía guarda solo `argmax`; para dibujar la curva
+  con un modelo real hace falta que también guarde la probabilidad de la clase
+  sospechosa. Pedido a Ariany, no modifiqué su archivo.
+
+Fase de frontend (rama `feat/frontend-vue`, en pareja con Diego):
+
+- **`frontend/`:** scaffold Vue 3 + Vite y la interfaz del plan: carga
+  drag-and-drop de `.mp4` con validación de tipo y tamaño, veredicto con nivel
+  de alerta y momento más crítico, timeline interactivo (clic salta al segundo
+  del video), slider de umbral que recalcula el veredicto en el navegador,
+  panel de métricas (por clase, matriz de confusión y curva PR) y vista de
+  preprocesamiento (16 frames).
+- La lógica (`frontend/src/lib/analysis.js`) tiene 7 tests con vitest.
+- **Sin backend todavía:** la app corre con datos simulados, rotulados como tales
+  en la interfaz. `frontend/README.md` documenta el contrato propuesto con la
+  API, pendiente de confirmar con quien haga `api/`.
+- Hecho con asistencia de Claude Code (declarar en el informe).
+- Queda sin implementar: vista de `/report`, modalidad webcam (opcional en el
+  plan) e integración con el backend real.
+
+Pendiente de mi parte: integración del frontend con la API real y revisión del
+trabajo conjunto con Diego.
