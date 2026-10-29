@@ -69,6 +69,27 @@ pip install -r requirements.txt
 Para los notebooks de EDA hacen falta los videos en `data/raw/` (ver
 [`data/README.md`](data/README.md)) y ejecutarlos en orden: 02 y luego 03.
 
+## API
+
+```bash
+uvicorn api.main:app --reload
+```
+
+Abrir http://localhost:8000/docs para probar los endpoints desde el navegador.
+
+| Método | Ruta | Qué hace |
+|---|---|---|
+| GET | `/health` | Estado de la API, si hay modelo entrenado (`model_loaded`) y `device` |
+| GET | `/metrics` | Métricas de test de `artifacts/metrics_<modelo>.json` |
+| POST | `/predict` | Video en el campo `file` (+ `threshold` opcional): veredicto y timeline por tramos de 2 s |
+| POST | `/predict/clip` | Igual, solo entre `start_sec` y `end_sec` |
+| GET | `/preprocessing_demo?video_id=...` | Los 16 frames extraídos de un video ya analizado, en base64 |
+
+- Carga `artifacts/model_mobilenet_lstm.pt` (otro modelo con `MODEL_NAME=resnet_lstm`).
+  Si no existe, arranca con pesos random y `/health` responde `model_loaded: false`.
+- Rechaza con 400 un video vacío, que no sea `.mp4`/`.avi`/`.mov` o un umbral fuera de
+  [0, 1]; con 413 uno de más de 100 MB o 2 minutos; con 415 un cuerpo que no sea multipart.
+
 ## Equipo
 
 Ver [`CONTRIBUCIONES.md`](CONTRIBUCIONES.md) para el detalle del aporte
