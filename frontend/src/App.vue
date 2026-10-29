@@ -101,7 +101,7 @@ function seek(time) {
     <template v-if="tab === 'result'">
       <p v-if="!result && !loading && !error" class="muted">Sube un video para ver el análisis.</p>
       <template v-if="result">
-        <video ref="video" :src="videoUrl" controls @timeupdate="currentTime = video.currentTime" />
+        <video ref="video" :src="videoUrl" controls @timeupdate="currentTime = $event.target.currentTime" />
         <VerdictCard :segments="result.segments" :threshold="threshold" :clip-url="result.clip_url" />
         <ThresholdSlider
           v-model="threshold"
