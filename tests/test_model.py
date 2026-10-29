@@ -110,8 +110,7 @@ def test_build_model_rechaza_nombre_desconocido() -> None:
 
 
 # ---------------------------------------------------------------------------
-# TODO(Lorgio): quitar cada skip cuando implementes la pieza correspondiente.
-# Los cuerpos ya describen el comportamiento esperado.
+# Variantes de la comparacion y checkpoints (parte de Lorgio).
 # ---------------------------------------------------------------------------
 
 
@@ -176,7 +175,6 @@ def test_save_checkpoint_rechaza_nombre_desconocido(tmp_path) -> None:
     assert not (tmp_path / "model.pt").exists()
 
 
-@pytest.mark.skip(reason="TODO(Lorgio): probar con pesos reales de ImageNet")
 @pytest.mark.parametrize("name", MODEL_NAMES)
 def test_pesos_imagenet_con_video_real(name: str) -> None:
     """Con pretrained=True y un video real, la salida es finita y (1, 2).

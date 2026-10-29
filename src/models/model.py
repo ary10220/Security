@@ -244,18 +244,13 @@ class ViolenceDetector(_LSTMDetector):
 
 
 # ---------------------------------------------------------------------------
-# PARTE DE LORGIO (fase 3 del plan). Diego dejo la estructura y los stubs;
-# cada TODO(Lorgio) dice que falta y como probarlo. Los tests que lo cubren
-# estan en tests/test_model.py marcados con skip: al terminar cada pieza,
-# quitar el skip y verificar que pasa.
+# PARTE DE LORGIO (fase 3 del plan), sobre la estructura que dejo Diego:
+# variantes para la comparacion (FrameBaseline, ResNetDetector), fabrica de
+# modelos y checkpoints.
 #
-# OJO, TODO(Lorgio): los tests usan pretrained=False para correr sin internet,
-# pero lo que importa es que TODO funcione con los pesos REALES de ImageNet
-# (pretrained=True, descarga ~14 MB de MobileNetV2 y ~100 MB de ResNet50 la
-# primera vez). Nadie lo ha probado asi todavia. Antes de dar tu parte por
-# cerrada, corre cada modelo con pretrained=True sobre un clip real pasado por
-# VideoPreprocessor (ver test_pesos_imagenet_con_video_real) y confirma que
-# da logits (1, 2) sin NaN y que el checkpoint se guarda y recarga igual.
+# Los tests usan pretrained=False para correr sin internet. Con los pesos
+# REALES de ImageNet lo cubre test_pesos_imagenet_con_video_real, que se
+# salta si no se define HOCKEY_VIDEO_PATH (sirve cualquier video real).
 # ---------------------------------------------------------------------------
 
 # Nombres validos para train.py --model (seccion 4 del plan). Ariany y
