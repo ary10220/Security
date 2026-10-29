@@ -27,7 +27,12 @@ from tqdm import tqdm
 
 from src.models.dataset import VideoDataset
 from src.models.metrics import compute_metrics, pr_curve
-from src.models.model import DEFAULT_HYPERPARAMS, MODEL_NAMES, build_model
+from src.models.model import (
+    DEFAULT_HYPERPARAMS,
+    MODEL_NAMES,
+    build_model,
+    save_checkpoint,
+)
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -251,8 +256,6 @@ def main() -> int:
         scheduler.step(epoch_metrics["f1_macro"])
 
         # Guardar el mejor por F1 macro (ver docstring de compute_metrics).
-        # TODO: cuando Lorgio implemente save_checkpoint, cambiar esta linea
-        # por save_checkpoint(model, args.model, checkpoint_path).
         if epoch_metrics["f1_macro"] > best_f1:
             best_f1 = epoch_metrics["f1_macro"]
             best_epoch = epoch
@@ -263,7 +266,7 @@ def main() -> int:
             except ValueError:
                 # Val sin ejemplos de la clase 1 (p.ej. smoke test muy chico).
                 best_pr_curve = None
-            torch.save(model.state_dict(), checkpoint_path)
+            save_checkpoint(model, args.model, checkpoint_path)
             logger.info("Nuevo mejor F1 macro: %.4f. Checkpoint en %s",
                         best_f1, checkpoint_path)
 

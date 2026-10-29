@@ -16,6 +16,8 @@ Reparto de este archivo (fase 3 del plan, Lorgio + Diego):
              de checkpoints. Buscar las marcas TODO(Lorgio).
 """
 
+from pathlib import Path
+
 import torch
 from torch import nn
 from torchvision.models import (
@@ -378,39 +380,48 @@ def build_model(name: str, pretrained: bool = True) -> nn.Module:
     raise ValueError(f"Modelo desconocido: {name!r}. Opciones: {MODEL_NAMES}")
 
 
-def save_checkpoint(model: nn.Module, name: str, path: str) -> None:
+def save_checkpoint(model: nn.Module, name: str, path: str | Path) -> None:
     """Guarda los pesos del modelo con lo necesario para recargarlo.
 
-    TODO(Lorgio): implementar (serializacion, seccion 4 del plan).
-        - torch.save de un dict con "model_name" (uno de MODEL_NAMES) y
-          "state_dict". Guardar el nombre evita que la API tenga que
-          adivinar que arquitectura corresponde al archivo.
-        - La API lo carga como artifacts/model.pt; esa carpeta esta en
-          .gitignore, no commitear pesos.
+    El archivo es un dict {"model_name", "state_dict"}. Guardar el nombre
+    evita que la API tenga que adivinar que arquitectura corresponde al
+    archivo. La API lo carga como artifacts/model.pt; esa carpeta esta en
+    .gitignore, no commitear pesos.
 
     Args:
         model: modelo entrenado.
         name: nombre con el que se creo (uno de MODEL_NAMES).
         path: archivo destino, por ejemplo artifacts/model.pt.
+
+    Raises:
+        ValueError: si name no esta en MODEL_NAMES.
     """
-    raise NotImplementedError("TODO(Lorgio): implementar save_checkpoint")
+    # Se valida al guardar y no solo al cargar: con un nombre invalido el
+    # error apareceria recien en la API, lejos del entrenamiento que lo causo.
+    if name not in MODEL_NAMES:
+        raise ValueError(f"Modelo desconocido: {name!r}. Opciones: {MODEL_NAMES}")
+    torch.save({"model_name": name, "state_dict": model.state_dict()}, path)
 
 
-def load_checkpoint(path: str, device: str = "cpu") -> nn.Module:
+def load_checkpoint(path: str | Path, device: str = "cpu") -> nn.Module:
     """Reconstruye un modelo desde un checkpoint de save_checkpoint.
 
-    TODO(Lorgio): implementar.
-        - Leer "model_name", crear el modelo con build_model(name,
-          pretrained=False) (los pesos reales vienen del state_dict, no hace
-          falta descargar ImageNet) y cargar el state_dict.
-        - Devolverlo en eval() y en el device pedido. Lo usan evaluate.py y
-          la API (api/main.py), asi que no debe depender de train.py.
+    No depende de train.py: lo usan la evaluacion y la API.
 
     Args:
         path: archivo creado por save_checkpoint.
         device: "cpu" o "cuda".
 
     Returns:
-        El modelo en modo evaluacion.
+        El modelo en modo evaluacion, en el device pedido.
     """
-    raise NotImplementedError("TODO(Lorgio): implementar load_checkpoint")
+    # map_location="cpu": un checkpoint entrenado en GPU tiene que poder
+    # abrirse en una maquina sin GPU (la de la API). Se mueve al final.
+    # weights_only=True: torch.load usa pickle, que puede ejecutar codigo al
+    # cargar; asi solo se aceptan tensores y tipos basicos como este dict.
+    checkpoint = torch.load(path, map_location="cpu", weights_only=True)
+    # pretrained=False: los pesos entrenados vienen del state_dict, descargar
+    # los de ImageNet seria tiempo perdido porque se sobrescriben enseguida.
+    model = build_model(checkpoint["model_name"], pretrained=False)
+    model.load_state_dict(checkpoint["state_dict"])
+    return model.to(device).eval()

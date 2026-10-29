@@ -147,7 +147,6 @@ def test_build_model_crea_todos_los_nombres(name: str) -> None:
         assert model(_clip(batch=1, frames=4)).shape == (1, 2)
 
 
-@pytest.mark.skip(reason="TODO(Lorgio): implementar save/load_checkpoint")
 def test_checkpoint_ida_y_vuelta(tmp_path) -> None:
     """Guardar y cargar devuelve un modelo con la misma salida, en eval."""
     model = build_model("mobilenet_lstm", pretrained=False).eval()
@@ -158,6 +157,23 @@ def test_checkpoint_ida_y_vuelta(tmp_path) -> None:
     x = _clip(batch=1, frames=4)
     with torch.no_grad():
         assert torch.allclose(model(x), loaded(x))
+
+
+@pytest.mark.parametrize("name", MODEL_NAMES)
+def test_checkpoint_reconstruye_la_arquitectura_guardada(name: str, tmp_path) -> None:
+    """load_checkpoint crea la clase que indica "model_name", sin adivinar."""
+    model = build_model(name, pretrained=False)
+    path = str(tmp_path / f"model_{name}.pt")
+    save_checkpoint(model, name, path)
+    assert type(load_checkpoint(path)) is type(model)
+
+
+def test_save_checkpoint_rechaza_nombre_desconocido(tmp_path) -> None:
+    """Un nombre fuera de MODEL_NAMES falla al guardar, no recien en la API."""
+    model = build_model("mobilenet_lstm", pretrained=False)
+    with pytest.raises(ValueError, match="mobilenet_lstm"):
+        save_checkpoint(model, "vit_video", str(tmp_path / "model.pt"))
+    assert not (tmp_path / "model.pt").exists()
 
 
 @pytest.mark.skip(reason="TODO(Lorgio): probar con pesos reales de ImageNet")
