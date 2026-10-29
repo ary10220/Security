@@ -126,7 +126,6 @@ def test_baseline_usa_solo_el_frame_del_medio() -> None:
         assert torch.equal(model(x), model(y))
 
 
-@pytest.mark.skip(reason="TODO(Lorgio): implementar ResNetDetector")
 def test_resnet_devuelve_logits_por_clase() -> None:
     """ResNetDetector cumple el mismo contrato que ViolenceDetector."""
     model = ResNetDetector(pretrained=False).eval()
@@ -134,14 +133,12 @@ def test_resnet_devuelve_logits_por_clase() -> None:
         assert model(_clip(batch=1, frames=4)).shape == (1, 2)
 
 
-@pytest.mark.skip(reason="TODO(Lorgio): implementar ResNetDetector")
 def test_resnet_backbone_congelado_no_actualiza_batchnorm() -> None:
     """Igual que en ViolenceDetector: train() deja el backbone en eval."""
     model = ResNetDetector(pretrained=False).train()
     assert not model.feature_extractor.training
 
 
-@pytest.mark.skip(reason="TODO(Lorgio): implementar build_model para todos")
 @pytest.mark.parametrize("name", MODEL_NAMES)
 def test_build_model_crea_todos_los_nombres(name: str) -> None:
     """Cada nombre de MODEL_NAMES produce un modelo con salida (B, 2)."""

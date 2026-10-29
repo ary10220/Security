@@ -18,10 +18,17 @@ Reparto de este archivo (fase 3 del plan, Lorgio + Diego):
 
 import torch
 from torch import nn
-from torchvision.models import MobileNet_V2_Weights, mobilenet_v2
+from torchvision.models import (
+    MobileNet_V2_Weights,
+    ResNet50_Weights,
+    mobilenet_v2,
+    resnet50,
+)
 
 # Salida de MobileNetV2.features tras el pooling global: 1280 canales.
 FEATURE_DIM = 1280
+# Salida de ResNet50 (sin avgpool ni fc) tras el pooling global: 2048 canales.
+RESNET_FEATURE_DIM = 2048
 NUM_CLASSES = 2  # [Normal, Sospechoso]
 
 
@@ -39,6 +46,26 @@ def _mobilenet_backbone(pretrained: bool) -> nn.Module:
     """
     weights = MobileNet_V2_Weights.IMAGENET1K_V1 if pretrained else None
     return mobilenet_v2(weights=weights).features
+
+
+def _resnet50_backbone(pretrained: bool) -> nn.Module:
+    """Devuelve ResNet50 sin avgpool ni fc.
+
+    Se quita tambien avgpool, no solo fc, para que el pooling lo haga
+    _FrameBackbone.pool igual que con MobileNetV2: asi los dos backbones
+    pasan por el mismo codigo y la comparacion solo cambia el backbone.
+
+    Args:
+        pretrained: si carga los pesos de ImageNet (IMAGENET1K_V2).
+
+    Returns:
+        Modulo que lleva (N, 3, 224, 224) a (N, 2048, 7, 7).
+    """
+    weights = ResNet50_Weights.IMAGENET1K_V2 if pretrained else None
+    resnet = resnet50(weights=weights)
+    # children() en orden: conv1, bn1, relu, maxpool, layer1..layer4,
+    # avgpool, fc. Nos quedamos con todo menos los dos ultimos.
+    return nn.Sequential(*list(resnet.children())[:-2])
 
 
 class _FrameBackbone(nn.Module):
@@ -295,18 +322,13 @@ class FrameBaseline(_FrameBackbone):
         return self.classifier(self.encode_frames(middle))
 
 
-class ResNetDetector(nn.Module):
+class ResNetDetector(_LSTMDetector):
     """ResNet50 + BiLSTM: el backbone 5x mas pesado de la comparacion.
 
-    TODO(Lorgio): implementar.
-        - torchvision.models.resnet50 con ResNet50_Weights.IMAGENET1K_V2,
-          quitando la capa fc (la salida de avgpool son 2048 dim por frame,
-          no 1280: ajustar el input_size de la LSTM).
-        - Congelar el backbone igual que ViolenceDetector, incluido el
-          override de train() para no actualizar BatchNorm.
-        - Misma LSTM bidireccional, mismo resumen con h_n y misma cabeza.
-        - Pista: si queda casi igual que ViolenceDetector, extraer el
-          cuerpo comun a una clase base en vez de duplicarlo.
+    Hereda de _LSTMDetector la misma LSTM, el mismo resumen con h_n, la misma
+    cabeza y el mismo congelado (incluido train() con BatchNorm en eval)
+    que ViolenceDetector. Lo unico que cambia es el backbone y, por eso, la
+    entrada de la LSTM: 2048 features por frame en vez de 1280.
     """
 
     def __init__(
@@ -316,9 +338,22 @@ class ResNetDetector(nn.Module):
         freeze_backbone: bool = True,
         pretrained: bool = True,
     ) -> None:
-        """Construye el modelo con backbone ResNet50 (pendiente)."""
-        super().__init__()
-        raise NotImplementedError("TODO(Lorgio): implementar ResNetDetector")
+        """Construye el modelo con backbone ResNet50.
+
+        Args:
+            hidden_size: unidades ocultas de la LSTM (por direccion).
+            num_classes: cantidad de clases de salida.
+            freeze_backbone: si es True, el backbone no se entrena.
+            pretrained: si es True, carga los pesos de ImageNet (descarga
+                ~100 MB la primera vez).
+        """
+        super().__init__(
+            _resnet50_backbone(pretrained),
+            RESNET_FEATURE_DIM,
+            hidden_size,
+            num_classes,
+            freeze_backbone,
+        )
 
 
 def build_model(name: str, pretrained: bool = True) -> nn.Module:
