@@ -7,19 +7,22 @@ y abrir http://localhost:8000/docs para probar cada endpoint.
 
 from __future__ import annotations
 
+import base64
 import hashlib
 import json
 import logging
 import math
 import tempfile
 import time
+from collections import OrderedDict
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import AsyncIterator
 
 import cv2
+import numpy as np
 import torch
-from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, Query, Request, UploadFile
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -29,10 +32,18 @@ from api.schemas import (
     HealthResponse,
     MetricsResponse,
     PredictResponse,
+    PreprocessedFrame,
+    PreprocessingDemoResponse,
     TimelineSegment,
     VideoInfo,
 )
-from src.preprocessing import VideoPreprocessor
+from src.preprocessing import (
+    IMAGE_SIZE,
+    N_FRAMES,
+    VideoPreprocessor,
+    extract_frames,
+    resize_and_convert,
+)
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -52,6 +63,12 @@ DEFAULT_THRESHOLD = 0.5
 # Tramos por forward: 8 x 16 frames es el mismo lote que en entrenamiento.
 INFERENCE_BATCH = 8
 UPLOAD_CHUNK = 1024 * 1024
+
+# Frames de los ultimos videos analizados, por video_id, para
+# /preprocessing_demo. En memoria y con tope: es una demo para la vista del
+# frontend, no un almacenamiento; al reiniciar la API se pierden.
+DEMO_CACHE_SIZE = 32
+demo_cache: OrderedDict[str, list[PreprocessedFrame]] = OrderedDict()
 
 # Mismo pipeline que en entrenamiento, sin augmentation (regla del CLAUDE.md:
 # la API no reimplementa el preprocesamiento).
@@ -185,6 +202,38 @@ def _score_segments(path: Path, bounds: list[tuple[float, float]]) -> list[float
     return scores
 
 
+def _demo_frames(path: Path) -> list[PreprocessedFrame]:
+    """Los 16 frames del video entero tras extraerlos y redimensionarlos.
+
+    Usa los pasos 3.1 y 3.2 del pipeline, los mismos que ve el modelo. Se
+    guardan como JPEG en base64 para que el frontend los muestre con <img>.
+    """
+    cap = cv2.VideoCapture(str(path))
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    cap.release()
+    # Los mismos indices que reparte extract_frames, solo para mostrar en
+    # que segundo cae cada frame.
+    indices = np.linspace(0, total - 1, N_FRAMES, dtype=int)
+    frames_rgb = resize_and_convert(extract_frames(str(path), N_FRAMES), IMAGE_SIZE)
+
+    result = []
+    for i, (index, frame) in enumerate(zip(indices, frames_rgb)):
+        # imencode espera BGR: se deshace la conversion solo para guardar.
+        ok, jpg = cv2.imencode(".jpg", cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
+        if ok:
+            src = "data:image/jpeg;base64," + base64.b64encode(jpg.tobytes()).decode()
+            result.append(PreprocessedFrame(index=i, time=round(index / fps, 3), src=src))
+    return result
+
+
+def _remember_frames(video_id: str, frames: list[PreprocessedFrame]) -> None:
+    """Guarda los frames de un video y descarta el mas viejo si hay mas de DEMO_CACHE_SIZE."""
+    demo_cache[video_id] = frames
+    while len(demo_cache) > DEMO_CACHE_SIZE:
+        demo_cache.popitem(last=False)
+
+
 def _verdict(timeline: list[TimelineSegment], threshold: float) -> tuple[str, float]:
     """Veredicto global con la ventana temporal del plan.
 
@@ -239,10 +288,12 @@ async def _analyze(request: Request, file: UploadFile | None, threshold: float |
 
         bounds = _segment_bounds(start, end)
         scores = _score_segments(path, bounds)
+        frames = _demo_frames(path)
 
     # Id corto para pedir despues los frames a /preprocessing_demo: el
     # timestamp lo hace unico aunque se suba dos veces el mismo archivo.
     video_id = f"{int(time.time())}-{digest[:8]}"
+    _remember_frames(video_id, frames)
     timeline = [TimelineSegment(start=round(s, 3), end=round(e, 3), score=score)
                 for (s, e), score in zip(bounds, scores)]
     verdict, confidence = _verdict(timeline, threshold)
@@ -274,3 +325,42 @@ async def predict(
     el cuerpo no es multipart.
     """
     return await _analyze(request, file, threshold)
+
+
+@app.post("/predict/clip", response_model=PredictResponse)
+async def predict_clip(
+    request: Request,
+    file: UploadFile | None = File(None, description="Video .mp4, .avi o .mov (max 100 MB, 2 min)."),
+    start_sec: float | None = Form(None, description="Inicio del tramo en segundos."),
+    end_sec: float | None = Form(None, description="Fin del tramo en segundos."),
+    threshold: float | None = Form(None, description="Umbral de 0 a 1 (por defecto 0.5)."),
+) -> PredictResponse:
+    """Igual que /predict pero solo sobre [start_sec, end_sec].
+
+    El timeline usa los segundos del video original, para que el frontend lo
+    dibuje en la misma barra; video_duration sigue siendo la del video entero.
+    """
+    # Se validan aca y no con Form(...) obligatorio: asi un cuerpo que no es
+    # multipart sigue dando 415 y no un error de campo faltante.
+    if start_sec is None or end_sec is None:
+        content_type = request.headers.get("content-type", "")
+        if not content_type or content_type.startswith("multipart/form-data"):
+            raise HTTPException(400, "Faltan start_sec y end_sec.")
+    return await _analyze(request, file, threshold, start_sec, end_sec)
+
+
+@app.get("/preprocessing_demo", response_model=PreprocessingDemoResponse)
+def preprocessing_demo(
+    video_id: str = Query(..., description="El video_id que devolvio /predict."),
+) -> PreprocessingDemoResponse:
+    """Los 16 frames extraidos de un video ya analizado, como imagenes base64.
+
+    Alimenta la vista del preprocesamiento paso a paso. 404 si el video_id no
+    existe o ya salio del cache (se guardan los ultimos 32 videos).
+    """
+    frames = demo_cache.get(video_id)
+    if frames is None:
+        raise HTTPException(404, "video_id desconocido: analizar el video con /predict primero.")
+    return PreprocessingDemoResponse(
+        video_id=video_id, n_frames=len(frames), size=[IMAGE_SIZE, IMAGE_SIZE], frames=frames,
+    )
