@@ -110,12 +110,10 @@ def test_build_model_rechaza_nombre_desconocido() -> None:
 
 
 # ---------------------------------------------------------------------------
-# TODO(Lorgio): quitar cada skip cuando implementes la pieza correspondiente.
-# Los cuerpos ya describen el comportamiento esperado.
+# Variantes de la comparacion y checkpoints (parte de Lorgio).
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.skip(reason="TODO(Lorgio): implementar FrameBaseline")
 def test_baseline_usa_solo_el_frame_del_medio() -> None:
     """El baseline ignora los demas frames: cambiarlos no altera la salida."""
     model = FrameBaseline(pretrained=False).eval()
@@ -127,7 +125,6 @@ def test_baseline_usa_solo_el_frame_del_medio() -> None:
         assert torch.equal(model(x), model(y))
 
 
-@pytest.mark.skip(reason="TODO(Lorgio): implementar ResNetDetector")
 def test_resnet_devuelve_logits_por_clase() -> None:
     """ResNetDetector cumple el mismo contrato que ViolenceDetector."""
     model = ResNetDetector(pretrained=False).eval()
@@ -135,14 +132,12 @@ def test_resnet_devuelve_logits_por_clase() -> None:
         assert model(_clip(batch=1, frames=4)).shape == (1, 2)
 
 
-@pytest.mark.skip(reason="TODO(Lorgio): implementar ResNetDetector")
 def test_resnet_backbone_congelado_no_actualiza_batchnorm() -> None:
     """Igual que en ViolenceDetector: train() deja el backbone en eval."""
     model = ResNetDetector(pretrained=False).train()
     assert not model.feature_extractor.training
 
 
-@pytest.mark.skip(reason="TODO(Lorgio): implementar build_model para todos")
 @pytest.mark.parametrize("name", MODEL_NAMES)
 def test_build_model_crea_todos_los_nombres(name: str) -> None:
     """Cada nombre de MODEL_NAMES produce un modelo con salida (B, 2)."""
@@ -151,7 +146,6 @@ def test_build_model_crea_todos_los_nombres(name: str) -> None:
         assert model(_clip(batch=1, frames=4)).shape == (1, 2)
 
 
-@pytest.mark.skip(reason="TODO(Lorgio): implementar save/load_checkpoint")
 def test_checkpoint_ida_y_vuelta(tmp_path) -> None:
     """Guardar y cargar devuelve un modelo con la misma salida, en eval."""
     model = build_model("mobilenet_lstm", pretrained=False).eval()
@@ -164,7 +158,23 @@ def test_checkpoint_ida_y_vuelta(tmp_path) -> None:
         assert torch.allclose(model(x), loaded(x))
 
 
-@pytest.mark.skip(reason="TODO(Lorgio): probar con pesos reales de ImageNet")
+@pytest.mark.parametrize("name", MODEL_NAMES)
+def test_checkpoint_reconstruye_la_arquitectura_guardada(name: str, tmp_path) -> None:
+    """load_checkpoint crea la clase que indica "model_name", sin adivinar."""
+    model = build_model(name, pretrained=False)
+    path = str(tmp_path / f"model_{name}.pt")
+    save_checkpoint(model, name, path)
+    assert type(load_checkpoint(path)) is type(model)
+
+
+def test_save_checkpoint_rechaza_nombre_desconocido(tmp_path) -> None:
+    """Un nombre fuera de MODEL_NAMES falla al guardar, no recien en la API."""
+    model = build_model("mobilenet_lstm", pretrained=False)
+    with pytest.raises(ValueError, match="mobilenet_lstm"):
+        save_checkpoint(model, "vit_video", str(tmp_path / "model.pt"))
+    assert not (tmp_path / "model.pt").exists()
+
+
 @pytest.mark.parametrize("name", MODEL_NAMES)
 def test_pesos_imagenet_con_video_real(name: str) -> None:
     """Con pretrained=True y un video real, la salida es finita y (1, 2).
