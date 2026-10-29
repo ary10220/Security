@@ -25,7 +25,154 @@ FEATURE_DIM = 1280
 NUM_CLASSES = 2  # [Normal, Sospechoso]
 
 
-class ViolenceDetector(nn.Module):
+def _mobilenet_backbone(pretrained: bool) -> nn.Module:
+    """Devuelve MobileNetV2 sin su capa de clasificacion.
+
+    Se crea en una sola funcion para que todos los modelos con MobileNetV2
+    usen exactamente el mismo backbone y la comparacion entre ellos sea justa.
+
+    Args:
+        pretrained: si carga los pesos de ImageNet.
+
+    Returns:
+        Modulo que lleva (N, 3, 224, 224) a (N, 1280, 7, 7).
+    """
+    weights = MobileNet_V2_Weights.IMAGENET1K_V1 if pretrained else None
+    return mobilenet_v2(weights=weights).features
+
+
+class _FrameBackbone(nn.Module):
+    """Base comun: un backbone de imagen pre-entrenado aplicado frame a frame.
+
+    Junta lo que comparten todos los modelos del archivo: congelar el
+    backbone, mantenerlo en eval() mientras el resto entrena, validar la forma
+    de la entrada y reducir cada frame a un vector. Cada modelo concreto solo
+    decide que backbone usa y que hace con esos vectores.
+
+    Attributes:
+        feature_extractor: backbone convolucional sin capa de clasificacion.
+        pool: promedio global que reduce (h, w) a un vector por frame.
+        freeze_backbone: si el backbone esta congelado.
+    """
+
+    def __init__(self, backbone: nn.Module, freeze_backbone: bool) -> None:
+        """Registra el backbone y lo congela si se pide.
+
+        Args:
+            backbone: red convolucional que devuelve mapas (N, C, h, w).
+            freeze_backbone: si es True, sus pesos no reciben gradiente.
+        """
+        super().__init__()
+        self.feature_extractor = backbone
+        self.pool = nn.AdaptiveAvgPool2d(1)
+        self.freeze_backbone = freeze_backbone
+        if freeze_backbone:
+            for param in self.feature_extractor.parameters():
+                param.requires_grad = False
+
+    def train(self, mode: bool = True) -> "_FrameBackbone":
+        """Pone el modelo en modo entrenamiento sin tocar el backbone congelado.
+
+        Con el backbone congelado hay que dejarlo siempre en eval(): sus capas
+        BatchNorm actualizan estadisticas en cada forward en modo train aunque
+        sus pesos no tengan gradiente, y eso lo alejaria del de ImageNet.
+        """
+        super().train(mode)
+        if self.freeze_backbone:
+            self.feature_extractor.eval()
+        return self
+
+    def encode_frames(self, frames: torch.Tensor) -> torch.Tensor:
+        """Reduce cada frame a un vector de features.
+
+        Args:
+            frames: tensor (N, 3, 224, 224) con N frames sueltos.
+
+        Returns:
+            Tensor (N, C), con C los canales de salida del backbone.
+        """
+        return self.pool(self.feature_extractor(frames)).flatten(1)
+
+    @staticmethod
+    def _check_clip(x: torch.Tensor) -> None:
+        """Falla con un mensaje claro si x no es un lote (B, T, C, H, W).
+
+        Raises:
+            ValueError: si x no tiene 5 dimensiones.
+        """
+        if x.dim() != 5:
+            raise ValueError(
+                f"Se esperaba un tensor (B, T, C, H, W), llego {tuple(x.shape)}"
+            )
+
+
+class _LSTMDetector(_FrameBackbone):
+    """Backbone por frame + BiLSTM + cabeza densa.
+
+    Es el cuerpo de ViolenceDetector separado de su backbone, para que otro
+    backbone lo reutilice cambiando solo la dimension de sus features.
+
+    Attributes:
+        lstm: BiLSTM sobre la secuencia de vectores por frame.
+        classifier: cabeza densa que produce los logits.
+    """
+
+    def __init__(
+        self,
+        backbone: nn.Module,
+        feature_dim: int,
+        hidden_size: int,
+        num_classes: int,
+        freeze_backbone: bool,
+    ) -> None:
+        """Construye la LSTM y la cabeza sobre el backbone dado.
+
+        Args:
+            backbone: red convolucional por frame (ver _FrameBackbone).
+            feature_dim: canales que devuelve el backbone, entrada de la LSTM.
+            hidden_size: unidades ocultas de la LSTM (por direccion).
+            num_classes: cantidad de clases de salida.
+            freeze_backbone: si el backbone queda congelado.
+        """
+        super().__init__(backbone, freeze_backbone)
+        self.lstm = nn.LSTM(
+            feature_dim, hidden_size, batch_first=True, bidirectional=True
+        )
+        self.classifier = nn.Sequential(
+            nn.Dropout(0.3),
+            nn.Linear(hidden_size * 2, 64),
+            nn.ReLU(),
+            nn.Linear(64, num_classes),
+        )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Clasifica un lote de clips.
+
+        Args:
+            x: tensor (B, T, 3, 224, 224) normalizado con ImageNet.
+
+        Returns:
+            Logits (B, num_classes).
+
+        Raises:
+            ValueError: si x no tiene 5 dimensiones.
+        """
+        self._check_clip(x)
+        batch, frames = x.shape[:2]
+        # Se apilan los frames de todos los clips para que el backbone los
+        # procese en una sola pasada, y luego se separan de nuevo por clip.
+        feats = self.encode_frames(x.reshape(batch * frames, *x.shape[2:]))
+        feats = feats.reshape(batch, frames, -1)
+
+        _, (h_n, _) = self.lstm(feats)
+        # h_n[-2] y h_n[-1] son el estado final de la direccion hacia adelante
+        # y hacia atras. Se usan ellos y no out[:, -1]: en ese ultimo paso la
+        # direccion hacia atras solo vio un frame, asi que resumiria casi nada.
+        summary = torch.cat([h_n[-2], h_n[-1]], dim=1)  # (B, 2 * hidden_size)
+        return self.classifier(summary)
+
+
+class ViolenceDetector(_LSTMDetector):
     """MobileNetV2 + BiLSTM para clasificar un clip de video.
 
     Recibe clips ya preprocesados por VideoPreprocessor y devuelve logits.
@@ -58,65 +205,13 @@ class ViolenceDetector(nn.Module):
                 ~14 MB la primera vez). Los tests usan False para correr
                 sin internet.
         """
-        super().__init__()
-        weights = MobileNet_V2_Weights.IMAGENET1K_V1 if pretrained else None
-        self.feature_extractor = mobilenet_v2(weights=weights).features
-        self.pool = nn.AdaptiveAvgPool2d(1)
-        self.freeze_backbone = freeze_backbone
-        if freeze_backbone:
-            for param in self.feature_extractor.parameters():
-                param.requires_grad = False
-
-        self.lstm = nn.LSTM(
-            FEATURE_DIM, hidden_size, batch_first=True, bidirectional=True
+        super().__init__(
+            _mobilenet_backbone(pretrained),
+            FEATURE_DIM,
+            hidden_size,
+            num_classes,
+            freeze_backbone,
         )
-        self.classifier = nn.Sequential(
-            nn.Dropout(0.3),
-            nn.Linear(hidden_size * 2, 64),
-            nn.ReLU(),
-            nn.Linear(64, num_classes),
-        )
-
-    def train(self, mode: bool = True) -> "ViolenceDetector":
-        """Pone el modelo en modo entrenamiento sin tocar el backbone congelado.
-
-        Con el backbone congelado hay que dejarlo siempre en eval(): sus capas
-        BatchNorm actualizan estadisticas en cada forward en modo train aunque
-        sus pesos no tengan gradiente, y eso lo alejaria del de ImageNet.
-        """
-        super().train(mode)
-        if self.freeze_backbone:
-            self.feature_extractor.eval()
-        return self
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """Clasifica un lote de clips.
-
-        Args:
-            x: tensor (B, T, 3, 224, 224) normalizado con ImageNet.
-
-        Returns:
-            Logits (B, num_classes).
-
-        Raises:
-            ValueError: si x no tiene 5 dimensiones.
-        """
-        if x.dim() != 5:
-            raise ValueError(
-                f"Se esperaba un tensor (B, T, C, H, W), llego {tuple(x.shape)}"
-            )
-        batch, frames = x.shape[:2]
-        # Se apilan los frames de todos los clips para que el backbone los
-        # procese en una sola pasada, y luego se separan de nuevo por clip.
-        x = x.reshape(batch * frames, *x.shape[2:])
-        feats = self.pool(self.feature_extractor(x)).reshape(batch, frames, FEATURE_DIM)
-
-        _, (h_n, _) = self.lstm(feats)
-        # h_n[-2] y h_n[-1] son el estado final de la direccion hacia adelante
-        # y hacia atras. Se usan ellos y no out[:, -1]: en ese ultimo paso la
-        # direccion hacia atras solo vio un frame, asi que resumiria casi nada.
-        summary = torch.cat([h_n[-2], h_n[-1]], dim=1)  # (B, 2 * hidden_size)
-        return self.classifier(summary)
 
 
 # ---------------------------------------------------------------------------
