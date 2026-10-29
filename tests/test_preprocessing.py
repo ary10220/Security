@@ -88,6 +88,34 @@ def test_extract_frames_handles_video_shorter_than_n_frames() -> None:
     assert frames.shape[0] == 16
 
 
+def _read_frame(path: Path, index: int) -> np.ndarray:
+    """Lee un frame puntual con el mismo seek que usa extract_frames."""
+    cap = cv2.VideoCapture(str(path))
+    cap.set(cv2.CAP_PROP_POS_FRAMES, index)
+    ok, frame = cap.read()
+    cap.release()
+    assert ok
+    return frame
+
+
+def test_extract_frames_de_un_tramo_empieza_y_termina_en_ese_tramo() -> None:
+    """Con start_sec/end_sec los frames salen solo de ese tramo (lo usa la API)."""
+    _require_fixture(SAMPLE_VIDEO)
+    # sample_video: 90 frames a 30 fps. El tramo 1 s - 2 s son los frames 30..59.
+    frames = extract_frames(str(SAMPLE_VIDEO), n_frames=16, start_sec=1.0, end_sec=2.0)
+    assert frames.shape == (16, FIXTURE_HEIGHT, FIXTURE_WIDTH, 3)
+    assert np.array_equal(frames[0], _read_frame(SAMPLE_VIDEO, 30))
+    assert np.array_equal(frames[-1], _read_frame(SAMPLE_VIDEO, 59))
+
+
+def test_extract_frames_sin_tramo_cubre_todo_el_video() -> None:
+    """Sin segundos el comportamiento es el de siempre: del frame 0 al ultimo."""
+    _require_fixture(SAMPLE_VIDEO)
+    frames = extract_frames(str(SAMPLE_VIDEO), n_frames=16)
+    assert np.array_equal(frames[0], _read_frame(SAMPLE_VIDEO, 0))
+    assert np.array_equal(frames[-1], _read_frame(SAMPLE_VIDEO, 89))
+
+
 # -----------------------------------------------------------------------------
 # resize_and_convert
 # -----------------------------------------------------------------------------
