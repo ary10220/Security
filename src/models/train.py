@@ -4,6 +4,15 @@ Uso:
     python -m src.models.train --dataset-path data/raw/rwf2000 --epochs 15
     python -m src.models.train --dataset-path data/raw/rwf2000 --smoke-test
 
+Particion de los datos:
+    - train/ se divide 85/15 por video fuente (split_by_source): el 85 % se
+      entrena y el 15 % es el val interno que elige el mejor checkpoint y
+      dispara el early stopping.
+    - val/ entero es el test: no se mira durante el entrenamiento. Al final
+      se carga el mejor checkpoint y se evalua UNA vez sobre test. Esas son
+      las metricas oficiales (artifacts/metrics_<modelo>.json, las del
+      informe); las del val interno van a metrics_<modelo>_internal_val.json.
+
 Trabajo en pareja con Grageda (seccion 5 del plan: train.py, metricas,
 matriz de confusion y curva PR). Importa la arquitectura de
 `src.models.model.build_model`, de modo que si Lorgio implementa el
@@ -25,14 +34,16 @@ from torch import nn
 from torch.utils.data import DataLoader, Subset
 from tqdm import tqdm
 
-from src.models.dataset import VideoDataset
+from src.models.dataset import VideoDataset, split_by_source
 from src.models.metrics import compute_metrics, pr_curve
 from src.models.model import (
     DEFAULT_HYPERPARAMS,
     MODEL_NAMES,
     build_model,
+    load_checkpoint,
     save_checkpoint,
 )
+from src.preprocessing import VideoPreprocessor
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -42,6 +53,9 @@ logger = logging.getLogger(__name__)
 # disco (checkpoint + json) sea el correcto.
 SMOKE_TRAIN_SIZE = 10
 SMOKE_VAL_SIZE = 5
+
+# Proporcion de train/ que se aparta como val interno (decision del equipo).
+INTERNAL_VAL_FRACTION = 0.15
 
 
 def parse_args() -> argparse.Namespace:
@@ -65,6 +79,11 @@ def parse_args() -> argparse.Namespace:
                         help="Carpeta donde guardar checkpoint y metricas.")
     parser.add_argument("--seed", type=int, default=42,
                         help="Semilla para reproducibilidad.")
+    parser.add_argument("--patience", type=int,
+                        default=DEFAULT_HYPERPARAMS["early_stopping_patience"],
+                        help="Epocas sin mejorar el F1 del val interno antes de cortar.")
+    parser.add_argument("--num-workers", type=int, default=0,
+                        help="Procesos que decodifican videos (0 en Windows, 2 en Colab).")
     parser.add_argument("--smoke-test", action="store_true",
                         help="Entrena 1 epoca con 10 train + 5 val para verificar.")
     return parser.parse_args()
@@ -191,24 +210,43 @@ def main() -> int:
     logger.info("Modelo '%s' en %s", args.model, device)
     logger.info("Dataset: %s", args.dataset_path)
 
+    # Dos datasets sobre la misma carpeta train/: el val interno tiene que
+    # evaluarse sin augmentation, igual que el test. Los samples salen en el
+    # mismo orden (carpetas y archivos ordenados), asi que los indices del
+    # split valen para los dos.
     train_dataset = VideoDataset(args.dataset_path, split="train")
-    val_dataset = VideoDataset(args.dataset_path, split="val")
+    internal_dataset = VideoDataset(
+        args.dataset_path, split="train",
+        preprocessor=VideoPreprocessor(train=False),
+    )
+    # split="val" crea su preprocessor sin augmentation (train=False).
+    test_dataset = VideoDataset(args.dataset_path, split="val")
+
+    train_idx, val_idx = split_by_source(
+        train_dataset.samples, INTERNAL_VAL_FRACTION, args.seed,
+    )
+    train_subset = Subset(train_dataset, train_idx)
+    val_subset = Subset(internal_dataset, val_idx)
+    test_subset = test_dataset
+    logger.info("Split: %d train, %d val interno, %d test",
+                len(train_subset), len(val_subset), len(test_subset))
 
     if args.smoke_test:
         logger.info("Modo smoke test: %d train + %d val, 1 epoca.",
                     SMOKE_TRAIN_SIZE, SMOKE_VAL_SIZE)
         train_subset = _stratified_subset(train_dataset, SMOKE_TRAIN_SIZE, args.seed)
-        val_subset = _stratified_subset(val_dataset, SMOKE_VAL_SIZE, args.seed)
+        val_subset = _stratified_subset(internal_dataset, SMOKE_VAL_SIZE, args.seed)
+        test_subset = _stratified_subset(test_dataset, SMOKE_VAL_SIZE, args.seed)
         n_epochs = 1
     else:
-        train_subset = train_dataset
-        val_subset = val_dataset
         n_epochs = args.epochs
 
-    train_loader = DataLoader(train_subset, batch_size=args.batch_size,
-                              shuffle=True, num_workers=0)
-    val_loader = DataLoader(val_subset, batch_size=args.batch_size,
-                            shuffle=False, num_workers=0)
+    # pin_memory acelera la copia CPU -> GPU; en CPU no aporta nada.
+    loader_kwargs = {"batch_size": args.batch_size, "num_workers": args.num_workers,
+                     "pin_memory": device.type == "cuda"}
+    train_loader = DataLoader(train_subset, shuffle=True, **loader_kwargs)
+    val_loader = DataLoader(val_subset, shuffle=False, **loader_kwargs)
+    test_loader = DataLoader(test_subset, shuffle=False, **loader_kwargs)
 
     criterion = nn.CrossEntropyLoss()
     # Adam solo sobre params con requires_grad=True: con backbone congelado,
@@ -227,6 +265,7 @@ def main() -> int:
     best_pr_curve = None
     checkpoint_path = output_dir / f"model_{args.model}.pt"
     metrics_path = output_dir / f"metrics_{args.model}.json"
+    internal_metrics_path = output_dir / f"metrics_{args.model}_internal_val.json"
 
     history: list[dict] = []
     t0 = time.time()
@@ -270,12 +309,20 @@ def main() -> int:
             logger.info("Nuevo mejor F1 macro: %.4f. Checkpoint en %s",
                         best_f1, checkpoint_path)
 
+        # Early stopping: si el val interno no mejora en `patience` epocas,
+        # seguir solo sobreajusta y gasta GPU.
+        if epoch - best_epoch >= args.patience:
+            logger.info("Early stopping: %d epocas sin mejorar (mejor epoca %d).",
+                        args.patience, best_epoch)
+            break
+
     elapsed = time.time() - t0
-    # Metricas finales = las de la ultima epoca; mas el mejor F1 visto.
+    # Metricas del val interno = las de la ultima epoca; mas el mejor F1 visto.
     final_metrics = history[-1] if history else {}
-    report = {
+    internal_report = {
         "model": args.model,
         "device": str(device),
+        "evaluated_on": "val interno (15 % de train/, por fuente)",
         "epochs_run": len(history),
         "best_f1_macro": best_f1,
         "best_epoch": best_epoch,
@@ -284,10 +331,46 @@ def main() -> int:
         "final": final_metrics,
         "history": history,
     }
+    internal_metrics_path.write_text(json.dumps(internal_report, indent=2))
+    logger.info("Metricas del val interno guardadas en %s", internal_metrics_path)
+
+    # Test: se recarga el MEJOR checkpoint (no el de la ultima epoca) y se
+    # evalua una sola vez. Es la misma funcion que usa la API para cargarlo.
+    best_model = load_checkpoint(checkpoint_path, device=str(device))
+    t_test = time.time()
+    test_loss, y_true, y_pred, y_score = _run_epoch(
+        best_model, test_loader, criterion, None, device, desc="Test",
+    )
+    test_seconds = time.time() - t_test
+    test_metrics = compute_metrics(y_true, y_pred, class_names=class_names)
+    test_metrics["test_loss"] = test_loss
+    try:
+        test_pr_curve = pr_curve(y_true, y_score)
+    except ValueError:
+        test_pr_curve = None
+
+    # El formato { model, final: {...} } es el que lee el panel de metricas
+    # del frontend (frontend/src/lib/api.js). inference_ms incluye decodificar
+    # el video: es lo que tarda un clip de punta a punta.
+    report = {
+        "model": args.model,
+        "device": str(device),
+        "evaluated_on": "test (val/ completo, no usado al entrenar)",
+        "n_test": len(y_true),
+        "class_names": class_names,
+        "best_epoch": best_epoch,
+        "epochs_run": len(history),
+        "internal_val_f1_macro": best_f1,
+        "inference_ms": round(1000 * test_seconds / max(len(y_true), 1), 1),
+        "pr_curve": test_pr_curve,
+        "train_seconds": elapsed,
+        "final": test_metrics,
+    }
     metrics_path.write_text(json.dumps(report, indent=2))
-    logger.info("Metricas guardadas en %s", metrics_path)
-    logger.info("Resumen final: best_f1_macro=%.4f  elapsed=%.1fs",
-                best_f1, elapsed)
+    logger.info("Metricas de test guardadas en %s", metrics_path)
+    logger.info("Resumen: val_interno_f1=%.4f  test_acc=%.4f  test_f1_macro=%.4f  "
+                "entrenamiento=%.1fs", best_f1, test_metrics["accuracy"],
+                test_metrics["f1_macro"], elapsed)
     return 0
 
 
