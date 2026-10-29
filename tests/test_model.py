@@ -115,7 +115,6 @@ def test_build_model_rechaza_nombre_desconocido() -> None:
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.skip(reason="TODO(Lorgio): implementar FrameBaseline")
 def test_baseline_usa_solo_el_frame_del_medio() -> None:
     """El baseline ignora los demas frames: cambiarlos no altera la salida."""
     model = FrameBaseline(pretrained=False).eval()

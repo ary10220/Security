@@ -246,25 +246,53 @@ DEFAULT_HYPERPARAMS = {
 }
 
 
-class FrameBaseline(nn.Module):
+class FrameBaseline(_FrameBackbone):
     """Baseline de 1 frame: MobileNetV2 + Linear, sin LSTM.
 
     Responde la pregunta "vale la pena modelar la secuencia temporal?". Si
     este modelo rinde parecido a ViolenceDetector, no hace falta la LSTM.
 
-    TODO(Lorgio): implementar.
-        - Mismo backbone MobileNetV2 congelado y el mismo pool que
-          ViolenceDetector (reutilizar, no copiar con otra forma).
-        - forward recibe (B, T, 3, 224, 224) como los demas modelos pero usa
-          solo el frame del medio, x[:, T // 2]. Asi train.py no cambia.
-        - Cabeza: Linear(FEATURE_DIM, num_classes).
-        - Devuelve logits (B, num_classes).
+    Usa el mismo backbone congelado y el mismo pool que ViolenceDetector
+    (heredados de _FrameBackbone), asi la unica diferencia entre ambos es
+    la parte temporal.
+
+    Attributes:
+        classifier: capa lineal de 1280 features a los logits.
     """
 
     def __init__(self, num_classes: int = NUM_CLASSES, pretrained: bool = True) -> None:
-        """Construye el baseline (pendiente)."""
-        super().__init__()
-        raise NotImplementedError("TODO(Lorgio): implementar FrameBaseline")
+        """Construye el baseline.
+
+        Args:
+            num_classes: cantidad de clases de salida.
+            pretrained: si carga los pesos de ImageNet en el backbone.
+        """
+        # Siempre congelado: es la misma configuracion que ViolenceDetector
+        # por defecto, que es contra quien se compara.
+        super().__init__(_mobilenet_backbone(pretrained), freeze_backbone=True)
+        self.classifier = nn.Linear(FEATURE_DIM, num_classes)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Clasifica cada clip mirando solo su frame del medio.
+
+        Recibe la misma entrada que los demas modelos para que train.py no
+        tenga que distinguirlos.
+
+        Args:
+            x: tensor (B, T, 3, 224, 224) normalizado con ImageNet.
+
+        Returns:
+            Logits (B, num_classes).
+
+        Raises:
+            ValueError: si x no tiene 5 dimensiones.
+        """
+        self._check_clip(x)
+        # El frame del medio es el que tiene mas margen hacia ambos lados:
+        # si la accion no empieza justo al inicio ni termina justo al final
+        # del clip, es el que tiene mas chance de mostrarla.
+        middle = x[:, x.shape[1] // 2]  # (B, 3, 224, 224)
+        return self.classifier(self.encode_frames(middle))
 
 
 class ResNetDetector(nn.Module):
