@@ -23,6 +23,8 @@ from __future__ import annotations
 
 import logging
 import random
+import re
+from collections import Counter
 from pathlib import Path
 from typing import Mapping
 
@@ -52,7 +54,87 @@ NEGATIVE_MARKERS = ("non",)
 # meterse en un bucle si el dataset entero esta roto.
 MAX_RETRIES = 10
 
+# Los clips de RWF-2000 se llaman <fuente>_<n>.avi: todos los que comparten
+# <fuente> son tramos del mismo video original (ver data/README.md).
+SOURCE_PATTERN = re.compile(r"^(.+)_\d+$")
+
 logger = logging.getLogger(__name__)
+
+
+def source_id(video_path: str | Path) -> str:
+    """Devuelve el video fuente de un clip, segun su nombre.
+
+    Args:
+        video_path: ruta al clip, p.ej. `.../Train_Fight/abc123_0.avi`.
+
+    Returns:
+        El prefijo antes del ultimo `_<numero>` (`abc123`). Si el nombre no
+        sigue ese patron, el nombre completo sin extension: el clip queda
+        como su propia fuente.
+    """
+    stem = Path(video_path).stem
+    match = SOURCE_PATTERN.match(stem)
+    return match.group(1) if match else stem
+
+
+def split_by_source(
+    samples: list[tuple[Path, int]],
+    val_fraction: float = 0.15,
+    seed: int = 42,
+) -> tuple[list[int], list[int]]:
+    """Separa un val interno dividiendo por video fuente, estratificado.
+
+    El EDA mostro que los 1600 clips de train de RWF-2000 salen de ~961
+    videos fuente. Si se divide por clip, tramos casi iguales del mismo video
+    caen en train y en val, y el F1 de val (el que elige el checkpoint) sale
+    inflado. Por eso se reparten fuentes enteras, y por clase, para que val
+    tenga la misma proporcion Fight/NonFight que train.
+
+    Si una clase tiene una sola fuente (p.ej. Real Life, donde el nombre
+    `V_398` no dice de que video sale, o el mini dataset), en esa clase se
+    divide por clip y se avisa: no hay forma de dividir por fuente.
+
+    Args:
+        samples: pares (ruta, label) de `VideoDataset.samples`.
+        val_fraction: proporcion de fuentes (o clips) que van a val.
+        seed: semilla para que el split sea el mismo en cada corrida.
+
+    Returns:
+        Tupla `(indices_train, indices_val)` sobre `samples`, ordenados.
+    """
+    rng = random.Random(seed)
+
+    groups: dict[str, list[int]] = {}
+    for i, (path, _) in enumerate(samples):
+        groups.setdefault(source_id(path), []).append(i)
+
+    # Cada fuente se asigna a la clase mayoritaria de sus clips. En RWF-2000
+    # una fuente es de una sola clase; si no lo fuera, igual queda entera en
+    # un lado del split, que es lo que evita la fuga.
+    by_label: dict[int, list[str]] = {}
+    for source, indices in sorted(groups.items()):
+        label = Counter(samples[i][1] for i in indices).most_common(1)[0][0]
+        by_label.setdefault(label, []).append(source)
+
+    val: list[int] = []
+    for label, sources in sorted(by_label.items()):
+        if len(sources) >= 2:
+            rng.shuffle(sources)
+            n_val = max(1, round(len(sources) * val_fraction))
+            for source in sources[:n_val]:
+                val.extend(groups[source])
+        else:
+            clips = list(groups[sources[0]])
+            logger.warning(
+                "La clase %d tiene una sola fuente: se divide por clip.", label
+            )
+            rng.shuffle(clips)
+            n_val = max(1, round(len(clips) * val_fraction)) if len(clips) >= 2 else 0
+            val.extend(clips[:n_val])
+
+    val_set = set(val)
+    train = [i for i in range(len(samples)) if i not in val_set]
+    return train, sorted(val_set)
 
 
 def _detect_label_map(class_dirs: list[Path]) -> dict[str, int]:
