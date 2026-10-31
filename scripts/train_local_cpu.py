@@ -14,6 +14,7 @@ Particion, igual que train.py pero sobre el subset:
 
 Uso (desde la raiz del repo):
     python -m scripts.train_local_cpu --dataset-path data/raw/rwf2000
+    python -m scripts.train_local_cpu --model mobilenet_baseline
 """
 
 from __future__ import annotations
@@ -30,7 +31,7 @@ from torch.utils.data import DataLoader, Subset
 
 from src.models.dataset import VideoDataset, split_by_source
 from src.models.metrics import compute_metrics, pr_curve
-from src.models.model import build_model, load_checkpoint, save_checkpoint
+from src.models.model import MODEL_NAMES, build_model, load_checkpoint, save_checkpoint
 from src.models.train import (
     INTERNAL_VAL_FRACTION,
     _run_epoch,
@@ -41,7 +42,6 @@ from src.preprocessing import VideoPreprocessor
 
 logger = logging.getLogger("train_local_cpu")
 
-MODEL_NAME = "mobilenet_lstm"
 # Cada cuantos batches se imprime el loss: con batch 4 y ~255 clips son
 # ~64 batches por epoca, asi se ve avanzar sin llenar el log.
 LOG_EVERY = 10
@@ -49,7 +49,10 @@ LOG_EVERY = 10
 
 def parse_args() -> argparse.Namespace:
     """Argumentos con los valores acordados para la corrida en CPU."""
-    parser = argparse.ArgumentParser(description="Entrena mobilenet_lstm en CPU con un subset.")
+    parser = argparse.ArgumentParser(description="Entrena un modelo en CPU con un subset.")
+    # Mismos hiperparametros y subset para todos: asi la tabla comparativa
+    # solo cambia el modelo.
+    parser.add_argument("--model", type=str, default="mobilenet_lstm", choices=MODEL_NAMES)
     parser.add_argument("--dataset-path", type=str, default="data/raw/rwf2000",
                         help="Carpeta raiz de RWF-2000 (train/ y val/ adentro).")
     parser.add_argument("--train-size", type=int, default=300,
@@ -101,11 +104,12 @@ def _train_epoch(model: nn.Module, loader: DataLoader, criterion: nn.Module,
 def main() -> int:
     """Arma el subset, entrena con early stopping y evalua el mejor en test."""
     args = parse_args()
+    model_name = args.model
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # El log va a consola y a archivo, para dejar evidencia de la corrida.
-    log_path = output_dir / f"train_{MODEL_NAME}_local.log"
+    log_path = output_dir / f"train_{model_name}_local.log"
     file_handler = logging.FileHandler(log_path, mode="w", encoding="utf-8")
     file_handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(message)s"))
     logging.getLogger().addHandler(file_handler)
@@ -138,7 +142,7 @@ def main() -> int:
     val_loader = DataLoader(val_subset, batch_size=args.batch_size, shuffle=False)
     test_loader = DataLoader(test_subset, batch_size=args.batch_size, shuffle=False)
 
-    model = build_model(MODEL_NAME, pretrained=True).to(device)
+    model = build_model(model_name, pretrained=True).to(device)
     criterion = nn.CrossEntropyLoss()
     trainable = [p for p in model.parameters() if p.requires_grad]
     optimizer = torch.optim.Adam(trainable, lr=args.lr)
@@ -147,7 +151,7 @@ def main() -> int:
     )
 
     class_names = train_dataset.classes
-    checkpoint_path = output_dir / f"model_{MODEL_NAME}.pt"
+    checkpoint_path = output_dir / f"model_{model_name}.pt"
     best_f1, best_epoch, best_pr_curve = -1.0, 0, None
     history: list[dict] = []
     t_start = time.time()
@@ -174,7 +178,7 @@ def main() -> int:
                 best_pr_curve = pr_curve(y_true, y_score)
             except ValueError:
                 best_pr_curve = None
-            save_checkpoint(model, MODEL_NAME, checkpoint_path)
+            save_checkpoint(model, model_name, checkpoint_path)
             logger.info("Nuevo mejor F1 del val interno: %.4f. Checkpoint en %s",
                         best_f1, checkpoint_path)
         if epoch - best_epoch >= args.patience:
@@ -183,8 +187,8 @@ def main() -> int:
             break
 
     train_seconds = time.time() - t_start
-    (output_dir / f"metrics_{MODEL_NAME}_internal_val.json").write_text(json.dumps({
-        "model": MODEL_NAME, "device": str(device),
+    (output_dir / f"metrics_{model_name}_internal_val.json").write_text(json.dumps({
+        "model": model_name, "device": str(device),
         "evaluated_on": "val interno (15 % del subset de train/, por fuente)",
         "epochs_run": len(history), "best_f1_macro": best_f1, "best_epoch": best_epoch,
         "pr_curve": best_pr_curve, "elapsed_seconds": train_seconds,
@@ -208,7 +212,7 @@ def main() -> int:
     # Mismo formato que metrics_<modelo>.json de train.py, mas los datos del
     # subset, para que nadie lo confunda con una corrida sobre RWF-2000 entero.
     report = {
-        "model": MODEL_NAME,
+        "model": model_name,
         "device": str(device),
         "evaluated_on": f"test: {len(y_true)} clips de val/ (subset, no usados al entrenar)",
         "subset": {"train": len(train_subset), "internal_val": len(val_subset),
@@ -225,7 +229,7 @@ def main() -> int:
         "train_seconds": train_seconds,
         "final": test_metrics,
     }
-    metrics_path = output_dir / f"metrics_{MODEL_NAME}.json"
+    metrics_path = output_dir / f"metrics_{model_name}.json"
     metrics_path.write_text(json.dumps(report, indent=2))
     logger.info("TEST  acc=%.4f  f1_macro=%.4f  recall_sospechoso=%.4f  matriz=%s",
                 test_metrics["accuracy"], test_metrics["f1_macro"],
