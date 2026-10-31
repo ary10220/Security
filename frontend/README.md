@@ -16,10 +16,9 @@ Variables (`.env.local`, no se versiona):
 
 | Variable | Por defecto | Efecto |
 |---|---|---|
-| `VITE_USE_MOCK` | `true` | `true` usa datos simulados; `false` llama al backend |
 | `VITE_API_URL` | `http://localhost:8000` | URL del backend FastAPI |
 
-Con `VITE_USE_MOCK=true` la interfaz lo avisa con un banner: el timeline y las métricas son **simulados**, no resultados del modelo. Los frames del tab de preprocesamiento sí salen del video subido, pero se calculan en el navegador (muestreo uniforme + resize), no con el pipeline real.
+El frontend siempre llama al backend real: no hay datos simulados. Los frames del tab de preprocesamiento los devuelve `GET /preprocessing_demo` (el pipeline real) usando el `video_id` de `/predict`.
 
 ## Contrato propuesto con la API
 
