@@ -58,7 +58,25 @@ MAX_RETRIES = 10
 # <fuente> son tramos del mismo video original (ver data/README.md).
 SOURCE_PATTERN = re.compile(r"^(.+)_\d+$")
 
+# RWF-2000 repite el split en el nombre de la carpeta de clase (Train_Fight,
+# Val_NonFight). Ese prefijo no es parte de la clase: sin quitarlo, las
+# metricas y el frontend mostrarian "Train_Fight" aunque se evalue en val/.
+SPLIT_PREFIX = re.compile(r"^(train|val|test)_", re.IGNORECASE)
+
 logger = logging.getLogger(__name__)
+
+
+def class_display_name(folder_name: str) -> str:
+    """Nombre de la clase sin el prefijo de split de la carpeta.
+
+    Args:
+        folder_name: nombre de la carpeta de clase, p.ej. `Train_Fight`.
+
+    Returns:
+        `Fight` para `Train_Fight` o `Val_Fight`. Si no hay prefijo de split
+        (`Violence`, `NonFight`), el nombre queda igual.
+    """
+    return SPLIT_PREFIX.sub("", folder_name)
 
 
 def source_id(video_path: str | Path) -> str:
@@ -245,9 +263,11 @@ class VideoDataset(Dataset):
             )
 
         # Guardamos clases ordenadas por label para que el reporte de metricas
-        # imprima nombres en vez de 0/1.
+        # imprima nombres en vez de 0/1. Sin el prefijo de split, asi train/
+        # y val/ dan los mismos nombres (Fight, NonFight).
         self.classes = [
-            name for name, _ in sorted(label_map.items(), key=lambda kv: kv[1])
+            class_display_name(name)
+            for name, _ in sorted(label_map.items(), key=lambda kv: kv[1])
         ]
 
         self.preprocessor = preprocessor or VideoPreprocessor(
