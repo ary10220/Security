@@ -6,7 +6,7 @@ import ThresholdSlider from './components/ThresholdSlider.vue'
 import Timeline from './components/Timeline.vue'
 import UploadDropzone from './components/UploadDropzone.vue'
 import VerdictCard from './components/VerdictCard.vue'
-import { DEFAULT_THRESHOLD, USE_MOCK } from './config.js'
+import { DEFAULT_THRESHOLD } from './config.js'
 import * as api from './lib/api.js'
 
 const tabs = [
@@ -51,7 +51,7 @@ async function analyze(selected) {
     result.value = await api.predict(selected)
     threshold.value = result.value.default_threshold ?? DEFAULT_THRESHOLD
     // La vista de preprocesamiento es secundaria: si falla no tumba el resultado.
-    api.preprocess(selected).then(
+    api.preprocess(result.value.video_id).then(
       (data) => (preprocessed.value = data),
       () => (preprocessed.value = null),
     )
@@ -73,9 +73,6 @@ function seek(time) {
   <header class="top">
     <h1>Detección de comportamiento sospechoso</h1>
     <p class="muted">Ayuda para priorizar la revisión humana de video de cámaras de seguridad.</p>
-    <p v-if="USE_MOCK" class="banner" role="status">
-      Modo simulado: el análisis no usa el modelo real (backend no conectado).
-    </p>
   </header>
 
   <main>
@@ -105,7 +102,7 @@ function seek(time) {
         <VerdictCard :segments="result.segments" :threshold="threshold" :clip-url="result.clip_url" />
         <ThresholdSlider
           v-model="threshold"
-          :best-threshold="metrics?.source === 'api' ? (metrics.pr_curve?.best_f1_threshold ?? null) : null"
+          :best-threshold="metrics?.pr_curve?.best_f1_threshold ?? null"
         />
         <Timeline
           :segments="result.segments"

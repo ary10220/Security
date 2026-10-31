@@ -1,9 +1,6 @@
-// Cliente del backend FastAPI (endpoints del plan: /health, /metrics,
-// /predict, /preprocess, /report). Los formatos de respuesta son una PROPUESTA
-// del frontend (ver frontend/README.md) pendiente de confirmar con quien haga
-// la API. Con USE_MOCK se usan datos simulados.
-import { API_URL, USE_MOCK } from '../config.js'
-import { mockMetrics, mockPredict, mockPreprocess } from './mock.js'
+// Cliente del backend FastAPI (api/main.py). Todo viene del backend real: el
+// frontend no genera resultados por su cuenta.
+import { API_URL } from '../config.js'
 
 async function request(path, options) {
   let response
@@ -30,29 +27,23 @@ function upload(file) {
   return { method: 'POST', body }
 }
 
-export async function health() {
-  if (USE_MOCK) return { status: 'mock' }
+export function health() {
   return request('/health')
 }
 
-export async function predict(file) {
-  if (USE_MOCK) return mockPredict(file)
+export function predict(file) {
   return request('/predict', upload(file))
 }
 
-export async function preprocess(file) {
-  if (USE_MOCK) return mockPreprocess(file)
-  return request('/preprocess', upload(file))
+// Los 16 frames que extrajo el pipeline real para un video ya analizado: el
+// backend los guarda por `video_id` (el que devolvió /predict).
+export function preprocess(videoId) {
+  return request(`/preprocessing_demo?video_id=${encodeURIComponent(videoId)}`)
 }
 
 // Acepta el formato plano o el `metrics_<modelo>.json` que escribe train.py
 // ({ model, final: {...} }), para no depender de como lo exponga la API.
 export async function getMetrics() {
-  const raw = USE_MOCK ? await mockMetrics() : await request('/metrics')
-  const { final, ...rest } = raw
-  return { source: 'api', ...rest, ...(final ?? {}) }
-}
-
-export function reportUrl() {
-  return `${API_URL}/report`
+  const { final, ...rest } = await request('/metrics')
+  return { ...rest, ...(final ?? {}) }
 }
