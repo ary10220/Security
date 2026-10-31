@@ -6,6 +6,7 @@ import ThresholdSlider from './components/ThresholdSlider.vue'
 import Timeline from './components/Timeline.vue'
 import UploadDropzone from './components/UploadDropzone.vue'
 import VerdictCard from './components/VerdictCard.vue'
+import WebcamRecorder from './components/WebcamRecorder.vue'
 import { DEFAULT_THRESHOLD } from './config.js'
 import * as api from './lib/api.js'
 
@@ -77,6 +78,7 @@ function seek(time) {
 
   <main>
     <UploadDropzone :disabled="loading" @select="analyze" />
+    <WebcamRecorder :disabled="loading" @select="analyze" />
 
     <nav class="tabs" role="tablist">
       <button
