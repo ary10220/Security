@@ -27,12 +27,20 @@ N_FRAMES = 16  # estandar en la literatura (I3D, SlowFast, CLIP-TSA)
 IMAGE_SIZE = 224  # tamano de entrada de MobileNetV2 / ResNet
 
 
-def extract_frames(video_path: str, n_frames: int = N_FRAMES) -> np.ndarray:
+def extract_frames(video_path: str, n_frames: int = N_FRAMES,
+                   start_sec: float | None = None,
+                   end_sec: float | None = None) -> np.ndarray:
     """Extrae un numero fijo de frames espaciados uniformemente (paso 3.1).
+
+    Por defecto cubre el video entero (entrenamiento). La API pasa
+    start_sec/end_sec para analizar un video largo por tramos de 2 s con el
+    mismo pipeline, en vez de reimplementar la extraccion.
 
     Args:
         video_path: ruta al video (.mp4, .avi o .mov).
         n_frames: cantidad de frames a extraer.
+        start_sec: inicio del tramo en segundos; None = desde el principio.
+        end_sec: fin del tramo en segundos (excluido); None = hasta el final.
 
     Returns:
         Arreglo de forma (n_frames, alto, ancho, 3) en formato BGR.
@@ -46,9 +54,21 @@ def extract_frames(video_path: str, n_frames: int = N_FRAMES) -> np.ndarray:
         cap.release()
         raise ValueError(f"El video no tiene frames legibles: {video_path}")
 
+    # Los segundos se pasan a indices de frame con los fps del video; el
+    # tramo se recorta a los frames que existen.
+    first, last = 0, total - 1
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    if (start_sec is not None or end_sec is not None) and fps <= 0:
+        cap.release()
+        raise ValueError(f"El video no informa sus fps: {video_path}")
+    if start_sec is not None:
+        first = min(max(0, int(start_sec * fps)), total - 1)
+    if end_sec is not None:
+        last = min(total - 1, max(first, int(end_sec * fps) - 1))
+
     # linspace reparte los indices parejo de principio a fin del clip, asi
     # los 16 frames cubren todo el movimiento y no solo el comienzo.
-    indices = np.linspace(0, total - 1, n_frames, dtype=int)
+    indices = np.linspace(first, last, n_frames, dtype=int)
 
     frames = []
     for i in indices:
@@ -213,11 +233,14 @@ class VideoPreprocessor:
         self.size = size
         self.train = train
 
-    def __call__(self, video_path: str) -> torch.Tensor:
-        """Procesa un video completo.
+    def __call__(self, video_path: str, start_sec: float | None = None,
+                 end_sec: float | None = None) -> torch.Tensor:
+        """Procesa un video completo, o un tramo si se pasan los segundos.
 
         Args:
             video_path: ruta al video.
+            start_sec: inicio del tramo (ver extract_frames).
+            end_sec: fin del tramo (ver extract_frames).
 
         Returns:
             Tensor (n_frames, 3, size, size) listo para el modelo.
@@ -226,7 +249,8 @@ class VideoPreprocessor:
         # -> tensorizar -> (augmentar si entrena). Se mantiene identico en
         # train y en inferencia; la API importa esta clase tal cual y nunca
         # replica estos pasos (regla del CLAUDE.md).
-        frames_bgr = extract_frames(video_path, n_frames=self.n_frames)
+        frames_bgr = extract_frames(video_path, n_frames=self.n_frames,
+                                    start_sec=start_sec, end_sec=end_sec)
         frames_rgb = resize_and_convert(frames_bgr, size=self.size)
         frames_norm = normalize_frames(frames_rgb)
         tensor = to_tensor(frames_norm)

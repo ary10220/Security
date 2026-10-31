@@ -25,6 +25,8 @@ tqdm==4.66.4
 
 # Testing
 pytest==8.2.2
+# TestClient de FastAPI (tests/test_api.py) usa httpx por debajo.
+httpx==0.28.1
 
 # Notebooks y visualizacion
 jupyter==1.0.0
