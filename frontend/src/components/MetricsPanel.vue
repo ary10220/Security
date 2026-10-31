@@ -10,9 +10,6 @@ const pct = (v) => (v * 100).toFixed(1) + ' %'
 
 <template>
   <section class="card">
-    <p v-if="metrics.source === 'mock'" class="banner" role="status">
-      Valores simulados para desarrollo: no son métricas medidas del modelo.
-    </p>
     <p class="label">Modelo: {{ metrics.model }}</p>
     <div class="grid2">
       <div>
