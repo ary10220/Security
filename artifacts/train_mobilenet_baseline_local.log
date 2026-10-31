@@ -1,0 +1,50 @@
+2026-10-30 23:59:02,689 INFO Argumentos: {'model': 'mobilenet_baseline', 'dataset_path': '<DATASET_PATH>', 'train_size': 300, 'test_size': 100, 'batch_size': 4, 'epochs': 5, 'lr': 0.0001, 'patience': 2, 'seed': 42, 'output_dir': 'artifacts'}
+2026-10-30 23:59:02,689 INFO torch 2.3.1+cpu, 6 hilos, device=cpu
+2026-10-30 23:59:02,784 INFO Subset: 259 train, 41 val interno, 100 test (de 1348 y 333 disponibles)
+2026-10-30 23:59:22,625 INFO Epoch 1  batch 10/65  loss=0.8913  promedio=0.7049  20s transcurridos, faltan ~108s
+2026-10-30 23:59:38,057 INFO Epoch 1  batch 20/65  loss=0.6121  promedio=0.6935  35s transcurridos, faltan ~79s
+2026-10-30 23:59:56,932 INFO Epoch 1  batch 30/65  loss=0.5538  promedio=0.7031  54s transcurridos, faltan ~63s
+2026-10-31 00:00:10,209 INFO Epoch 1  batch 40/65  loss=0.6442  promedio=0.6865  67s transcurridos, faltan ~42s
+2026-10-31 00:00:28,297 INFO Epoch 1  batch 50/65  loss=0.6630  promedio=0.6861  85s transcurridos, faltan ~26s
+2026-10-31 00:00:44,556 INFO Epoch 1  batch 60/65  loss=0.6250  promedio=0.6865  102s transcurridos, faltan ~8s
+2026-10-31 00:00:50,754 INFO Epoch 1  batch 65/65  loss=0.4625  promedio=0.6823  108s transcurridos, faltan ~0s
+2026-10-31 00:01:03,143 INFO Epoch 1/5  train_loss=0.6823  val_loss=0.6592  val_acc=0.6098  val_f1_macro=0.6039  (120s)
+2026-10-31 00:01:03,182 INFO Nuevo mejor F1 del val interno: 0.6039. Checkpoint en artifacts\model_mobilenet_baseline.pt
+2026-10-31 00:01:19,176 INFO Epoch 2  batch 10/65  loss=0.5483  promedio=0.6217  16s transcurridos, faltan ~88s
+2026-10-31 00:01:36,587 INFO Epoch 2  batch 20/65  loss=0.6594  promedio=0.6335  33s transcurridos, faltan ~75s
+2026-10-31 00:01:51,590 INFO Epoch 2  batch 30/65  loss=0.5958  promedio=0.6508  48s transcurridos, faltan ~56s
+2026-10-31 00:02:06,176 INFO Epoch 2  batch 40/65  loss=0.7243  promedio=0.6561  63s transcurridos, faltan ~39s
+2026-10-31 00:02:20,659 INFO Epoch 2  batch 50/65  loss=0.8558  promedio=0.6570  77s transcurridos, faltan ~23s
+2026-10-31 00:02:35,750 INFO Epoch 2  batch 60/65  loss=0.5846  promedio=0.6535  93s transcurridos, faltan ~8s
+2026-10-31 00:02:44,021 INFO Epoch 2  batch 65/65  loss=0.6453  promedio=0.6480  101s transcurridos, faltan ~0s
+2026-10-31 00:02:55,613 INFO Epoch 2/5  train_loss=0.6480  val_loss=0.6446  val_acc=0.6829  val_f1_macro=0.6799  (112s)
+2026-10-31 00:02:55,638 INFO Nuevo mejor F1 del val interno: 0.6799. Checkpoint en artifacts\model_mobilenet_baseline.pt
+2026-10-31 00:03:09,409 INFO Epoch 3  batch 10/65  loss=0.4978  promedio=0.6484  14s transcurridos, faltan ~76s
+2026-10-31 00:03:25,048 INFO Epoch 3  batch 20/65  loss=0.5267  promedio=0.6099  29s transcurridos, faltan ~66s
+2026-10-31 00:03:41,181 INFO Epoch 3  batch 30/65  loss=0.5721  promedio=0.6012  46s transcurridos, faltan ~53s
+2026-10-31 00:03:59,751 INFO Epoch 3  batch 40/65  loss=0.8615  promedio=0.6245  64s transcurridos, faltan ~40s
+2026-10-31 00:04:17,068 INFO Epoch 3  batch 50/65  loss=0.4837  promedio=0.6076  81s transcurridos, faltan ~24s
+2026-10-31 00:04:33,619 INFO Epoch 3  batch 60/65  loss=0.5766  promedio=0.6170  98s transcurridos, faltan ~8s
+2026-10-31 00:04:38,952 INFO Epoch 3  batch 65/65  loss=0.4783  promedio=0.6123  103s transcurridos, faltan ~0s
+2026-10-31 00:04:50,321 INFO Epoch 3/5  train_loss=0.6123  val_loss=0.6354  val_acc=0.7073  val_f1_macro=0.7029  (115s)
+2026-10-31 00:04:50,356 INFO Nuevo mejor F1 del val interno: 0.7029. Checkpoint en artifacts\model_mobilenet_baseline.pt
+2026-10-31 00:05:06,100 INFO Epoch 4  batch 10/65  loss=0.4557  promedio=0.5936  16s transcurridos, faltan ~87s
+2026-10-31 00:05:23,265 INFO Epoch 4  batch 20/65  loss=0.5842  promedio=0.5860  33s transcurridos, faltan ~74s
+2026-10-31 00:05:39,804 INFO Epoch 4  batch 30/65  loss=0.7942  promedio=0.5791  49s transcurridos, faltan ~58s
+2026-10-31 00:05:54,173 INFO Epoch 4  batch 40/65  loss=0.4292  promedio=0.5818  64s transcurridos, faltan ~40s
+2026-10-31 00:06:07,800 INFO Epoch 4  batch 50/65  loss=0.6375  promedio=0.5773  77s transcurridos, faltan ~23s
+2026-10-31 00:06:26,450 INFO Epoch 4  batch 60/65  loss=0.5571  promedio=0.5829  96s transcurridos, faltan ~8s
+2026-10-31 00:06:33,779 INFO Epoch 4  batch 65/65  loss=0.3425  promedio=0.5750  103s transcurridos, faltan ~0s
+2026-10-31 00:06:44,719 INFO Epoch 4/5  train_loss=0.5750  val_loss=0.6303  val_acc=0.6829  val_f1_macro=0.6799  (114s)
+2026-10-31 00:07:01,833 INFO Epoch 5  batch 10/65  loss=0.4654  promedio=0.4981  17s transcurridos, faltan ~94s
+2026-10-31 00:07:17,980 INFO Epoch 5  batch 20/65  loss=0.6430  promedio=0.5833  33s transcurridos, faltan ~75s
+2026-10-31 00:07:33,658 INFO Epoch 5  batch 30/65  loss=0.3991  promedio=0.5823  49s transcurridos, faltan ~57s
+2026-10-31 00:07:47,228 INFO Epoch 5  batch 40/65  loss=0.6714  promedio=0.5884  63s transcurridos, faltan ~39s
+2026-10-31 00:08:02,429 INFO Epoch 5  batch 50/65  loss=0.7036  promedio=0.5760  78s transcurridos, faltan ~23s
+2026-10-31 00:08:18,846 INFO Epoch 5  batch 60/65  loss=0.5501  promedio=0.5637  94s transcurridos, faltan ~8s
+2026-10-31 00:08:27,926 INFO Epoch 5  batch 65/65  loss=0.4232  promedio=0.5577  103s transcurridos, faltan ~0s
+2026-10-31 00:08:40,126 INFO Epoch 5/5  train_loss=0.5577  val_loss=0.6325  val_acc=0.7073  val_f1_macro=0.6925  (115s)
+2026-10-31 00:08:40,127 INFO Early stopping: 2 epocas sin mejorar (mejor epoca 3).
+2026-10-31 00:09:20,928 INFO TEST  acc=0.6600  f1_macro=0.6595  recall_sospechoso=0.6200  matriz=[[35, 15], [19, 31]]
+2026-10-31 00:09:20,928 INFO Tiempo real: entrenamiento 9.6 min, test 0.7 min, total 10.3 min
+2026-10-31 00:09:20,928 INFO Metricas en artifacts\metrics_mobilenet_baseline.json, log en artifacts\train_mobilenet_baseline_local.log
