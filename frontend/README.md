@@ -16,10 +16,10 @@ Variables (`.env.local`, no se versiona):
 
 | Variable | Por defecto | Efecto |
 |---|---|---|
-| `VITE_USE_MOCK` | `false` | Reservada para el cliente anterior; el dashboard actual consulta la API real |
 | `VITE_API_URL` | `http://localhost:8000` | URL del backend FastAPI |
 
 El dashboard actual obtiene predicciones, métricas y frames desde la API. El historial guarda solo los últimos 20 nombres, fechas y resultados en `localStorage`; no guarda videos.
+La pestaña Analizar también permite grabar 10 segundos con webcam si el navegador puede producir MP4. Los frames del modal de preprocesamiento provienen de `GET /preprocessing_demo` usando el `video_id` de `/predict`.
 
 ## Contrato con la API
 
@@ -53,4 +53,4 @@ El cliente del dashboard está en `src/composables/useApi.js`.
 - Cortes del nivel de alerta (`ALERT_LEVELS` en `src/config.js`, provisionales).
 - Duración del segmento (2 s o 3 s).
 - Tamaño máximo de subida (`MAX_UPLOAD_MB`), que debe coincidir con el backend.
-- Modalidad webcam: el plan la deja como opcional y no está implementada.
+- La webcam depende de que el navegador permita grabar MP4; si no, se puede subir un archivo.

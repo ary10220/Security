@@ -4,6 +4,8 @@ import UploadDropzone from '../components/UploadDropzone.vue'
 import Timeline from '../components/Timeline.vue'
 import ThresholdSlider from '../components/ThresholdSlider.vue'
 import PreprocessView from '../components/PreprocessView.vue'
+import WebcamRecorder from '../components/WebcamRecorder.vue'
+import VerdictCard from '../components/VerdictCard.vue'
 import { deriveVerdict } from '../lib/analysis.js'
 import { useApi } from '../composables/useApi.js'
 import { useHistorial } from '../composables/useHistorial.js'
@@ -23,6 +25,7 @@ const modalOpen = ref(false)
 const frames = ref(null)
 const framesLoading = ref(false)
 const framesError = ref('')
+const bestThreshold = ref(null)
 const verdict = computed(() => result.value
   ? deriveVerdict(result.value.segments, threshold.value) : null)
 const suspiciousProbability = computed(() => Math.max(
@@ -44,6 +47,12 @@ async function analyze(selected) {
     result.value = await api.predict(selected)
     threshold.value = result.value.default_threshold ?? 0.5
     addPrediction(selected.name, result.value)
+    try {
+      const metrics = await api.metrics(result.value.model)
+      bestThreshold.value = metrics.pr_curve?.best_f1_threshold ?? null
+    } catch {
+      bestThreshold.value = null
+    }
   } catch (cause) {
     error.value = cause.message
   } finally {
@@ -79,6 +88,7 @@ function seek(time) {
     </div>
     <p v-if="!modelReady" class="banner" role="status">La inferencia requiere que la API tenga un checkpoint entrenado cargado.</p>
     <UploadDropzone :disabled="loading || !modelReady" @select="analyze" />
+    <WebcamRecorder :disabled="loading || !modelReady" @select="analyze" />
     <div v-if="loading" class="card loading-line" role="status"><span class="spinner" /> Analizando {{ file?.name }}…</div>
     <p v-if="error" class="error" role="alert">{{ error }}</p>
     <template v-if="result">
@@ -92,7 +102,8 @@ function seek(time) {
           <p class="muted">Confianza del veredicto: {{ (verdict.confidence * 100).toFixed(1) }} %</p>
         </section>
       </div>
-      <ThresholdSlider v-model="threshold" />
+      <VerdictCard :segments="result.segments" :threshold="threshold" :clip-url="result.clip_url" />
+      <ThresholdSlider v-model="threshold" :best-threshold="bestThreshold" />
       <Timeline :segments="result.segments" :threshold="threshold"
         :duration="result.video_duration" :current-time="currentTime" @seek="seek" />
       <button type="button" class="button" @click="showFrames">Ver preprocesamiento</button>

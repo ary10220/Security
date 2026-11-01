@@ -3,13 +3,14 @@
 
 export const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
 
-// Con VITE_USE_MOCK=true (o sin backend) la app usa datos simulados de
-// src/lib/mock.js. Nunca se muestran como resultados reales: la interfaz los
-// marca como "simulado".
-export const USE_MOCK = (import.meta.env.VITE_USE_MOCK ?? 'false') === 'true'
-
 export const MAX_UPLOAD_MB = 100 // PROVISIONAL: debe coincidir con la validacion del backend
 export const ACCEPTED_TYPES = ['video/mp4']
+
+// El plan pide grabar 10 s con la webcam. La API solo acepta mp4/avi/mov, y los
+// navegadores graban en mp4 o webm: se ofrece solo mp4 hasta que el backend
+// acepte webm (pendiente de confirmar con quien hace api/).
+export const WEBCAM_SECONDS = 10
+export const RECORDING_TYPES = ['video/mp4']
 
 // PROVISIONAL: umbral inicial del slider si la API no manda `default_threshold`.
 export const DEFAULT_THRESHOLD = 0.5

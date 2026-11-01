@@ -6,10 +6,6 @@ defineProps({ data: { type: Object, required: true } })
 
 <template>
   <section class="card">
-    <p v-if="data.source === 'local'" class="banner" role="status">
-      Vista previa calculada en tu navegador (muestreo uniforme + resize). La salida real del
-      pipeline también convierte a RGB y normaliza con media/desviación de ImageNet.
-    </p>
     <p class="label">{{ data.n_frames }} frames · {{ data.size[0] }}×{{ data.size[1] }} px</p>
     <ol class="frames">
       <li v-for="f in data.frames" :key="f.index">

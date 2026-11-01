@@ -29,7 +29,7 @@ defineEmits(['update:modelValue'])
         class="link"
         @click="$emit('update:modelValue', bestThreshold)"
       >
-        Usar el que maximiza F1 en validación ({{ bestThreshold.toFixed(2) }})
+        Explorar umbral de mayor F1 en el test ({{ bestThreshold.toFixed(2) }}; no validado para producción)
       </button>
     </p>
   </section>

@@ -130,7 +130,7 @@ Fase de pipeline (días 3-4, en pareja con Ariany, que completó
   `8c891ab`), `extract_frames` con 16 frames uniformes vía OpenCV y relleno
   con el último frame si el video es corto (`394939f`), `normalize_frames` con
   media/std de ImageNet (`01d9257`) y `to_tensor` a `(T, C, H, W)` (`f649286`).
-- **Rama `feat/preprocess-augment`:** `augment_frames` (paso 3.4, commit
+- **Rama `feat/preprocess-augment` (PR #11):** `augment_frames` (paso 3.4, commit
   `d4b70aa`). Flip horizontal (p=0.5), recorte aleatorio del 80-100 % del área
   reescalado al tamaño original y jitter leve de brillo/contraste (±20 %),
   sorteados una sola vez por clip para no romper la coherencia temporal. El
@@ -144,14 +144,14 @@ Fase de pipeline (días 3-4, en pareja con Ariany, que completó
 
 Fase de modelo (día 5, en pareja con Lorgio):
 
-- **Rama `feat/model-violence-detector`:** `ViolenceDetector` en
+- **Rama `feat/model-violence-detector` (PR #12):** `ViolenceDetector` en
   `src/models/model.py` (MobileNetV2 congelado + BiLSTM, commit `2963dee`) con
   8 tests en `tests/test_model.py`. Usa el estado final `h_n` de la BiLSTM y no
   `out[:, -1]` (en ese paso la dirección hacia atrás solo vio un frame), y
   `train()` deja el backbone congelado en `eval()` para que BatchNorm no
   cambie sus estadísticas.
-- **Para Lorgio:** dejé la estructura y los stubs marcados con `TODO(Lorgio)`
-  en `src/models/model.py`: `FrameBaseline`, `ResNetDetector`, `build_model`
+- **Para Lorgio** (commit `8d308ef`): dejé la estructura y los stubs marcados
+  con `TODO(Lorgio)` en `src/models/model.py`: `FrameBaseline`, `ResNetDetector`, `build_model`
   (ya despacha los 3 nombres de `train.py --model`), `save_checkpoint`,
   `load_checkpoint` y confirmar `DEFAULT_HYPERPARAMS`. Sus tests ya están
   escritos en `tests/test_model.py` con `skip`: al implementar cada pieza se
@@ -163,8 +163,28 @@ Fase de modelo (día 5, en pareja con Lorgio):
   `test_pesos_imagenet_con_video_real`, con `HOCKEY_VIDEO_PATH`) y comprobar
   logits finitos y checkpoint que recarga igual.
 
-Pendiente de mi parte según el plan: frontend (con Grageda). Se registrará
-aquí cuando se haga.
+Fase de frontend (en pareja con Grageda, que armó la interfaz en el PR #15):
+
+- **Revisión y corrección (PR #18, commit `8ed39bd`):** revisé la interfaz de
+  Grageda y corregí un fallo del video en `frontend/src/App.vue` (evitar
+  `null` en `timeupdate`).
+- **Frontend contra la API real (PR #22, commits `a856b99` y `578afa6`):**
+  quité los datos simulados (`mock.js`, `frames.js` y la variable
+  `VITE_USE_MOCK`). `frontend/src/lib/api.js` llama siempre al backend real y
+  la vista de preprocesamiento pide los 16 frames a `/preprocessing_demo` con
+  el `video_id` que devuelve `/predict`, para no reimplementar el
+  preprocesamiento en el navegador. Actualicé el README del frontend.
+- **Webcam (PR #23, commits `e1bca1e` y `067f0ca`):** botón "Usar webcam"
+  (`WebcamRecorder.vue` y `lib/webcam.js`) que graba 10 s con `MediaRecorder`
+  y envía el archivo al mismo análisis que la carga de video. Solo graba en
+  mp4, porque la API acepta mp4, avi y mov y no webm; en Firefox, que solo
+  graba webm, la interfaz muestra un aviso. 5 tests en
+  `frontend/src/lib/webcam.test.js`.
+- Hecho con asistencia de Claude Code (declarar en el informe).
+
+Pendiente de mi parte: prueba de punta a punta con la API y el modelo
+entrenado (`.pt`) cuando el equipo lo comparta; reporte PDF del timeline
+(opcional, el clip depende de `clip_url`, que la API aún no implementa).
 
 ## P4 — Grageda
 
