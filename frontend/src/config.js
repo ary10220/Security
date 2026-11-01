@@ -6,7 +6,7 @@ export const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
 // Con VITE_USE_MOCK=true (o sin backend) la app usa datos simulados de
 // src/lib/mock.js. Nunca se muestran como resultados reales: la interfaz los
 // marca como "simulado".
-export const USE_MOCK = (import.meta.env.VITE_USE_MOCK ?? 'true') === 'true'
+export const USE_MOCK = (import.meta.env.VITE_USE_MOCK ?? 'false') === 'true'
 
 export const MAX_UPLOAD_MB = 100 // PROVISIONAL: debe coincidir con la validacion del backend
 export const ACCEPTED_TYPES = ['video/mp4']

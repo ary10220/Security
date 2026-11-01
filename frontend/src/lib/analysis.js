@@ -42,6 +42,20 @@ export function suspiciousRuns(segments, threshold) {
   return runs
 }
 
+export function deriveVerdict(segments, threshold) {
+  // Replica la ventana de 3 s de la API para ajustar el umbral sin reinferir.
+  if (!segments?.length) return { verdict: 'normal', confidence: 0 }
+  const runs = suspiciousRuns(segments, threshold)
+  const longest = Math.max(0, ...runs.map((run) => run.end - run.start))
+  const analyzed = segments[segments.length - 1].end - segments[0].start
+  const top = Math.max(...segments.map((segment) => segment.score))
+  const suspicious = longest > 3 || (longest > 0 && longest >= analyzed)
+  return {
+    verdict: suspicious ? 'suspicious' : 'normal',
+    confidence: suspicious ? top : 1 - top,
+  }
+}
+
 export function formatTime(seconds) {
   const total = Math.max(0, Math.floor(seconds))
   const m = Math.floor(total / 60)
