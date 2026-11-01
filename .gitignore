@@ -240,6 +240,9 @@ data/processed/
 # Frontend (Vue/Vite): dependencias instaladas localmente, se reconstruyen
 # con npm install a partir de package-lock.json.
 node_modules/
+frontend/.npm-cache/
+.runtime/
+.uv-cache/
 
 
 # El frontend tiene su propio src/lib (no es la carpeta lib/ de Python)

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   alertLevel,
   criticalSegment,
+  deriveVerdict,
   flagSegments,
   formatTime,
   suspiciousRuns,
@@ -49,5 +50,11 @@ describe('analysis', () => {
   it('formatea el tiempo como m:ss', () => {
     expect(formatTime(0)).toBe('0:00')
     expect(formatTime(75.9)).toBe('1:15')
+  })
+
+  it('recalcula el veredicto con la ventana temporal de la API', () => {
+    expect(deriveVerdict(segments, 0.7).verdict).toBe('suspicious')
+    expect(deriveVerdict(segments, 0.85).verdict).toBe('normal')
+    expect(deriveVerdict([seg(0, 0.8)], 0.5).verdict).toBe('suspicious')
   })
 })

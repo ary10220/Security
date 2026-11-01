@@ -28,6 +28,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from api import model_loader
+from src.models.model import MODEL_NAMES
 from api.schemas import (
     HealthResponse,
     MetricsResponse,
@@ -125,19 +126,24 @@ def health() -> HealthResponse:
 
 
 @app.get("/metrics", response_model=MetricsResponse)
-def metrics() -> dict:
+def metrics(model: str | None = Query(None, description="Modelo evaluado.")) -> dict:
     """Devuelve las metricas de test del modelo cargado.
 
     Lee artifacts/metrics_<modelo>.json, el que escribe train.py. No las
     recalcula: evaluar el test set en cada request tardaria minutos.
     """
-    name = model_loader.load_model().name
+    name = model or model_loader.load_model().name
+    if name not in MODEL_NAMES:
+        raise HTTPException(400, "Modelo desconocido.")
     path = model_loader.ARTIFACTS_DIR / f"metrics_{name}.json"
     if not path.is_file():
         raise HTTPException(
             404, f"Todavia no hay metricas de {name}: entrenar con train.py."
         )
-    return json.loads(path.read_text(encoding="utf-8"))
+    report = json.loads(path.read_text(encoding="utf-8"))
+    checkpoint = model_loader.checkpoint_path(name)
+    report["model_size_mb"] = round(checkpoint.stat().st_size / (1024 * 1024), 2) if checkpoint.is_file() else None
+    return report
 
 
 async def _save_upload(file: UploadFile, folder: Path) -> tuple[Path, str]:
@@ -325,6 +331,28 @@ async def predict(
     el cuerpo no es multipart.
     """
     return await _analyze(request, file, threshold)
+
+
+@app.post("/predict/batch")
+async def predict_batch(
+    request: Request,
+    files: list[UploadFile] = File(..., description="Hasta 20 videos en el campo files."),
+) -> list[dict]:
+    """Analiza varios videos y devuelve un resultado o error por archivo.
+
+    Se procesan en orden para no saturar la memoria con inferencias simultaneas
+    en la CPU del equipo.
+    """
+    if not files or len(files) > 20:
+        raise HTTPException(400, "Enviar entre 1 y 20 videos.")
+    results = []
+    for file in files:
+        try:
+            prediction = await _analyze(request, file, None)
+            results.append({"filename": file.filename, "result": prediction.model_dump(), "error": None})
+        except HTTPException as exc:
+            results.append({"filename": file.filename, "result": None, "error": str(exc.detail)})
+    return results
 
 
 @app.post("/predict/clip", response_model=PredictResponse)
