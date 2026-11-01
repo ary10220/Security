@@ -79,7 +79,17 @@ def test_metrics_returns_json(artifacts: Path, client: TestClient) -> None:
 
     response = client.get("/metrics")
     assert response.status_code == 200
-    assert response.json() == report
+    assert response.json() == {**report, "model_size_mb": None}
+
+
+def test_metrics_selects_requested_model(artifacts: Path, client: TestClient) -> None:
+    """El selector lee la evaluacion indicada sin cambiar el modelo de inferencia."""
+    report = {"model": "mobilenet_baseline", "final": {"accuracy": 0.66}}
+    (artifacts / "metrics_mobilenet_baseline.json").write_text(json.dumps(report))
+    response = client.get("/metrics?model=mobilenet_baseline")
+    assert response.status_code == 200
+    assert response.json()["model"] == "mobilenet_baseline"
+    assert client.get("/metrics?model=desconocido").status_code == 400
 
 
 def test_metrics_sin_archivo_da_404(client: TestClient) -> None:
@@ -152,6 +162,20 @@ def test_predict_with_valid_video_returns_prediction(client: TestClient) -> None
     assert body["segments"] == body["timeline"]
     assert body["video"] == {"name": "clip.mp4", "duration_s": pytest.approx(3.0)}
     assert body["segment_seconds"] == 2.0
+
+
+def test_predict_batch_returns_result_and_file_error(client: TestClient) -> None:
+    """Un archivo invalido no descarta los resultados validos del lote."""
+    response = client.post("/predict/batch", files=[
+        ("files", ("clip.mp4", SAMPLE_VIDEO.read_bytes(), "video/mp4")),
+        ("files", ("notas.txt", b"hola", "text/plain")),
+    ])
+    assert response.status_code == 200
+    rows = response.json()
+    assert rows[0]["result"]["verdict"] in ("suspicious", "normal")
+    assert rows[0]["error"] is None
+    assert rows[1]["result"] is None
+    assert "Formato" in rows[1]["error"]
 
 
 def test_verdict_aplica_la_ventana_de_3_segundos() -> None:
