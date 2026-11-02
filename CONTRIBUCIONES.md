@@ -248,7 +248,7 @@ Fase de EDA (rama `feat/eda-dataset`):
   sin decodificar el clip completo. Tests en `tests/test_dataset_metadata.py`.
 - **`notebooks/02_eda_datasets.ipynb`** (commit `a5e1e4e`): EDA de Real Life (balance, integridad,
   duración, fps, resolución, muestra visual). Hallazgo: la clase se predice solo
-  con la resolución (77,5 %) o solo con fps (81,7 %), un posible atajo para el
+  con la resolución (77,5 %) o solo con fps (81,3 %), un posible atajo para el
   modelo. La sección de RWF-2000 está lista pero no se ejecutó: falta tener esos
   videos en `data/raw/rwf2000/`.
 - **`notebooks/03_comparar_frames.ipynb`** (commit `e7990b5`): comparación 8 vs 16 vs 32 frames con
@@ -306,6 +306,24 @@ Fase de frontend (rama `feat/frontend-vue`, en pareja con Diego):
 - Hecho con asistencia de Claude Code (declarar en el informe).
 - Queda sin implementar: vista de `/report`, modalidad webcam (opcional en el
   plan) e integración con el backend real.
+
+Fase de correcciones tras la revisión del EDA (rama `fix/eda-cifras-grageda`):
+
+- Lorgio revisó los notebooks 02 y 03 (PR #28) y señaló dos cifras mías mal
+  copiadas. Las comprobé contra las salidas guardadas y las corregí:
+  - `CONTRIBUCIONES.md`: fps de Real Life 81,7 % → 81,3 % (el notebook 02 imprime
+    0,813).
+  - `notebooks/03_comparar_frames.ipynb`: pasar de 16 a 32 frames multiplica el
+    tiempo de MobileNetV2 por ~2,5 (2,46 veces: 168,5 → 415,2 ms), no por ~2, y no
+    crece linealmente (de 8 a 16 sube 2,35 veces). También corregí la misma
+    imprecisión en la recomendación final. La recomendación de usar 16 frames no
+    cambia.
+- Solo cambié texto: los notebooks no se reejecutaron y sus salidas guardadas son
+  las mismas.
+- Comprobé el rango de fps de Real Life que Lorgio no pudo confirmar (10–37, según
+  la conclusión del notebook 02) con `data/processed/metadata_real_life.csv`: va
+  de 10,5 a 37,0 fps. Es consistente con lo escrito.
+- Hecho con asistencia de Claude Code.
 
 Pendiente de mi parte: integración del frontend con la API real y revisión del
 trabajo conjunto con Diego.
