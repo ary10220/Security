@@ -376,7 +376,8 @@ def build_model(name: str, pretrained: bool = True) -> nn.Module:
     raise ValueError(f"Modelo desconocido: {name!r}. Opciones: {MODEL_NAMES}")
 
 
-def save_checkpoint(model: nn.Module, name: str, path: str | Path) -> None:
+def save_checkpoint(model: nn.Module, name: str, path: str | Path,
+                    mode: str | None = None) -> None:
     """Guarda los pesos del modelo con lo necesario para recargarlo.
 
     El archivo es un dict {"model_name", "state_dict"}. Guardar el nombre
@@ -396,7 +397,10 @@ def save_checkpoint(model: nn.Module, name: str, path: str | Path) -> None:
     # error apareceria recien en la API, lejos del entrenamiento que lo causo.
     if name not in MODEL_NAMES:
         raise ValueError(f"Modelo desconocido: {name!r}. Opciones: {MODEL_NAMES}")
-    torch.save({"model_name": name, "state_dict": model.state_dict()}, path)
+    payload = {"model_name": name, "state_dict": model.state_dict()}
+    if mode is not None:
+        payload["mode"] = mode
+    torch.save(payload, path)
 
 
 def load_checkpoint(path: str | Path, device: str = "cpu") -> nn.Module:

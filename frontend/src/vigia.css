@@ -91,6 +91,17 @@ body { background: var(--paper); color: var(--ink); font-family: 'Segoe UI', Ari
 .studio .card { border-radius: 10px; box-shadow: none; }
 .studio .dropzone { border-color: #83987a; padding-block: 44px; background: #eef1e7; }
 .studio .tab-content { min-width: 0; }
+.mode-picker { border: 1px solid #9baa91; border-radius: 14px; padding: 18px; margin: 18px 0; background: #eef2e8; }
+.mode-picker legend { padding: 0 8px; font-weight: 700; }
+.mode-picker .muted { margin: 12px 0 0; font-size: 13px; }
+.mode-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.mode-option { display: flex; align-items: center; gap: 10px; padding: 14px; border: 1px solid #aabb9f; border-radius: 10px; cursor: pointer; transition: background .2s, transform .2s, border-color .2s; }
+.mode-option:hover { transform: translateY(-2px); border-color: #456b39; }
+.mode-option.chosen { background: #d7e7c5; border-color: #456b39; }
+.mode-option.unavailable { color: #667066; }
+.mode-option input { accent-color: #3f733b; }
+.mode-option span { display: grid; gap: 3px; }
+.mode-option small { font-size: 11px; }
 .endbar { color: #e1e8d9; background: #18241d; padding-block: 24px; }
 .endbar .rail { gap: 18px; flex-wrap: wrap; }
 .endbar span, .endbar a:last-child { font-size: 13px; }
@@ -98,6 +109,7 @@ body { background: var(--paper); color: var(--ink); font-family: 'Segoe UI', Ari
 .footer-brand { font: 700 24px/1 'Segoe UI',sans-serif; letter-spacing: -.07em; }
 a:focus-visible, button:focus-visible { outline: 3px solid #72ad32; outline-offset: 3px; }
 @media(max-width:780px) {
+.mode-options { grid-template-columns: 1fr; }
   .mast-inner { height: 65px; }
   .hero-inner { grid-template-columns: 1fr; gap: 16px; padding: 42px 0 20px; }
   .hero-copy > p { max-width: 48ch; }

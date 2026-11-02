@@ -16,11 +16,13 @@ const stages = [
 const stage = ref(0)
 const selected = ref(models[0])
 const reports = ref({})
+const modeStatuses = ref([])
 const loading = ref(true)
 const report = computed(() => reports.value[selected.value.id])
 const percent = n => n == null ? '—' : new Intl.NumberFormat('es', { style: 'percent', maximumFractionDigits: 1 }).format(n)
 onMounted(async () => {
   const api = useApi()
+  try { modeStatuses.value = await api.modes() } catch { modeStatuses.value = [] }
   const results = await Promise.allSettled(models.map(model => api.metrics(model.id)))
   results.forEach((result, i) => {
     if (result.status === 'fulfilled') reports.value[models[i].id] = result.value
@@ -51,7 +53,8 @@ onMounted(async () => {
   </section>
   <section id="modelos" class="evidence">
     <div class="rail"><span class="folio">02 / EVIDENCIA</span><div class="evidence-title"><h2>El modelo, <em>a prueba.</em></h2><a href="#metricas" class="text-link">Explorar métricas ↗</a></div>
-      <p>Aunque los videos de prueba de RWF-2000 están clasificados bajo las categorías de «pelea» o «sin pelea», nuestro enfoque va más allá: la detección específica de asaltos y robos en entornos comerciales requiere métricas y evaluaciones adaptadas a nuestra propia casuística</p>
+      <p>Estas cifras corresponden únicamente a peleas y no peleas de RWF-2000. Los modos Interior / joyería y Exterior necesitarán clips propios etiquetados y una evaluación separada antes de ofrecer inferencias.</p>
+      <p v-if="modeStatuses.length" class="mode-status-line">Modos: <span v-for="item in modeStatuses" :key="item.id">{{ item.label }} · {{ item.available ? 'disponible' : 'Modelo no disponible' }}. </span></p>
       <div class="model-switch" aria-label="Arquitecturas"><button v-for="model in models" :key="model.id" :aria-pressed="selected.id === model.id" @click="selected = model">{{ model.name }}</button></div>
       <div class="report-strip" aria-live="polite"><div class="report-note"><b>{{ selected.name }}</b><p>{{ selected.detail }}</p></div>
         <template v-if="report"><div><strong>{{ percent(report.final.accuracy) }}</strong><small>Exactitud en test</small></div><div><strong>{{ percent(report.final.recall_per_class.Fight) }}</strong><small>Peleas del test detectadas</small></div><div><strong>{{ percent(report.final.f1_macro) }}</strong><small>F1 macro</small></div></template>

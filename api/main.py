@@ -28,6 +28,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from api import model_loader
+from api.modes import MODES, get_mode, mode_status
 from src.models.model import MODEL_NAMES
 from api.schemas import (
     HealthResponse,
@@ -132,18 +133,43 @@ def metrics(model: str | None = Query(None, description="Modelo evaluado.")) -> 
     Lee artifacts/metrics_<modelo>.json, el que escribe train.py. No las
     recalcula: evaluar el test set en cada request tardaria minutos.
     """
-    name = model or model_loader.load_model().name
-    if name not in MODEL_NAMES:
+    name = model or model_loader.DEFAULT_MODEL
+    if name not in MODEL_NAMES and name not in MODES:
         raise HTTPException(400, "Modelo desconocido.")
-    path = model_loader.ARTIFACTS_DIR / f"metrics_{name}.json"
+    report_name = MODES[name].artifact if name in MODES else name
+    path = model_loader.ARTIFACTS_DIR / f"metrics_{report_name}.json"
     if not path.is_file():
         raise HTTPException(
             404, f"Todavia no hay metricas de {name}: entrenar con train.py."
         )
     report = json.loads(path.read_text(encoding="utf-8"))
-    checkpoint = model_loader.checkpoint_path(name)
+    checkpoint = model_loader.checkpoint_path(report_name)
     report["model_size_mb"] = round(checkpoint.stat().st_size / (1024 * 1024), 2) if checkpoint.is_file() else None
     return report
+
+
+@app.get("/modes")
+def modes() -> list[dict]:
+    """Expone los tres modos y habilita solo los evaluados y cargables."""
+    return [mode_status(mode_id) for mode_id in MODES]
+
+
+def _require_mode(mode_id: str) -> model_loader.LoadedModel:
+    """Rechaza modos sin pesos y métricas antes de procesar videos."""
+    try:
+        definition = get_mode(mode_id)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    status = mode_status(mode_id)
+    if not status["available"]:
+        raise HTTPException(503, f"Modelo no disponible: {definition.label}. {status['detail']}")
+    loaded = model_loader.load_model(
+        definition.artifact,
+        expected_mode=mode_id if mode_id != "peleas" else None,
+    )
+    if not loaded.from_checkpoint or loaded.model is None:
+        raise HTTPException(503, f"Modelo no disponible: {definition.label}.")
+    return loaded
 
 
 async def _save_upload(file: UploadFile, folder: Path) -> tuple[Path, str]:
@@ -191,9 +217,9 @@ def _segment_bounds(start: float, end: float) -> list[tuple[float, float]]:
             for i in range(n)]
 
 
-def _score_segments(path: Path, bounds: list[tuple[float, float]]) -> list[float]:
+def _score_segments(path: Path, bounds: list[tuple[float, float]],
+                    loaded: model_loader.LoadedModel) -> list[float]:
     """Probabilidad de sospechoso de cada tramo, con el modelo cargado."""
-    loaded = model_loader.load_model()
     scores: list[float] = []
     for i in range(0, len(bounds), INFERENCE_BATCH):
         # Cada tramo pasa por el pipeline completo: 16 frames de ESE tramo.
@@ -262,7 +288,8 @@ def _verdict(timeline: list[TimelineSegment], threshold: float) -> tuple[str, fl
 
 async def _analyze(request: Request, file: UploadFile | None, threshold: float | None,
                    start_sec: float | None = None,
-                   end_sec: float | None = None) -> PredictResponse:
+                   end_sec: float | None = None,
+                   mode: str = "peleas") -> PredictResponse:
     """Valida la entrada, analiza el video (o un tramo) y arma la respuesta.
 
     Lo comparten /predict y /predict/clip: solo cambia el rango analizado.
@@ -277,6 +304,8 @@ async def _analyze(request: Request, file: UploadFile | None, threshold: float |
         raise HTTPException(400, "Falta el video: enviarlo en el campo file.")
     if Path(file.filename).suffix.lower() not in ALLOWED_EXTENSIONS:
         raise HTTPException(400, "Formato no soportado: usar .mp4, .avi o .mov.")
+
+    loaded = _require_mode(mode)
 
     # El archivo temporal se borra al salir del with, pase lo que pase.
     with tempfile.TemporaryDirectory() as tmp:
@@ -293,7 +322,7 @@ async def _analyze(request: Request, file: UploadFile | None, threshold: float |
             )
 
         bounds = _segment_bounds(start, end)
-        scores = _score_segments(path, bounds)
+        scores = _score_segments(path, bounds, loaded)
         frames = _demo_frames(path)
 
     # Id corto para pedir despues los frames a /preprocessing_demo: el
@@ -310,7 +339,9 @@ async def _analyze(request: Request, file: UploadFile | None, threshold: float |
         video_duration=round(duration, 3),
         video_id=video_id,
         threshold=threshold,
-        model=model_loader.load_model().name,
+        model="mobilenet_lstm" if mode != "peleas" else loaded.name,
+        mode=mode,
+        reason=get_mode(mode).reason,
         segment_seconds=SEGMENT_SECONDS,
         default_threshold=DEFAULT_THRESHOLD,
         segments=timeline,
@@ -323,6 +354,7 @@ async def predict(
     request: Request,
     file: UploadFile | None = File(None, description="Video .mp4, .avi o .mov (max 100 MB, 2 min)."),
     threshold: float | None = Form(None, description="Umbral de 0 a 1 (por defecto 0.5)."),
+    mode: str = Form("peleas", description="peleas, interior o exterior."),
 ) -> PredictResponse:
     """Clasifica el video entero por tramos de 2 s.
 
@@ -330,13 +362,14 @@ async def predict(
     umbral no esta en [0, 1]; 413 si pasa de 100 MB o de 2 minutos; 415 si
     el cuerpo no es multipart.
     """
-    return await _analyze(request, file, threshold)
+    return await _analyze(request, file, threshold, mode=mode)
 
 
 @app.post("/predict/batch")
 async def predict_batch(
     request: Request,
     files: list[UploadFile] = File(..., description="Hasta 20 videos en el campo files."),
+    mode: str = Form("peleas", description="Modo de todos los videos del lote."),
 ) -> list[dict]:
     """Analiza varios videos y devuelve un resultado o error por archivo.
 
@@ -345,10 +378,11 @@ async def predict_batch(
     """
     if not files or len(files) > 20:
         raise HTTPException(400, "Enviar entre 1 y 20 videos.")
+    _require_mode(mode)
     results = []
     for file in files:
         try:
-            prediction = await _analyze(request, file, None)
+            prediction = await _analyze(request, file, None, mode=mode)
             results.append({"filename": file.filename, "result": prediction.model_dump(), "error": None})
         except HTTPException as exc:
             results.append({"filename": file.filename, "result": None, "error": str(exc.detail)})
@@ -362,6 +396,7 @@ async def predict_clip(
     start_sec: float | None = Form(None, description="Inicio del tramo en segundos."),
     end_sec: float | None = Form(None, description="Fin del tramo en segundos."),
     threshold: float | None = Form(None, description="Umbral de 0 a 1 (por defecto 0.5)."),
+    mode: str = Form("peleas", description="peleas, interior o exterior."),
 ) -> PredictResponse:
     """Igual que /predict pero solo sobre [start_sec, end_sec].
 
@@ -374,7 +409,7 @@ async def predict_clip(
         content_type = request.headers.get("content-type", "")
         if not content_type or content_type.startswith("multipart/form-data"):
             raise HTTPException(400, "Faltan start_sec y end_sec.")
-    return await _analyze(request, file, threshold, start_sec, end_sec)
+    return await _analyze(request, file, threshold, start_sec, end_sec, mode)
 
 
 @app.get("/preprocessing_demo", response_model=PreprocessingDemoResponse)

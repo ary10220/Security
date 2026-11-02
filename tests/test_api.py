@@ -1,11 +1,12 @@
 """Tests de los endpoints de la API (api/main.py).
 
-Corren sin modelo entrenado: cada test apunta ARTIFACTS_DIR a una carpeta
-temporal, asi model_loader cae a pesos random y nunca lee artifacts/ real.
+Cada test apunta ARTIFACTS_DIR a una carpeta temporal. Los tests de inferencia
+crean pesos sintéticos explícitos; la API rechaza modelos faltantes.
 Los videos son los fixtures sinteticos de tests/fixtures/make_fixture.py.
 """
 
 import json
+import shutil
 from pathlib import Path
 
 import pytest
@@ -33,6 +34,26 @@ def artifacts(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
 @pytest.fixture
 def client(artifacts: Path) -> TestClient:
     """Cliente de la API; el with dispara la carga del modelo al arrancar."""
+    with TestClient(main.app) as test_client:
+        yield test_client
+
+
+@pytest.fixture(scope="session")
+def synthetic_checkpoint(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    """Construye una vez pesos sintéticos para probar el transporte de la API."""
+    path = tmp_path_factory.mktemp("checkpoints") / "model_mobilenet_lstm.pt"
+    save_checkpoint(build_model("mobilenet_lstm", pretrained=False), "mobilenet_lstm", path)
+    return path
+
+
+@pytest.fixture
+def ready_client(artifacts: Path, synthetic_checkpoint: Path) -> TestClient:
+    """Habilita solo el modo peleas con artefactos ficticios de prueba."""
+    shutil.copyfile(synthetic_checkpoint, artifacts / "model_mobilenet_lstm.pt")
+    (artifacts / "metrics_mobilenet_lstm.json").write_text(json.dumps({
+        "model": "mobilenet_lstm", "final": {"confusion_matrix": [[1, 0], [0, 1]]}
+    }))
+    model_loader.load_model.cache_clear()
     with TestClient(main.app) as test_client:
         yield test_client
 
@@ -66,10 +87,22 @@ def test_health_reports_model_loaded_status(artifacts: Path) -> None:
 
 
 def test_checkpoint_viejo_no_tira_la_api(artifacts: Path) -> None:
-    """Un .pt sin el formato de save_checkpoint cae a pesos random."""
+    """Un .pt inválido deja la API sin modelo de inferencia."""
     torch.save({"otra": "cosa"}, artifacts / "model_mobilenet_lstm.pt")
     with TestClient(main.app) as client:
         assert client.get("/health").json()["model_loaded"] is False
+        assert model_loader.load_model().model is None
+
+
+def test_modes_only_enable_own_evaluated_checkpoint(ready_client: TestClient) -> None:
+    """Los pesos de peleas no habilitan interior ni exterior."""
+    status = {item["id"]: item for item in ready_client.get("/modes").json()}
+    assert status["peleas"]["available"] is True
+    assert status["interior"]["available"] is False
+    assert status["exterior"]["available"] is False
+    response = ready_client.post("/predict", files=_video(), data={"mode": "interior"})
+    assert response.status_code == 503
+    assert "Modelo no disponible" in response.json()["detail"]
 
 
 def test_metrics_returns_json(artifacts: Path, client: TestClient) -> None:
@@ -104,8 +137,8 @@ def test_predict_rejects_empty_body(client: TestClient) -> None:
     assert client.post("/predict").status_code == 400
 
 
-def test_predict_rejects_empty_file(client: TestClient) -> None:
-    response = client.post("/predict", files={"file": ("vacio.mp4", b"", "video/mp4")})
+def test_predict_rejects_empty_file(ready_client: TestClient) -> None:
+    response = ready_client.post("/predict", files={"file": ("vacio.mp4", b"", "video/mp4")})
     assert response.status_code == 400
 
 
@@ -114,9 +147,9 @@ def test_predict_rejects_non_video_file(client: TestClient) -> None:
     assert response.status_code == 400
 
 
-def test_predict_rejects_unreadable_video(client: TestClient) -> None:
+def test_predict_rejects_unreadable_video(ready_client: TestClient) -> None:
     """Extension valida pero contenido que OpenCV no puede abrir."""
-    response = client.post("/predict", files=_video(CORRUPT_VIDEO))
+    response = ready_client.post("/predict", files=_video(CORRUPT_VIDEO))
     assert response.status_code == 400
 
 
@@ -130,25 +163,25 @@ def test_predict_rejects_threshold_out_of_range(client: TestClient, threshold: s
     assert response.status_code == 400
 
 
-def test_predict_rejects_video_too_big(client: TestClient,
+def test_predict_rejects_video_too_big(ready_client: TestClient,
                                        monkeypatch: pytest.MonkeyPatch) -> None:
     # Se baja el limite en vez de subir 100 MB en un test.
     monkeypatch.setattr(main, "MAX_UPLOAD_BYTES", 1000)
-    assert client.post("/predict", files=_video()).status_code == 413
+    assert ready_client.post("/predict", files=_video()).status_code == 413
 
 
-def test_predict_rejects_video_too_long(client: TestClient,
+def test_predict_rejects_video_too_long(ready_client: TestClient,
                                         monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(main, "MAX_DURATION_SECONDS", 1.0)
-    assert client.post("/predict", files=_video()).status_code == 413
+    assert ready_client.post("/predict", files=_video()).status_code == 413
 
 
 # -----------------------------------------------------------------------------
 # /predict: respuesta
 # -----------------------------------------------------------------------------
 
-def test_predict_with_valid_video_returns_prediction(client: TestClient) -> None:
-    response = client.post("/predict", files=_video())
+def test_predict_with_valid_video_returns_prediction(ready_client: TestClient) -> None:
+    response = ready_client.post("/predict", files=_video())
     assert response.status_code == 200
     body = response.json()
 
@@ -162,11 +195,13 @@ def test_predict_with_valid_video_returns_prediction(client: TestClient) -> None
     assert body["segments"] == body["timeline"]
     assert body["video"] == {"name": "clip.mp4", "duration_s": pytest.approx(3.0)}
     assert body["segment_seconds"] == 2.0
+    assert body["mode"] == "peleas"
+    assert "RWF-2000" in body["reason"]
 
 
-def test_predict_batch_returns_result_and_file_error(client: TestClient) -> None:
+def test_predict_batch_returns_result_and_file_error(ready_client: TestClient) -> None:
     """Un archivo invalido no descarta los resultados validos del lote."""
-    response = client.post("/predict/batch", files=[
+    response = ready_client.post("/predict/batch", files=[
         ("files", ("clip.mp4", SAMPLE_VIDEO.read_bytes(), "video/mp4")),
         ("files", ("notas.txt", b"hola", "text/plain")),
     ])
@@ -194,8 +229,8 @@ def test_verdict_aplica_la_ventana_de_3_segundos() -> None:
 # /predict/clip y /preprocessing_demo
 # -----------------------------------------------------------------------------
 
-def test_predict_clip_analiza_solo_el_rango(client: TestClient) -> None:
-    response = client.post("/predict/clip", files=_video(),
+def test_predict_clip_analiza_solo_el_rango(ready_client: TestClient) -> None:
+    response = ready_client.post("/predict/clip", files=_video(),
                            data={"start_sec": "1", "end_sec": "3"})
     assert response.status_code == 200
     body = response.json()
@@ -205,15 +240,15 @@ def test_predict_clip_analiza_solo_el_rango(client: TestClient) -> None:
 
 @pytest.mark.parametrize("data", [{}, {"start_sec": "2", "end_sec": "1"},
                                   {"start_sec": "5", "end_sec": "6"}])
-def test_predict_clip_rechaza_rango_invalido(client: TestClient, data: dict) -> None:
-    response = client.post("/predict/clip", files=_video(), data=data)
+def test_predict_clip_rechaza_rango_invalido(ready_client: TestClient, data: dict) -> None:
+    response = ready_client.post("/predict/clip", files=_video(), data=data)
     assert response.status_code == 400
 
 
-def test_preprocessing_demo_devuelve_los_16_frames(client: TestClient) -> None:
-    video_id = client.post("/predict", files=_video()).json()["video_id"]
+def test_preprocessing_demo_devuelve_los_16_frames(ready_client: TestClient) -> None:
+    video_id = ready_client.post("/predict", files=_video()).json()["video_id"]
 
-    response = client.get("/preprocessing_demo", params={"video_id": video_id})
+    response = ready_client.get("/preprocessing_demo", params={"video_id": video_id})
     assert response.status_code == 200
     body = response.json()
     assert body["n_frames"] == 16

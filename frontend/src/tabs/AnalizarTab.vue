@@ -1,16 +1,23 @@
 <script setup>
-import { computed, onBeforeUnmount, ref } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import ModePicker from '../components/ModePicker.vue'
 import UploadDropzone from '../components/UploadDropzone.vue'
 import Timeline from '../components/Timeline.vue'
 import ThresholdSlider from '../components/ThresholdSlider.vue'
 import PreprocessView from '../components/PreprocessView.vue'
 import WebcamRecorder from '../components/WebcamRecorder.vue'
 import VerdictCard from '../components/VerdictCard.vue'
-import { deriveVerdict } from '../lib/analysis.js'
+import { criticalSegment, deriveVerdict } from '../lib/analysis.js'
 import { useApi } from '../composables/useApi.js'
 import { useHistorial } from '../composables/useHistorial.js'
 
-defineProps({ modelReady: { type: Boolean, required: true } })
+const props = defineProps({
+  modelReady: { type: Boolean, required: true },
+  modes: { type: Array, required: true },
+  mode: { type: String, required: true },
+  modeDetail: { type: String, default: '' },
+})
+const emit = defineEmits(['update:mode'])
 const api = useApi()
 const { addPrediction } = useHistorial()
 const file = ref(null)
@@ -31,6 +38,17 @@ const verdict = computed(() => result.value
 const suspiciousProbability = computed(() => Math.max(
   0, ...(result.value?.segments ?? []).map((segment) => segment.score),
 ))
+const critical = computed(() => criticalSegment(
+  (result.value?.segments ?? []).filter(segment => segment.score >= threshold.value),
+))
+
+watch(() => props.mode, () => {
+  // Un resultado anterior nunca debe parecer un resultado del nuevo modo.
+  result.value = null
+  frames.value = null
+  bestThreshold.value = null
+  error.value = ''
+})
 
 onBeforeUnmount(() => { if (videoUrl.value) URL.revokeObjectURL(videoUrl.value) })
 
@@ -44,11 +62,14 @@ async function analyze(selected) {
   error.value = ''
   loading.value = true
   try {
-    result.value = await api.predict(selected)
+    const requestedMode = props.mode
+    const response = await api.predict(selected, requestedMode)
+    if (requestedMode !== props.mode) return
+    result.value = response
     threshold.value = result.value.default_threshold ?? 0.5
     addPrediction(selected.name, result.value)
     try {
-      const metrics = await api.metrics(result.value.model)
+      const metrics = await api.metrics(result.value.mode === 'peleas' ? result.value.model : result.value.mode)
       bestThreshold.value = metrics.pr_curve?.best_f1_threshold ?? null
     } catch {
       bestThreshold.value = null
@@ -78,6 +99,13 @@ async function showFrames() {
 function seek(time) {
   if (video.value) video.value.currentTime = time
 }
+
+function reviewCritical() {
+  if (critical.value) {
+    seek(critical.value.start)
+    video.value?.play()
+  }
+}
 </script>
 
 <template>
@@ -86,7 +114,8 @@ function seek(time) {
       <div><p class="eyebrow">Análisis individual</p><h2>Revisar un video</h2></div>
       <p class="muted">Archivo MP4 · máximo 100 MB · hasta 2 minutos</p>
     </div>
-    <p v-if="!modelReady" class="banner" role="status">La inferencia requiere que la API tenga un checkpoint entrenado cargado.</p>
+    <ModePicker :modes="modes" :model-value="mode" group="single-mode" @update:model-value="emit('update:mode', $event)" />
+    <p v-if="!modelReady" class="banner" role="status"><strong>Modelo no disponible.</strong> {{ modeDetail || 'No hay checkpoint y métricas de prueba para este escenario.' }}</p>
     <UploadDropzone :disabled="loading || !modelReady" @select="analyze" />
     <WebcamRecorder :disabled="loading || !modelReady" @select="analyze" />
     <div v-if="loading" class="card loading-line" role="status"><span class="spinner" /> Analizando {{ file?.name }}…</div>
@@ -95,11 +124,13 @@ function seek(time) {
       <div class="analysis-grid">
         <video ref="video" :src="videoUrl" controls @timeupdate="currentTime = $event.target.currentTime" />
         <section class="card result-card" :class="verdict.verdict">
-          <p class="eyebrow">Veredicto con umbral {{ threshold.toFixed(2) }}</p>
-          <strong class="verdict-word">{{ verdict.verdict === 'suspicious' ? 'SOSPECHOSO' : 'NORMAL' }}</strong>
-          <p class="muted">Probabilidad máxima de Sospechoso: {{ (suspiciousProbability * 100).toFixed(1) }} %</p>
+          <p class="eyebrow">{{ modes.find(item => item.id === result.mode)?.label }} · umbral {{ threshold.toFixed(2) }}</p>
+          <strong class="verdict-word">{{ verdict.verdict === 'suspicious' ? 'REVISAR TRAMO' : 'SIN TRAMO PRIORITARIO' }}</strong>
+          <p v-if="verdict.verdict === 'suspicious'" class="muted">Motivo: {{ result.reason }}</p>
+          <p class="muted">Puntuación máxima del modo: {{ (suspiciousProbability * 100).toFixed(1) }} %</p>
           <div class="probability-track"><span :style="{ width: (suspiciousProbability * 100) + '%' }" /></div>
           <p class="muted">Confianza del veredicto: {{ (verdict.confidence * 100).toFixed(1) }} %</p>
+          <button v-if="critical" type="button" class="button" @click="reviewCritical">Revisar tramo {{ critical.start.toFixed(1) }}–{{ critical.end.toFixed(1) }} s</button>
         </section>
       </div>
       <VerdictCard :segments="result.segments" :threshold="threshold" :clip-url="result.clip_url" />

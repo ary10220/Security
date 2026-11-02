@@ -34,7 +34,7 @@ from torch import nn
 from torch.utils.data import DataLoader, Subset
 from tqdm import tqdm
 
-from src.models.dataset import VideoDataset, split_by_source
+from src.models.dataset import VideoDataset, source_id, split_by_source
 from src.models.metrics import compute_metrics, pr_curve
 from src.models.model import (
     DEFAULT_HYPERPARAMS,
@@ -63,6 +63,8 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Entrena un detector de violencia.")
     parser.add_argument("--model", choices=MODEL_NAMES, default="mobilenet_lstm",
                         help="Arquitectura a entrenar.")
+    parser.add_argument("--mode", choices=("peleas", "interior", "exterior"),
+                        default="peleas", help="Modo de clasificación y artefactos de salida.")
     parser.add_argument("--dataset-path", type=str, required=True,
                         help="Carpeta raiz del dataset (train/ val/ clase/ *.mp4).")
     parser.add_argument("--epochs", type=int,
@@ -186,6 +188,10 @@ def _run_epoch(
 def main() -> int:
     """Punto de entrada: arma datasets, modelo y corre el loop de entrenamiento."""
     args = parse_args()
+    if args.mode != "peleas" and args.model != "mobilenet_lstm":
+        raise ValueError("Los modos de riesgo usan la arquitectura mobilenet_lstm.")
+    if args.mode != "peleas" and args.smoke_test:
+        raise ValueError("El smoke test no produce métricas publicables para modos de riesgo.")
     set_seed(args.seed)
 
     # Autodetect del device: si no se pide uno, usar GPU si existe.
@@ -195,36 +201,51 @@ def main() -> int:
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # Construccion del modelo. Los stubs de Lorgio (baseline, resnet_lstm)
-    # lanzan NotImplementedError: lo convertimos en un aviso claro para que
-    # train.py no reviente mientras Lorgio no cierra su parte.
-    try:
-        model = build_model(args.model, pretrained=True).to(device)
-    except NotImplementedError as exc:
-        logger.warning(
-            "Modelo '%s' todavia no esta implementado: %s. Saltando entrenamiento.",
-            args.model, exc,
-        )
-        return 0
-
-    logger.info("Modelo '%s' en %s", args.model, device)
     logger.info("Dataset: %s", args.dataset_path)
 
     # Dos datasets sobre la misma carpeta train/: el val interno tiene que
     # evaluarse sin augmentation, igual que el test. Los samples salen en el
     # mismo orden (carpetas y archivos ordenados), asi que los indices del
     # split valen para los dos.
-    train_dataset = VideoDataset(args.dataset_path, split="train")
+    label_map = {"Normal": 0, "Riesgo": 1} if args.mode != "peleas" else None
+    train_dataset = VideoDataset(args.dataset_path, split="train", label_map=label_map)
     internal_dataset = VideoDataset(
         args.dataset_path, split="train",
         preprocessor=VideoPreprocessor(train=False),
+        label_map=label_map,
     )
     # split="val" crea su preprocessor sin augmentation (train=False).
-    test_dataset = VideoDataset(args.dataset_path, split="val")
+    test_dataset = VideoDataset(args.dataset_path, split="val", label_map=label_map)
+
+    if args.mode != "peleas":
+        # En los modos nuevos no se permite el fallback por clip de RWF-2000:
+        # el test y el val interno deben contener fuentes completas distintas.
+        train_sources = {source_id(path) for path, _ in train_dataset.samples}
+        test_sources = {source_id(path) for path, _ in test_dataset.samples}
+        if train_sources & test_sources:
+            raise ValueError("La misma fuente aparece en train y test.")
+        for label in (0, 1):
+            sources = {source_id(path) for path, y in train_dataset.samples if y == label}
+            test_count = sum(y == label for _, y in test_dataset.samples)
+            if len(sources) < 2 or test_count == 0:
+                raise ValueError("Cada clase necesita al menos 2 fuentes train y 1 clip test.")
 
     train_idx, val_idx = split_by_source(
         train_dataset.samples, INTERNAL_VAL_FRACTION, args.seed,
     )
+    if args.mode != "peleas":
+        for indices in (train_idx, val_idx):
+            if {train_dataset.samples[i][1] for i in indices} != {0, 1}:
+                raise ValueError("Train y val interno necesitan ambas clases.")
+
+    # Se construye el modelo solo después de validar fuentes y etiquetas para
+    # evitar descargas y entrenamiento sobre datos mezclados o incompletos.
+    try:
+        model = build_model(args.model, pretrained=True).to(device)
+    except NotImplementedError as exc:
+        logger.warning("Modelo '%s' no implementado: %s.", args.model, exc)
+        return 0
+    logger.info("Modelo '%s' en %s", args.model, device)
     train_subset = Subset(train_dataset, train_idx)
     val_subset = Subset(internal_dataset, val_idx)
     test_subset = test_dataset
@@ -263,9 +284,10 @@ def main() -> int:
     best_f1 = -1.0
     best_epoch = 0
     best_pr_curve = None
-    checkpoint_path = output_dir / f"model_{args.model}.pt"
-    metrics_path = output_dir / f"metrics_{args.model}.json"
-    internal_metrics_path = output_dir / f"metrics_{args.model}_internal_val.json"
+    artifact = args.model if args.mode == "peleas" else args.mode
+    checkpoint_path = output_dir / f"model_{artifact}.pt"
+    metrics_path = output_dir / f"metrics_{artifact}.json"
+    internal_metrics_path = output_dir / f"metrics_{artifact}_internal_val.json"
 
     history: list[dict] = []
     t0 = time.time()
@@ -305,7 +327,8 @@ def main() -> int:
             except ValueError:
                 # Val sin ejemplos de la clase 1 (p.ej. smoke test muy chico).
                 best_pr_curve = None
-            save_checkpoint(model, args.model, checkpoint_path)
+            save_checkpoint(model, args.model, checkpoint_path,
+                            mode=args.mode if args.mode != "peleas" else None)
             logger.info("Nuevo mejor F1 macro: %.4f. Checkpoint en %s",
                         best_f1, checkpoint_path)
 
@@ -321,6 +344,7 @@ def main() -> int:
     final_metrics = history[-1] if history else {}
     internal_report = {
         "model": args.model,
+        "mode": args.mode,
         "device": str(device),
         "evaluated_on": "val interno (15 % de train/, por fuente)",
         "epochs_run": len(history),
@@ -344,6 +368,15 @@ def main() -> int:
     test_seconds = time.time() - t_test
     test_metrics = compute_metrics(y_true, y_pred, class_names=class_names)
     test_metrics["test_loss"] = test_loss
+    errors = [
+        {"clip": str(path.relative_to(test_dataset.split_dir)),
+         "source_id": source_id(path),
+         "type": "false_alert" if actual == 0 else "missed_event",
+         "score": round(float(score), 4)}
+        for (path, _), actual, predicted, score in zip(
+            test_dataset.samples, y_true, y_pred, y_score
+        ) if actual != predicted
+    ]
     try:
         test_pr_curve = pr_curve(y_true, y_score)
     except ValueError:
@@ -354,6 +387,7 @@ def main() -> int:
     # el video: es lo que tarda un clip de punta a punta.
     report = {
         "model": args.model,
+        "mode": args.mode,
         "device": str(device),
         "evaluated_on": "test (val/ completo, no usado al entrenar)",
         "n_test": len(y_true),
@@ -364,6 +398,9 @@ def main() -> int:
         "inference_ms": round(1000 * test_seconds / max(len(y_true), 1), 1),
         "pr_curve": test_pr_curve,
         "train_seconds": elapsed,
+        "false_alerts": test_metrics["confusion_matrix"][0][1],
+        "positive_clip_recall": test_metrics["recall_per_class"][class_names[1]],
+        "test_errors": errors,
         "final": test_metrics,
     }
     metrics_path.write_text(json.dumps(report, indent=2))

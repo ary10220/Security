@@ -18,7 +18,10 @@ const view = ref(readView())
 const inStudio = computed(() => tabs.some(([key]) => view.value === key))
 const visited = ref(inStudio.value)
 const health = ref(null)
-const ready = computed(() => health.value?.model_loaded === true)
+const modes = ref([])
+const selectedMode = ref('peleas')
+const currentMode = computed(() => modes.value.find(item => item.id === selectedMode.value))
+const ready = computed(() => currentMode.value?.available === true)
 const currentName = computed(() => tabs.find(([key]) => key === view.value)?.[1])
 
 // El hash permite volver a la portada con Atrás y compartir cada herramienta.
@@ -33,7 +36,10 @@ async function navigate() {
 onMounted(async () => {
   window.addEventListener('hashchange', navigate)
   navigate()
-  try { health.value = await useApi().health() } catch { health.value = null }
+  const api = useApi()
+  const [healthResult, modesResult] = await Promise.allSettled([api.health(), api.modes()])
+  health.value = healthResult.status === 'fulfilled' ? healthResult.value : null
+  modes.value = modesResult.status === 'fulfilled' ? modesResult.value : []
 })
 onUnmounted(() => window.removeEventListener('hashchange', navigate))
 </script>
@@ -49,11 +55,11 @@ onUnmounted(() => window.removeEventListener('hashchange', navigate))
     <div v-if="visited" v-show="inStudio" class="studio rail">
       <a class="back-link" href="#inicio">← Volver a Vigía</a>
       <div class="studio-title"><div><span class="folio">CONSOLA / VIDEO</span><h1>{{ currentName }}</h1></div>
-        <div class="status-chip" :class="{ ready }" role="status"><strong>{{ health?.model || 'API' }}</strong><span>{{ ready ? 'Modelo cargado' : health ? 'Sin checkpoint' : 'Sin conexión' }}</span></div>
+        <div class="status-chip" :class="{ ready }" role="status"><strong>{{ currentMode?.label || 'API' }}</strong><span>{{ ready ? 'Modelo cargado' : health ? 'Modelo no disponible' : 'Sin conexión' }}</span></div>
       </div>
       <nav class="app-tabs" aria-label="Herramientas"><a v-for="([key,label], index) in tabs" :key="key" :href="'#'+key" :aria-current="view === key ? 'page' : undefined"><small>0{{ index+1 }}</small>{{ label }}</a></nav>
-      <AnalizarTab v-show="view === 'analizar'" :model-ready="ready"/>
-      <LoteTab v-show="view === 'lote'" :model-ready="ready"/>
+      <AnalizarTab v-show="view === 'analizar'" v-model:mode="selectedMode" :modes="modes" :model-ready="ready" :mode-detail="currentMode?.detail || ''"/>
+      <LoteTab v-show="view === 'lote'" v-model:mode="selectedMode" :modes="modes" :model-ready="ready" :mode-detail="currentMode?.detail || ''"/>
       <MetricasTab v-show="view === 'metricas'"/><DatosTab v-show="view === 'datos'"/><HistorialTab v-show="view === 'historial'"/>
     </div>
   </main>
