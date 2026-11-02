@@ -103,7 +103,63 @@ final. Se registrará aquí cuando se haga.
 
 ## P2 — Lorgio
 
-- (pendiente)
+Fase de exploración (día 2, PR #5, commit `996bbe8`):
+
+- **`notebooks/01_explore_dataset.ipynb`:** lo ejecuté con un clip real de
+  RWF-2000 (`_2RYnSFPD_U_0.avi`: 1280x720, 30 fps, 150 frames, 5 s) y dejé las
+  salidas guardadas. Agregué la cita del dataset y la validación
+  `cap.isOpened()`. El muestreo de 16 frames y la grilla son de Ariany (commit
+  `143fa3f`).
+
+Fase de modelo (día 5, PR #17, en pareja con Diego, que dejó `ViolenceDetector`,
+los stubs y los tests):
+
+- **`src/models/model.py`:**
+  - Clases base `_FrameBackbone` y `_LSTMDetector` (commit `82ba657`): moví ahí
+    el cuerpo de `ViolenceDetector`, como sugería el TODO de Diego. Por fuera no
+    cambia: mismas claves del `state_dict` y salida idéntica con los mismos pesos.
+  - `FrameBaseline` (commit `d0d813b`): el mismo MobileNetV2 congelado y una capa
+    lineal sobre el frame del medio, para medir si la LSTM aporta.
+  - `ResNetDetector` (commit `dc9d216`): ResNet50 sin `avgpool` ni `fc`, con la
+    misma LSTM y la misma cabeza. `build_model` crea los 3 modelos.
+  - `save_checkpoint` y `load_checkpoint` (commit `81fd9c1`): guardan el nombre
+    del modelo junto a los pesos. Cargan con `map_location="cpu"` y
+    `weights_only=True`.
+- **`src/models/train.py`:** guarda el mejor epoch con `save_checkpoint`.
+- **`tests/test_model.py`:** quité los skips de mi parte y agregué 2 tests de
+  checkpoints. También activé la prueba con pesos de ImageNet (commit `88f0de8`).
+- **Verificación con pesos reales:** los 3 modelos dan logits `(1, 2)` finitos
+  sobre un clip de RWF-2000. El smoke test de `train.py` corre con los 3 y sus
+  checkpoints se recargan como la clase correcta.
+- **`DEFAULT_HYPERPARAMS`:** se mantienen sin cambios. Las métricas de
+  `artifacts/` usan los valores de `scripts/train_local_cpu.py`.
+
+Revisión del EDA (`notebooks/02_eda_datasets.ipynb` y
+`notebooks/03_comparar_frames.ipynb`, de Grageda):
+
+- **Alcance:** la revisión la hizo Claude Code a pedido mío: leyó el código, las
+  conclusiones y las salidas guardadas, y corrió los tests. Los notebooks no se
+  volvieron a ejecutar porque no tengo los videos.
+- **Sin problemas:** `threshold_shortcut` elige el umbral en un conjunto y lo
+  evalúa en otro. En el notebook 02, los conteos, las duraciones, las
+  resoluciones, los atajos y las fuentes de las conclusiones coinciden con las
+  salidas impresas. El rango de fps de Real Life solo se ve en una figura, así
+  que no se pudo confirmar. No hay rutas absolutas guardadas.
+- **Detalles a corregir:**
+  - La sección de Grageda dice fps 81,7 %; el notebook 02 mide 81,3 %.
+  - El notebook 03 dice que pasar de 16 a 32 frames multiplica el costo por ~2 y
+    que crece linealmente. Su salida da 2,46 veces. La recomendación de usar 16
+    no cambia.
+- **Complemento:** los modelos no superan a la regla de metadatos. `alto > 251`
+  acierta 75 % en los 400 clips de `val/`; `mobilenet_lstm` acierta 64 % y
+  `mobilenet_baseline` 66 % en 100 clips. Los clips no son los mismos y los
+  intervalos al 95 % se solapan (54-73 % y 56-75 % contra 71-79 %), así que no
+  prueba que sean peores, pero tampoco hay evidencia de que sean mejores.
+
+Hecho con asistencia de Claude Code.
+
+Pendiente de mi parte: entrenar y evaluar `resnet_lstm` con los mismos clips que
+los otros dos modelos (la copia de Ariany, de 1348 y 333 clips).
 
 ## P3 — Diego
 
