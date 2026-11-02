@@ -23,15 +23,18 @@ export function useApi() {
   // Se envían FormData sin Content-Type manual para que el navegador agregue el boundary.
   return {
     health: () => request('/health'),
+    modes: () => request('/modes'),
     metrics: (model) => request(`/metrics?model=${encodeURIComponent(model)}`),
-    predict: (file) => {
+    predict: (file, mode = 'peleas') => {
       const body = new FormData()
       body.append('file', file)
+      body.append('mode', mode)
       return request('/predict', { method: 'POST', body })
     },
-    predictBatch: (files) => {
+    predictBatch: (files, mode = 'peleas') => {
       const body = new FormData()
       for (const file of files) body.append('files', file)
+      body.append('mode', mode)
       return request('/predict/batch', { method: 'POST', body })
     },
     preprocessingDemo: (videoId) =>

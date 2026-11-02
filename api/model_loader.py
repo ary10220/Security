@@ -17,7 +17,7 @@ from pathlib import Path
 import torch
 from torch import nn
 
-from src.models.model import build_model, load_checkpoint
+from src.models.model import load_checkpoint
 
 logger = logging.getLogger(__name__)
 
@@ -40,10 +40,10 @@ class LoadedModel:
         model: red en modo eval, en `device`.
         name: nombre del modelo (uno de MODEL_NAMES).
         device: "cpu" o "cuda".
-        from_checkpoint: False si no habia checkpoint y se usan pesos random.
+        from_checkpoint: False si falta un checkpoint valido.
     """
 
-    model: nn.Module
+    model: nn.Module | None
     name: str
     device: str
     from_checkpoint: bool
@@ -56,16 +56,15 @@ def checkpoint_path(name: str, artifacts_dir: Path | None = None) -> Path:
 
 @lru_cache(maxsize=None)
 def load_model(name: str = DEFAULT_MODEL,
-               artifacts_dir: Path | None = None) -> LoadedModel:
+               artifacts_dir: Path | None = None,
+               expected_mode: str | None = None) -> LoadedModel:
     """Devuelve el modelo `name`, cargandolo solo la primera vez.
 
     lru_cache hace de singleton: cada request reutiliza la misma instancia en
     vez de leer el .pt de disco (17-95 MB) en cada prediccion.
 
-    Si no existe el checkpoint, se avisa y se usan pesos random: asi la API y
-    el frontend se pueden desarrollar antes de tener un modelo entrenado.
-    /health lo informa con model_loaded=false, para que nadie confunda esas
-    predicciones con resultados reales.
+    Si no existe o no corresponde al modo, no se crea un modelo. Nunca se
+    hacen predicciones con pesos aleatorios.
 
     Args:
         name: uno de MODEL_NAMES.
@@ -79,17 +78,18 @@ def load_model(name: str = DEFAULT_MODEL,
     if path.is_file():
         logger.info("Cargando checkpoint %s en %s", path, device)
         try:
+            # El modo en los pesos evita usar un checkpoint de peleas como si
+            # hubiera aprendido eventos de riesgo de interior o exterior.
+            saved = torch.load(path, map_location="cpu", weights_only=True)
+            if expected_mode is not None and saved.get("mode") != expected_mode:
+                raise ValueError("El checkpoint no pertenece al modo solicitado.")
+            if expected_mode is not None and saved.get("model_name") != "mobilenet_lstm":
+                raise ValueError("Arquitectura inesperada para el modo de riesgo.")
             return LoadedModel(load_checkpoint(path, device=device), name, device, True)
-        except (KeyError, RuntimeError) as exc:
+        except (KeyError, RuntimeError, ValueError, TypeError) as exc:
             # Un .pt de antes de save_checkpoint (sin "model_name") o de otra
             # arquitectura no debe tirar la API: se avisa y se sigue sin el.
             logger.warning("No se pudo cargar %s (%r).", path, exc)
 
-    logger.warning(
-        "Sin checkpoint valido en %s: se usan pesos RANDOM. Las predicciones "
-        "no significan nada hasta entrenar con train.py.", path,
-    )
-    # pretrained=False: sin checkpoint no vale la pena descargar ImageNet,
-    # y asi la API arranca sin internet.
-    model = build_model(name, pretrained=False).to(device).eval()
-    return LoadedModel(model, name, device, False)
+    logger.warning("Modelo no disponible: falta checkpoint valido en %s.", path)
+    return LoadedModel(None, name, device, False)

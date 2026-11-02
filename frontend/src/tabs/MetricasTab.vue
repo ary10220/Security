@@ -4,7 +4,7 @@ import PrCurve from '../components/PrCurve.vue'
 import { useApi } from '../composables/useApi.js'
 
 const api = useApi()
-const modelNames = ['mobilenet_lstm', 'mobilenet_baseline', 'resnet_lstm']
+const modelNames = ['mobilenet_lstm', 'mobilenet_baseline', 'resnet_lstm', 'interior', 'exterior']
 const reports = ref({})
 const selected = ref('mobilenet_lstm')
 const loading = ref(true)
@@ -12,7 +12,14 @@ const error = ref('')
 const available = computed(() => modelNames.filter((name) => reports.value[name]))
 const report = computed(() => reports.value[selected.value])
 const final = computed(() => report.value?.final)
-const classLabels = { NonFight: 'Normal', Fight: 'Sospechoso' }
+const classLabels = { NonFight: 'Sin pelea', Fight: 'Pelea', Normal: 'Normal', Riesgo: 'Riesgo observable' }
+const displayName = {
+  mobilenet_lstm: 'Peleas · MobileNet + BiLSTM',
+  mobilenet_baseline: 'Peleas · MobileNet un frame',
+  resnet_lstm: 'Peleas · ResNet + BiLSTM',
+  interior: 'Interior / joyería',
+  exterior: 'Exterior',
+}
 const pct = (value) => value == null ? 'Sin medir' : `${(value * 100).toFixed(1)} %`
 
 onMounted(async () => {
@@ -33,19 +40,21 @@ onMounted(async () => {
     <div class="section-heading">
       <div><p class="eyebrow">Evaluación del modelo</p><h2>Métricas de test</h2></div>
       <label v-if="available.length" class="model-picker">Modelo
-        <select v-model="selected"><option v-for="name in available" :key="name" :value="name">{{ name }}</option></select>
+        <select v-model="selected"><option v-for="name in available" :key="name" :value="name">{{ displayName[name] }}</option></select>
       </label>
     </div>
     <p v-if="loading" class="muted">Cargando métricas…</p>
     <p v-if="error" class="error" role="alert">{{ error }}</p>
     <template v-if="report && final">
-      <p class="muted">Evaluación: {{ report.evaluated_on }}. ResNet LSTM se mostrará cuando exista su JSON de test.</p>
+      <p class="muted">{{ report.mode === 'interior' || report.mode === 'exterior' ? 'Evaluación específica del escenario' : 'Evaluación de peleas en RWF-2000' }} · {{ report.evaluated_on }}.</p>
+      <p v-if="!reports.interior || !reports.exterior" class="muted">Interior / joyería: {{ reports.interior ? 'evaluado' : 'Modelo no disponible' }} · Exterior: {{ reports.exterior ? 'evaluado' : 'Modelo no disponible' }}.</p>
       <div class="metrics-summary">
         <div class="card stat"><span>Accuracy</span><strong>{{ pct(final.accuracy) }}</strong></div>
         <div class="card stat"><span>F1 macro</span><strong>{{ pct(final.f1_macro) }}</strong></div>
         <div class="card stat"><span>AP</span><strong>{{ pct(report.pr_curve?.average_precision) }}</strong></div>
         <div class="card stat"><span>Tiempo / clip</span><strong>{{ report.inference_ms == null ? 'Sin medir' : report.inference_ms.toFixed(1) + ' ms' }}</strong></div>
         <div class="card stat"><span>Tamaño</span><strong>{{ report.model_size_mb == null ? 'Sin medir' : report.model_size_mb + ' MB' }}</strong></div>
+        <div v-if="report.mode === 'interior' || report.mode === 'exterior'" class="card stat"><span>Falsas alertas en test</span><strong>{{ report.false_alerts ?? 'Sin medir' }}</strong></div>
       </div>
       <div class="metric-grid">
         <section class="card">
@@ -78,6 +87,10 @@ onMounted(async () => {
         <h3>Curva precisión–recall</h3>
         <PrCurve :curve="report.pr_curve" :threshold="0.5" />
       </div>
+      <section v-if="report.test_errors?.length" class="card">
+        <h3>Ejemplos de errores en test</h3>
+        <ul><li v-for="item in report.test_errors.slice(0, 20)" :key="item.clip">{{ item.type === 'false_alert' ? 'Falsa alerta' : 'Evento omitido' }} · {{ item.clip }} · puntuación {{ pct(item.score) }}</li></ul>
+      </section>
     </template>
   </section>
 </template>

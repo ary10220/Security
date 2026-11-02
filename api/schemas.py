@@ -16,7 +16,7 @@ class HealthResponse(BaseModel):
     """Estado de la API y del modelo cargado."""
 
     status: Literal["ok"]
-    # False = no habia checkpoint y se usan pesos random (ver model_loader).
+    # False = no hay checkpoint valido; la API no ofrece inferencia.
     model_loaded: bool
     device: Literal["cpu", "cuda"]
     model: str
@@ -65,6 +65,8 @@ class PredictResponse(BaseModel):
     threshold: float
     # Campos del contrato del frontend: `segments` es el mismo timeline.
     model: str
+    mode: str
+    reason: str
     segment_seconds: float
     default_threshold: float
     segments: list[TimelineSegment]
