@@ -66,7 +66,7 @@ Ver el plan compartido. Las carpetas principales son `data/`, `src/preprocessing
 - P3 — Diego
 - P4 — Grageda
 
-## Estado del proyecto (actualizado el 27 oct 2026)
+## Estado del proyecto (actualizado el 1 nov 2026)
 
 Resumen para quien retome el trabajo con Claude. Es un estado, no un plan:
 si algo cambia, actualizar esta sección en el mismo PR.
@@ -83,12 +83,16 @@ si algo cambia, actualizar esta sección en el mismo PR.
   flip, recorte y jitter una vez por clip.
 - **EDA (Grageda):** `src/preprocessing/dataset_metadata.py` (metadatos de
   videos y `threshold_shortcut`), `notebooks/02_eda_datasets.ipynb` y
-  `notebooks/03_comparar_frames.ipynb`. La parte de Lorgio (revisar y
-  complementar) sigue pendiente.
+  `notebooks/03_comparar_frames.ipynb`. La revisión y el complemento de Lorgio
+  están en `CONTRIBUCIONES.md`.
+- **Modelos, API y frontend:** `src/models/`, `api/` y `frontend/` implementados.
+- **Entrenamiento:** `mobilenet_lstm` y `mobilenet_baseline` evaluados en CPU con
+  `scripts/train_local_cpu.py`, sobre una copia parcial de RWF-2000 (1348 clips
+  en `train/` y 333 en `val/`). Resultados en `docs/informe.md`.
 
 ### Pendiente
-- `src/models/` (modelo MobileNetV2 + BiLSTM), entrenamiento (`train.py`,
-  métricas, matriz de confusión, curva PR), `api/` y `frontend/`: sin empezar.
+- `resnet_lstm`: entrenarlo y evaluarlo con esa misma copia. La semilla elige los
+  clips según la lista de archivos, así que con otra copia salen otros clips.
 - Comparación de **exactitud** entre 8, 16 y 32 frames: requiere entrenar con
   cada valor; los notebooks solo miden cobertura y costo.
 

@@ -13,7 +13,7 @@ y una LSTM bidireccional que mira la secuencia de 16 frames.
 Reparto de este archivo (fase 3 del plan, Lorgio + Diego):
     Diego  : ViolenceDetector (esta clase) y sus tests.
     Lorgio : variantes para la comparacion, fabrica de modelos y guardado
-             de checkpoints. Buscar las marcas TODO(Lorgio).
+             de checkpoints.
 """
 
 from pathlib import Path
@@ -257,9 +257,10 @@ class ViolenceDetector(_LSTMDetector):
 # Grageda eligen el modelo con este argumento, asi que no cambiar los nombres.
 MODEL_NAMES = ("mobilenet_lstm", "resnet_lstm", "mobilenet_baseline")
 
-# TODO(Lorgio): confirmar o ajustar estos valores (tabla "Hiperparametros de
-# entrenamiento" del plan). Se dejan los del plan para que train.py pueda
-# arrancar; si cambias alguno, anota el por que en CONTRIBUCIONES.md.
+# Valores por defecto de train.py (tabla "Hiperparametros de entrenamiento"
+# del plan). Las metricas publicadas en artifacts/ NO salieron de estos valores:
+# la corrida en CPU usa los suyos en scripts/train_local_cpu.py (batch 4, 5
+# epocas, paciencia 2) porque con el dataset entero una epoca tarda horas.
 DEFAULT_HYPERPARAMS = {
     "optimizer": "Adam",
     "lr": 1e-4,  # bajo porque la LSTM es la que aprende; backbone congelado
