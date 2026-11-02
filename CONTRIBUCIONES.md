@@ -182,9 +182,46 @@ Fase de frontend (en pareja con Grageda, que armó la interfaz en el PR #15):
   `frontend/src/lib/webcam.test.js`.
 - Hecho con asistencia de Claude Code (declarar en el informe).
 
-Pendiente de mi parte: prueba de punta a punta con la API y el modelo
-entrenado (`.pt`) cuando el equipo lo comparta; reporte PDF del timeline
-(opcional, el clip depende de `clip_url`, que la API aún no implementa).
+Fase de integración (1 nov):
+
+- **Conversión de videos:** el frontend solo acepta `.mp4` y RWF-2000 viene
+  en `.avi`, así que convertí 972 de los 2000 clips con `ffmpeg` (H.264,
+  `yuv420p`, sin audio): los 800 de `Train_Fight` y 172 de `Train_NonFight`.
+  Los `.avi` originales no se tocaron y los `.mp4` quedaron fuera del repo.
+- **Script `scripts/eval_test_por_clip.py` (commit `fc02cc2`, rama
+  `feat/eval-test-por-clip`):** reconstruye el mismo test de
+  `train_local_cpu.py` (semilla 42) y guarda, por clip, el video, la etiqueta
+  real, la predicción y el score. Sirve para identificar qué clips falla el
+  modelo en el informe. No entrena ni modifica el checkpoint.
+- **Hallazgo sobre los datos:** el log de la corrida de Ariany indica 1348
+  clips en `train/` y 333 en `val/`; mi copia tiene 1600 y 400. Con listas
+  distintas, la semilla 42 no muestrea los mismos 100 clips de test, así que
+  mi evaluación no es comparable clip a clip con la suya.
+- **Prueba de integración con la pestaña Lote** (API y frontend locales, modelo
+  `mobilenet_lstm` en `artifacts/`): 30 clips (3 lotes de 10) dieron 22
+  aciertos (73 %), y 100 clips (5 lotes de 20, 10 peleas y 10 normales cada
+  uno, de `train/`) dieron **64 %**: 36 de 50 peleas detectadas (72 %) y 22 de
+  50 normales marcados como sospechosos (44 %). La matriz,
+  `[[28, 22], [14, 36]]`, coincide con la publicada por Ariany. Con 100 clips
+  el margen de error ronda ±5 puntos (los lotes van de 50 % a 85 %), por lo
+  que esa coincidencia no prueba que sea el mismo modelo.
+- **Procedencia del `.pt`:** el `model_mobilenet_lstm.pt` que usé estaba en mi
+  carpeta `artifacts/` y no sé quién lo entrenó. Sus resultados son
+  consistentes con los de Ariany, pero no está confirmado que sea su
+  checkpoint.
+- **Comportamiento observado:** el modelo casi no deja pasar peleas, pero
+  marca como sospechosa casi la mitad de los videos normales. Un score por
+  encima de 0,5 no basta: la API alerta solo con más de 3 s consecutivos
+  sobre el umbral, y por eso hay peleas con 55-61 % que salen NORMAL.
+  Ejemplos: falso negativo `s-jW4cyavW0_0` (61,1 %); falsos positivos
+  `API3q8TBGu4_0` (70,7 %) y `36zWWHlldS8_0` (69,5 %).
+- Hecho con asistencia de Claude Code (declarar en el informe).
+
+Pendiente de mi parte: los 3 ejemplos de error del informe, que deben salir
+del checkpoint y del dataset de Ariany (corriendo `eval_test_por_clip.py` en
+su máquina) para que cuadren con sus cifras; abrir el PR de la rama
+`feat/eval-test-por-clip`; reporte PDF del timeline (opcional, el clip
+depende de `clip_url`, que la API aún no implementa).
 
 ## P4 — Grageda
 
