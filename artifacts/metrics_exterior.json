@@ -1,0 +1,121 @@
+{
+  "model": "mobilenet_lstm",
+  "mode": "exterior",
+  "device": "cuda",
+  "evaluated_on": "test (val/ completo, no usado al entrenar)",
+  "n_test": 13,
+  "class_names": [
+    "Normal",
+    "Riesgo"
+  ],
+  "best_epoch": 8,
+  "epochs_run": 13,
+  "internal_val_f1_macro": 0.7333333333333334,
+  "inference_ms": 50.7,
+  "pr_curve": {
+    "precision": [
+      0.6153846153846154,
+      0.6666666666666666,
+      0.7272727272727273,
+      0.8,
+      0.7777777777777778,
+      0.75,
+      0.7142857142857143,
+      0.6666666666666666,
+      0.6,
+      0.5,
+      0.3333333333333333,
+      0.5,
+      1.0
+    ],
+    "recall": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      0.875,
+      0.75,
+      0.625,
+      0.5,
+      0.375,
+      0.25,
+      0.125,
+      0.125,
+      0.125
+    ],
+    "thresholds": [
+      0.4169694185256958,
+      0.4312296509742737,
+      0.44108033180236816,
+      0.4919920265674591,
+      0.4934385120868683,
+      0.511711597442627,
+      0.5151479244232178,
+      0.5259705781936646,
+      0.5349177718162537,
+      0.5440555214881897,
+      0.5448176264762878,
+      0.563920795917511,
+      0.5679423809051514
+    ],
+    "average_precision": 0.7260912698412698,
+    "best_f1_threshold": 0.4919920265674591,
+    "best_f1": 0.888888888888889
+  },
+  "train_seconds": 19.792875051498413,
+  "false_alerts": 2,
+  "positive_clip_recall": 0.75,
+  "test_errors": [
+    {
+      "clip": "Normal/a1027333758f116a_0.mp4",
+      "source_id": "a1027333758f116a",
+      "type": "false_alert",
+      "score": 0.5639
+    },
+    {
+      "clip": "Normal/a1027333758f116a_1.mp4",
+      "source_id": "a1027333758f116a",
+      "type": "false_alert",
+      "score": 0.5448
+    },
+    {
+      "clip": "Riesgo/347bc129378c8a83_0.mp4",
+      "source_id": "347bc129378c8a83",
+      "type": "missed_event",
+      "score": 0.492
+    },
+    {
+      "clip": "Riesgo/347bc129378c8a83_1.mp4",
+      "source_id": "347bc129378c8a83",
+      "type": "missed_event",
+      "score": 0.4934
+    }
+  ],
+  "final": {
+    "accuracy": 0.6923076923076923,
+    "f1_macro": 0.675,
+    "f1_per_class": {
+      "Normal": 0.6,
+      "Riesgo": 0.75
+    },
+    "precision_per_class": {
+      "Normal": 0.6,
+      "Riesgo": 0.75
+    },
+    "recall_per_class": {
+      "Normal": 0.6,
+      "Riesgo": 0.75
+    },
+    "confusion_matrix": [
+      [
+        3,
+        2
+      ],
+      [
+        2,
+        6
+      ]
+    ],
+    "test_loss": 0.6533899123852069
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "mode": "exterior",
+  "protocol": "un evento anotado por clip positivo recortado",
+  "n_test_clips": 13,
+  "n_events": 8,
+  "event_recall": 0.75,
+  "false_alerts": 2,
+  "confusion_matrix": [
+    [
+      3,
+      2
+    ],
+    [
+      2,
+      6
+    ]
+  ],
+  "errors": [
+    {
+      "clip": "exterior/val/Riesgo/347bc129378c8a83_0.mp4",
+      "source_id": "Assault011_x264",
+      "type": "missed_event",
+      "peak_score": 0.4907,
+      "notes": "Assault; ambiente exterior; intervalo de anotacion ASHEN"
+    },
+    {
+      "clip": "exterior/val/Riesgo/347bc129378c8a83_1.mp4",
+      "source_id": "Assault011_x264",
+      "type": "missed_event",
+      "peak_score": 0.5042,
+      "notes": "Assault; ambiente exterior; intervalo de anotacion ASHEN"
+    },
+    {
+      "clip": "exterior/val/Normal/a1027333758f116a_0.mp4",
+      "source_id": "Normal_Videos337_x264",
+      "type": "false_alert",
+      "peak_score": 0.5777,
+      "notes": "Normal; ambiente exterior"
+    },
+    {
+      "clip": "exterior/val/Normal/a1027333758f116a_1.mp4",
+      "source_id": "Normal_Videos337_x264",
+      "type": "false_alert",
+      "peak_score": 0.5517,
+      "notes": "Normal; ambiente exterior"
+    }
+  ]
+}

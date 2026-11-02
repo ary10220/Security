@@ -66,7 +66,7 @@ Ver el plan compartido. Las carpetas principales son `data/`, `src/preprocessing
 - P3 — Diego
 - P4 — Grageda
 
-## Estado del proyecto (actualizado el 1 nov 2026)
+## Estado del proyecto (actualizado el 2 nov 2026)
 
 Resumen para quien retome el trabajo con Claude. Es un estado, no un plan:
 si algo cambia, actualizar esta sección en el mismo PR.
@@ -86,13 +86,30 @@ si algo cambia, actualizar esta sección en el mismo PR.
   `notebooks/03_comparar_frames.ipynb`. La revisión y el complemento de Lorgio
   están en `CONTRIBUCIONES.md`.
 - **Modelos, API y frontend:** `src/models/`, `api/` y `frontend/` implementados.
-- **Entrenamiento:** `mobilenet_lstm` y `mobilenet_baseline` evaluados en CPU con
-  `scripts/train_local_cpu.py`, sobre una copia parcial de RWF-2000 (1348 clips
-  en `train/` y 333 en `val/`). Resultados en `docs/informe.md`.
+- **Entrenamiento:** dos corridas, ambas en `docs/informe.md`. (1) CPU, subset de
+  una copia parcial de RWF-2000, con `scripts/train_local_cpu.py`: 
+  `mobilenet_lstm` y `mobilenet_baseline`, métricas en `artifacts/cpu/`. (2) GPU,
+  RWF-2000 completo, con `src/models/train.py`: los tres modelos, 400 clips de
+  test, 73,0 % / 73,5 % / 74,3 % (`mobilenet_lstm` / `mobilenet_baseline` /
+  `resnet_lstm`), métricas en `artifacts/`. La regla de resolución acierta 75 %
+  en esos mismos clips: ningún modelo la supera.
+- **Modos de riesgo (PR #31):** la API y `train.py --mode` soportan `peleas`,
+  `interior` y `exterior`. Interior y exterior se entrenaron con 78 videos de
+  ASHEN (Robbery + Assault anotados y normales); datos, decisiones y comandos
+  en `data/ashen/`. Test: interior 75,8 % (62 clips de 18 videos), exterior
+  69,2 % (13 clips de 4 videos, casi inconcluso). Ver `docs/informe.md` §5.4.
+- **Predicciones por clip:** `artifacts/predicciones_<modelo>_test.csv` para
+  los 3 modelos de peleas (400 clips) y los 2 modos; la matriz coincide con su
+  JSON de métricas.
 
 ### Pendiente
-- `resnet_lstm`: entrenarlo y evaluarlo con esa misma copia. La semilla elige los
-  clips según la lista de archivos, así que con otra copia salen otros clips.
+- Exterior necesita más videos fuente para que sus métricas digan algo.
+- Medir si los modos de ASHEN aprenden el estilo de imagen de los videos
+  normales en vez del comportamiento (atajo).
+- Grageda: comparación 8/16/32 frames, regla de resolución clip por clip con
+  los CSV de predicciones y revisión de una muestra de `data/ashen/videos.csv`.
+- Decidir qué modelo usa la demo de peleas: hoy carga `mobilenet_lstm`, que es el
+  de menor recall de Fight (0,62) de los tres.
 - Comparación de **exactitud** entre 8, 16 y 32 frames: requiere entrenar con
   cada valor; los notebooks solo miden cobertura y costo.
 

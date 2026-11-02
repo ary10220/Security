@@ -226,6 +226,10 @@ __marimo__/
 artifacts/*.pt
 artifacts/*.pth
 
+# Corrida de entrenamiento en GPU y respaldos locales: checkpoints pesados y
+# logs con barras de progreso. Las metricas que se citan viven en artifacts/.
+artifacts_gpu/
+
 # Metricas por corrida (train.py las escribe en artifacts/metrics_<model>.json):
 # son resultados por ejecucion, no definen el repo. Los informes compartidos
 # van a docs/ o al PR como texto.
