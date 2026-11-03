@@ -2,7 +2,7 @@
 
 **Proyecto académico:** Tópicos y Programación Avanzada, UAGRM  
 **Equipo:** Ariany, Lorgio, Diego y Grageda  
-**Estado de la evaluación:** 2 de noviembre de 2026. Peleas: un subset ejecutado en CPU (1 de noviembre) y RWF-2000 completo ejecutado en GPU (2 de noviembre). Interior y exterior: ASHEN en GPU (2 de noviembre).
+**Estado de la evaluación:** 2 de noviembre de 2026. Peleas: un subset ejecutado en CPU (1 de noviembre; `resnet_lstm`, 2 de noviembre) y RWF-2000 completo ejecutado en GPU (2 de noviembre). Interior y exterior: ASHEN en GPU (2 de noviembre).
 
 ## 1. Problema y objetivo
 
@@ -12,7 +12,7 @@ La inseguridad en Bolivia motiva estudiar herramientas que ayuden a revisar grab
 
 El conjunto principal es [RWF-2000, de Cheng, Cai y Li (ICPR 2020)](https://arxiv.org/abs/1911.05913), formado por 2.000 clips de vigilancia de 5 segundos, 1.000 con pelea y 1.000 sin pelea. La copia usada por el equipo provino del [registro de Zenodo](https://zenodo.org/records/15687512), cuya licencia se registró en `data/README.md` como CC BY 4.0; este trabajo lo usa con fines académicos y cita a los autores. La estructura original comprobada es `train/Train_Fight` (800), `train/Train_NonFight` (800), `val/Val_Fight` (200) y `val/Val_NonFight` (200). No se publica ningún video dentro del repositorio.
 
-El entrenamiento local en CPU tomó **400 clips balanceados**, 200 Fight y 200 NonFight. De 300 clips seleccionados en `train/`, la partición por video fuente dejó **259 para entrenamiento** y **41 para validación interna**. Otros **100 clips de `val/` original** se reservaron como test y no se usaron para escoger épocas. La semilla fue 42. Los clips salieron de una copia parcial de RWF-2000, con 1.348 clips en `train/` y 333 en `val/` según los logs de `artifacts/`; con otra copia, la misma semilla elige otros clips. El test contiene 50 casos de cada clase, como muestran las filas de ambas matrices de confusión. El script `scripts/train_local_cpu.py` guarda el mejor checkpoint según F1 macro de la validación interna y evalúa el test una vez al final. Esta primera corrida solo evaluó `mobilenet_lstm` y `mobilenet_baseline`.
+El entrenamiento local en CPU tomó **400 clips balanceados**, 200 Fight y 200 NonFight. De 300 clips seleccionados en `train/`, la partición por video fuente dejó **259 para entrenamiento** y **41 para validación interna**. Otros **100 clips de `val/` original** se reservaron como test y no se usaron para escoger épocas. La semilla fue 42. Los clips salieron de una copia parcial de RWF-2000, con 1.348 clips en `train/` y 333 en `val/` según los logs de `artifacts/`; con otra copia, la misma semilla elige otros clips. El test contiene 50 casos de cada clase, como muestran las filas de las matrices de confusión. El script `scripts/train_local_cpu.py` guarda el mejor checkpoint según F1 macro de la validación interna y evalúa el test una vez al final. `resnet_lstm` se agregó a esta corrida después, en otra máquina, con la lista de archivos de esa copia: la lista produce los mismos conteos (259, 41 y 100), se descargaron del Drive solo los 400 clips seleccionados y los demás quedaron como archivos vacíos, que el script no lee. Los logs anteriores no guardan los nombres de los clips, así que no está comprobado que la lista sea idéntica a la copia usada el 30 de octubre.
 
 La segunda corrida usó **RWF-2000 completo** con `src/models/train.py` en una GPU NVIDIA RTX 3060 Laptop. Los 1.600 clips de `train/` se dividieron por video fuente (semilla 42): **1.393 para entrenamiento** y **207 para validación interna**, que elige el mejor checkpoint y activa la parada temprana. Los **400 clips de `val/`** (200 Fight y 200 NonFight) son el test, se evaluaron una sola vez al final y no se usaron para escoger épocas. Esta corrida evaluó los tres modelos (`mobilenet_lstm`, `mobilenet_baseline` y `resnet_lstm`) con exactamente la misma partición. Sus resultados no son comparables con los de la primera corrida: cambian el tamaño del entrenamiento (1.393 contra 259 clips) y del test (400 contra 100 clips).
 
@@ -160,9 +160,9 @@ Clip (16, 3, 224, 224)
 
 ### 4.3 Variantes y entrenamiento ejecutado
 
-Para comparar la contribución temporal se entrenó `mobilenet_baseline` con el mismo backbone y una cabeza sin BiLSTM. `resnet_lstm` es la alternativa con backbone ResNet y la misma cabeza BiLSTM; solo se evaluó en la corrida de GPU. Las métricas de las tres variantes se comparan en la sección 5.
+Para comparar la contribución temporal se entrenó `mobilenet_baseline` con el mismo backbone y una cabeza sin BiLSTM. `resnet_lstm` es la alternativa con backbone ResNet y la misma cabeza BiLSTM; se evaluó en las dos corridas. Las métricas de las tres variantes se comparan en la sección 5.
 
-La corrida en CPU configuró máximo **5 épocas**, tasa de aprendizaje **1e-4**, **batch 4**, semilla **42**, optimizador Adam, scheduler que reduce la tasa cuando F1 macro se estanca y parada temprana con paciencia 2. El LSTM ejecutó **4 épocas** y seleccionó el checkpoint de la época 2; el baseline ejecutó **5 épocas** y seleccionó la época 3. Estas cifras proceden de `artifacts/cpu/metrics_*.json`. El tiempo de inferencia se midió en CPU y depende de la máquina.
+La corrida en CPU configuró máximo **5 épocas**, tasa de aprendizaje **1e-4**, **batch 4**, semilla **42**, optimizador Adam, scheduler que reduce la tasa cuando F1 macro se estanca y parada temprana con paciencia 2. El LSTM ejecutó **4 épocas** y seleccionó el checkpoint de la época 2; el baseline ejecutó **5 épocas** y seleccionó la época 3; `resnet_lstm` ejecutó **5 épocas** y seleccionó la época 4. Estas cifras proceden de `artifacts/cpu/metrics_*.json`. El tiempo de inferencia se midió en CPU y depende de la máquina.
 
 La corrida en GPU configuró máximo **15 épocas**, tasa de aprendizaje **1e-4**, **batch 8**, semilla **42**, optimizador Adam, `ReduceLROnPlateau` (factor 0,5, paciencia 3) y parada temprana con paciencia 5; los valores son los de `DEFAULT_HYPERPARAMS` en `src/models/model.py`. `mobilenet_lstm` ejecutó las 15 épocas y seleccionó la época 12 (1.309 s en total). `mobilenet_baseline` y `resnet_lstm` pararon en la época 7 y seleccionaron la época 2 (568 s y 682 s). Estas cifras proceden de `artifacts/metrics_*.json`. El comando de cada modelo fue `python -m src.models.train --dataset-path <RWF-2000> --model <modelo> --device cuda --batch-size 8 --num-workers 8 --epochs 15 --output-dir <carpeta>`, con la semilla por defecto (42); la partición en entrenamiento, validación interna y test la hace el propio script. El campo `inference_ms` de esta corrida mide el tiempo por clip de punta a punta con la GPU, lectura del video incluida, y no es comparable con los milisegundos de la corrida en CPU.
 
@@ -172,13 +172,15 @@ Hay dos corridas. La primera (CPU, subset) se conserva como antecedente; la segu
 
 ### 5.1 Primera corrida: subset en CPU (100 clips de test)
 
-Los números siguientes proceden de `artifacts/cpu/metrics_mobilenet_lstm.json` y `artifacts/cpu/metrics_mobilenet_baseline.json`. Todos corresponden a los mismos 100 clips de test.
+Los números siguientes proceden de `artifacts/cpu/metrics_mobilenet_lstm.json`, `artifacts/cpu/metrics_mobilenet_baseline.json` y `artifacts/cpu/metrics_resnet_lstm.json`. Los tres usan la selección de 100 clips de test que sale de la lista de archivos descrita en la sección 2.
 
 | Modelo | Accuracy | F1 macro | Recall Fight | Precisión Fight | AP | Matriz [[TN, FP], [FN, TP]] | ms/clip |
 |---|---:|---:|---:|---:|---:|---|---:|
 | mobilenet_lstm | 0,640 | 0,638 | **0,720** | 0,621 | 0,651 | [[28, 22], [14, 36]] | 594,3 |
-| mobilenet_baseline | **0,660** | **0,659** | 0,620 | **0,674** | **0,684** | [[35, 15], [19, 31]] | **406,3** |
-| resnet_lstm | no evaluado en esta corrida | | | | | | |
+| mobilenet_baseline | 0,660 | 0,659 | 0,620 | 0,674 | 0,684 | [[35, 15], [19, 31]] | **406,3** |
+| resnet_lstm | **0,690** | **0,688** | 0,620 | **0,721** | **0,761** | [[38, 12], [19, 31]] | 850,9\* |
+
+\* Medido en otra máquina (10 hilos; las otras dos filas, 6), así que no es comparable con los demás tiempos.
 
 Para el LSTM, las filas de la matriz son la clase real y las columnas la predicción:
 
@@ -188,6 +190,8 @@ Para el LSTM, las filas de la matriz son la clase real y las columnas la predicc
 | Sospechoso | 14 (FN) | 36 (TP) |
 
 El LSTM recuperó 36 de 50 peleas, cinco más que el baseline, pero produjo 22 falsas alarmas, siete más que el baseline. El baseline ganó 2,2 puntos porcentuales de F1 macro y tardó cerca de 188 ms menos por clip. En esta corrida se había escogido `mobilenet_lstm` para la demo porque la prioridad declarada es reducir falsos negativos de Fight; la sección 5.2 muestra que ese criterio ya no favorece al LSTM con el entrenamiento completo.
+
+`resnet_lstm` obtuvo aquí la mayor exactitud, el mayor F1 macro (2,9 puntos más que el baseline y 5,1 más que el LSTM) y la menor cantidad de falsas alarmas (12), pero recuperó 31 de 50 peleas, igual que el baseline y cinco menos que el LSTM. Con 100 clips de test, esas diferencias no bastan para afirmar que ResNet50 es mejor, y su tiempo por clip se midió en otra máquina, así que esta corrida no confirma ni desmiente la hipótesis de la sección 4.2.
 
 ### 5.2 Segunda corrida: RWF-2000 completo en GPU (400 clips de test)
 
@@ -237,7 +241,8 @@ Estas cifras tienen límites fuertes:
 - Los videos normales de ASHEN suelen tener otro estilo de imagen que los de robos y asaltos. Como pasó con la resolución en RWF-2000, el modelo podría aprender esa diferencia y no el comportamiento; no se midió.
 - Se usaron videos del split de test de ASHEN como datos propios, así que estas cifras no son comparables con las publicadas para ASHEN.
 - La clase Riesgo agrupa robos y asaltos observables. El modelo no distingue un arma real de un juguete ni confirma un delito: marca tramos para revisión humana.
- El notebook `notebooks/03_model_comparison.ipynb` dibuja las matrices, curvas precisión–recall y la comparación de precisión/recall a partir de los JSON.
+
+El notebook `notebooks/03_model_comparison.ipynb` dibuja las matrices, curvas precisión–recall y la comparación de precisión/recall de la corrida en GPU a partir de los JSON, y muestra también la tabla de la corrida en CPU.
 
 ## 6. Arquitectura del sistema
 
@@ -253,13 +258,13 @@ En entrenamiento, `scripts/train_local_cpu.py` (subset en CPU) o `src/models/tra
 
 ## 7. Limitaciones y mitigaciones
 
-La primera corrida usa solo **100 clips de test** y entrenamiento en un subset de **400**, así que su diferencia de 0,022 en F1 macro podría cambiar con otra muestra. La segunda usa 1.393 clips de entrenamiento y **400 de test**, pero cada resultado sale de una sola ejecución con una semilla (42), sin repeticiones. Los modelos fueron evaluados en clips del propio RWF-2000, no en cámaras bolivianas ni en grabaciones en vivo. Además, el dataset etiqueta Fight/NonFight; no mide asaltos de forma independiente. El paper original reporta resultados mayores con **otro método**. Con el dataset completo en GPU el F1 macro medido fue de 0,727 a 0,742, por debajo de ese rango, y no hay evidencia para prometer más sin otro entrenamiento y otro test reproducibles.
+La primera corrida usa solo **100 clips de test** y entrenamiento en un subset de **400**, así que sus diferencias de F1 macro, de hasta 0,051, podrían cambiar con otra muestra. La segunda usa 1.393 clips de entrenamiento y **400 de test**, pero cada resultado sale de una sola ejecución con una semilla (42), sin repeticiones. Los modelos fueron evaluados en clips del propio RWF-2000, no en cámaras bolivianas ni en grabaciones en vivo. Además, el dataset etiqueta Fight/NonFight; no mide asaltos de forma independiente. El paper original reporta resultados mayores con **otro método**. Con el dataset completo en GPU el F1 macro medido fue de 0,727 a 0,742, por debajo de ese rango, y no hay evidencia para prometer más sin otro entrenamiento y otro test reproducibles.
 
 Los movimientos de un niño jugando, un saludo físico o un deporte pueden parecerse a una pelea y generar falsos positivos. La API usa una ventana temporal mayor de 3 segundos para suprimir picos aislados; el umbral ajustable permite explorar sensibilidad, pero **no cambia el rendimiento medido del test** hasta que se vuelva a evaluar. Las falsas alarmas siguen siendo importantes: 22 de 50 NonFight en la primera corrida con el LSTM y entre 32 y 68 de 200 en la segunda, según el modelo. Conviene revisar manualmente errores, reunir ejemplos difíciles con derechos de uso claros y medir por resolución, iluminación, tipo de escena y fuente. La decisión final siempre debe incluir revisión humana.
 
-El EDA detectó un posible atajo de resolución. Por ello, antes de afirmar generalización hay que comparar con una línea base basada en metadatos, comprobar fuentes independientes y evaluar en datos externos autorizados. `resnet_lstm` ya se evaluó con el mismo split (sección 5.2). **TODO:** actualizar `notebooks/03_model_comparison.ipynb` con las métricas de la corrida en GPU; este informe no recalcula el notebook.
+El EDA detectó un posible atajo de resolución. Por ello, antes de afirmar generalización hay que comparar con una línea base basada en metadatos, comprobar fuentes independientes y evaluar en datos externos autorizados. `resnet_lstm` ya se evaluó con el mismo split (sección 5.2).
 
-La comparación con esa línea base no favorece a los modelos. La regla de un solo umbral `alto > 251`, elegida en los 1.600 clips de `train/` y evaluada en los 400 de `val/` de la copia completa, acierta **75 %** (`notebooks/02_eda_datasets.ipynb`, sección 6). Los 400 clips de `val/` son los mismos del test de la segunda corrida: `mobilenet_lstm` acierta **73,0 %**, `mobilenet_baseline` **73,5 %** y `resnet_lstm` **74,3 %**. Los intervalos de Wilson al 95 % se solapan (71–79 % para la regla y 68–78 % para los modelos), así que no hay evidencia de que los modelos superen a la regla ni de que sean peores. En la primera corrida, con 100 clips distintos y 259 de entrenamiento, los modelos acertaron 64 % y 66 %. Falta comparar clip por clip y revisar los errores por resolución, porque los JSON no guardan predicciones individuales.
+La comparación con esa línea base no favorece a los modelos. La regla de un solo umbral `alto > 251`, elegida en los 1.600 clips de `train/` y evaluada en los 400 de `val/` de la copia completa, acierta **75 %** (`notebooks/02_eda_datasets.ipynb`, sección 6). Los 400 clips de `val/` son los mismos del test de la segunda corrida: `mobilenet_lstm` acierta **73,0 %**, `mobilenet_baseline` **73,5 %** y `resnet_lstm` **74,3 %**. Los intervalos de Wilson al 95 % se solapan (71–79 % para la regla y 68–78 % para los modelos), así que no hay evidencia de que los modelos superen a la regla ni de que sean peores. En la primera corrida, con 100 clips distintos y 259 de entrenamiento, los modelos acertaron 64 %, 66 % y 69 %. Falta comparar clip por clip y revisar los errores por resolución, porque los JSON no guardan predicciones individuales.
 
 ## 8. Uso de asistentes de IA
 
