@@ -43,7 +43,7 @@ from src.models.model import (
     load_checkpoint,
     save_checkpoint,
 )
-from src.preprocessing import VideoPreprocessor
+from src.preprocessing import N_FRAMES, VideoPreprocessor
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -86,6 +86,8 @@ def parse_args() -> argparse.Namespace:
                         help="Epocas sin mejorar el F1 del val interno antes de cortar.")
     parser.add_argument("--num-workers", type=int, default=0,
                         help="Procesos que decodifican videos (0 en Windows, 2 en Colab).")
+    parser.add_argument("--num-frames", type=int, default=N_FRAMES,
+                        help="Frames por clip (comparacion 8/16/32; 16 es el valor del plan).")
     parser.add_argument("--smoke-test", action="store_true",
                         help="Entrena 1 epoca con 10 train + 5 val para verificar.")
     return parser.parse_args()
@@ -208,14 +210,21 @@ def main() -> int:
     # mismo orden (carpetas y archivos ordenados), asi que los indices del
     # split valen para los dos.
     label_map = {"Normal": 0, "Riesgo": 1} if args.mode != "peleas" else None
-    train_dataset = VideoDataset(args.dataset_path, split="train", label_map=label_map)
+    # El mismo n_frames va a train, val interno y test: si no, el modelo se
+    # evaluaria con una secuencia de largo distinto a la que vio al entrenar.
+    train_dataset = VideoDataset(
+        args.dataset_path, split="train", label_map=label_map,
+        preprocessor=VideoPreprocessor(n_frames=args.num_frames, train=True),
+    )
     internal_dataset = VideoDataset(
         args.dataset_path, split="train",
-        preprocessor=VideoPreprocessor(train=False),
+        preprocessor=VideoPreprocessor(n_frames=args.num_frames, train=False),
         label_map=label_map,
     )
-    # split="val" crea su preprocessor sin augmentation (train=False).
-    test_dataset = VideoDataset(args.dataset_path, split="val", label_map=label_map)
+    test_dataset = VideoDataset(
+        args.dataset_path, split="val", label_map=label_map,
+        preprocessor=VideoPreprocessor(n_frames=args.num_frames, train=False),
+    )
 
     if args.mode != "peleas":
         # En los modos nuevos no se permite el fallback por clip de RWF-2000:
@@ -345,6 +354,7 @@ def main() -> int:
     internal_report = {
         "model": args.model,
         "mode": args.mode,
+        "num_frames": args.num_frames,
         "device": str(device),
         "evaluated_on": "val interno (15 % de train/, por fuente)",
         "epochs_run": len(history),
@@ -388,6 +398,7 @@ def main() -> int:
     report = {
         "model": args.model,
         "mode": args.mode,
+        "num_frames": args.num_frames,
         "device": str(device),
         "evaluated_on": "test (val/ completo, no usado al entrenar)",
         "n_test": len(y_true),
