@@ -1,0 +1,2063 @@
+[
+  {
+    "clip": "exterior/val/Riesgo/347bc129378c8a83_0.mp4",
+    "source_id": "Assault011_x264",
+    "label": "Riesgo",
+    "start_sec": 13.0,
+    "end_sec": 18.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Assault; ambiente exterior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "exterior/val/Riesgo/347bc129378c8a83_1.mp4",
+    "source_id": "Assault011_x264",
+    "label": "Riesgo",
+    "start_sec": 22.0,
+    "end_sec": 27.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Assault; ambiente exterior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/val/Riesgo/a9a7b945c6bbc995_0.mp4",
+    "source_id": "Assault013_x264",
+    "label": "Riesgo",
+    "start_sec": 18.5,
+    "end_sec": 23.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Assault; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/val/Riesgo/a9a7b945c6bbc995_1.mp4",
+    "source_id": "Assault013_x264",
+    "label": "Riesgo",
+    "start_sec": 28.5,
+    "end_sec": 33.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Assault; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/val/Riesgo/a9a7b945c6bbc995_2.mp4",
+    "source_id": "Assault013_x264",
+    "label": "Riesgo",
+    "start_sec": 38.5,
+    "end_sec": 43.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Assault; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/val/Riesgo/a9a7b945c6bbc995_3.mp4",
+    "source_id": "Assault013_x264",
+    "label": "Riesgo",
+    "start_sec": 48.5,
+    "end_sec": 53.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Assault; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/val/Riesgo/a9a7b945c6bbc995_4.mp4",
+    "source_id": "Assault013_x264",
+    "label": "Riesgo",
+    "start_sec": 58.5,
+    "end_sec": 63.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Assault; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/val/Riesgo/a9a7b945c6bbc995_5.mp4",
+    "source_id": "Assault013_x264",
+    "label": "Riesgo",
+    "start_sec": 68.5,
+    "end_sec": 73.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Assault; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "exterior/train/Riesgo/2c51217164989527_0.mp4",
+    "source_id": "Assault014_x264",
+    "label": "Riesgo",
+    "start_sec": 20.5,
+    "end_sec": 23.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Assault; ambiente exterior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "exterior/train/Riesgo/f739869fc6fdbf4c_0.mp4",
+    "source_id": "Assault017_x264",
+    "label": "Riesgo",
+    "start_sec": 21.0,
+    "end_sec": 26.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Assault; ambiente exterior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "exterior/train/Riesgo/f739869fc6fdbf4c_1.mp4",
+    "source_id": "Assault017_x264",
+    "label": "Riesgo",
+    "start_sec": 26.0,
+    "end_sec": 31.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Assault; ambiente exterior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/fd182123b98399f4_0.mp4",
+    "source_id": "Assault027_x264",
+    "label": "Riesgo",
+    "start_sec": 166.0,
+    "end_sec": 171.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Assault; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/fd182123b98399f4_1.mp4",
+    "source_id": "Assault027_x264",
+    "label": "Riesgo",
+    "start_sec": 171.0,
+    "end_sec": 176.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Assault; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/fd182123b98399f4_2.mp4",
+    "source_id": "Assault027_x264",
+    "label": "Riesgo",
+    "start_sec": 176.0,
+    "end_sec": 181.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Assault; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/fd182123b98399f4_3.mp4",
+    "source_id": "Assault027_x264",
+    "label": "Riesgo",
+    "start_sec": 181.0,
+    "end_sec": 186.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Assault; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/f2b6092a1f7e842a_0.mp4",
+    "source_id": "Assault041_x264",
+    "label": "Riesgo",
+    "start_sec": 104.0,
+    "end_sec": 109.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Assault; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "exterior/val/Riesgo/32d77fd0af5a272d_0.mp4",
+    "source_id": "Assault046_x264",
+    "label": "Riesgo",
+    "start_sec": 0.0,
+    "end_sec": 5.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Assault; ambiente exterior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "exterior/val/Riesgo/32d77fd0af5a272d_1.mp4",
+    "source_id": "Assault046_x264",
+    "label": "Riesgo",
+    "start_sec": 5.0,
+    "end_sec": 10.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Assault; ambiente exterior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "exterior/val/Riesgo/32d77fd0af5a272d_2.mp4",
+    "source_id": "Assault046_x264",
+    "label": "Riesgo",
+    "start_sec": 10.0,
+    "end_sec": 15.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Assault; ambiente exterior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "exterior/val/Riesgo/32d77fd0af5a272d_3.mp4",
+    "source_id": "Assault046_x264",
+    "label": "Riesgo",
+    "start_sec": 15.0,
+    "end_sec": 20.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Assault; ambiente exterior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "exterior/val/Riesgo/32d77fd0af5a272d_4.mp4",
+    "source_id": "Assault046_x264",
+    "label": "Riesgo",
+    "start_sec": 20.0,
+    "end_sec": 25.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Assault; ambiente exterior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "exterior/val/Riesgo/32d77fd0af5a272d_5.mp4",
+    "source_id": "Assault046_x264",
+    "label": "Riesgo",
+    "start_sec": 25.0,
+    "end_sec": 30.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Assault; ambiente exterior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/734e2128b1467311_0.mp4",
+    "source_id": "Assault054_x264",
+    "label": "Riesgo",
+    "start_sec": 4.0,
+    "end_sec": 9.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Assault; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/4e6416a4d8929448_0.mp4",
+    "source_id": "Assault055_x264",
+    "label": "Riesgo",
+    "start_sec": 6.52,
+    "end_sec": 9.8,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Assault; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/2f92103b1f1cdf95_0.mp4",
+    "source_id": "Assault058_x264",
+    "label": "Riesgo",
+    "start_sec": 1.6,
+    "end_sec": 6.6,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Assault; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/5abd33ec42ef025b_0.mp4",
+    "source_id": "Assault069_x264",
+    "label": "Riesgo",
+    "start_sec": 3.44,
+    "end_sec": 8.44,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Assault; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/val/Riesgo/89fd95650d2af474_0.mp4",
+    "source_id": "Assault073_x264",
+    "label": "Riesgo",
+    "start_sec": 3.6,
+    "end_sec": 7.2,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Assault; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/499884dd1d529115_0.mp4",
+    "source_id": "Assault075_x264",
+    "label": "Riesgo",
+    "start_sec": 0.0,
+    "end_sec": 5.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Assault; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/58b2db999176a59a_0.mp4",
+    "source_id": "Assault080_x264",
+    "label": "Riesgo",
+    "start_sec": 0.0,
+    "end_sec": 5.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Assault; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/58b2db999176a59a_1.mp4",
+    "source_id": "Assault080_x264",
+    "label": "Riesgo",
+    "start_sec": 5.0,
+    "end_sec": 10.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Assault; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/80717b11582f0de4_0.mp4",
+    "source_id": "Assault083_x264",
+    "label": "Riesgo",
+    "start_sec": 0.0,
+    "end_sec": 5.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Assault; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/80717b11582f0de4_1.mp4",
+    "source_id": "Assault083_x264",
+    "label": "Riesgo",
+    "start_sec": 5.0,
+    "end_sec": 10.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Assault; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/91348a5d2606a00e_0.mp4",
+    "source_id": "Assault095_x264",
+    "label": "Riesgo",
+    "start_sec": 0.0,
+    "end_sec": 5.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Assault; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/217e4491fafee33b_0.mp4",
+    "source_id": "Assault098_x264",
+    "label": "Riesgo",
+    "start_sec": 0.0,
+    "end_sec": 5.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Assault; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/217e4491fafee33b_1.mp4",
+    "source_id": "Assault098_x264",
+    "label": "Riesgo",
+    "start_sec": 5.0,
+    "end_sec": 10.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Assault; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/val/Riesgo/28ce698ad865f081_0.mp4",
+    "source_id": "Assault100_x264",
+    "label": "Riesgo",
+    "start_sec": 1.64,
+    "end_sec": 6.64,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Assault; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/b494b0562dd678a3_0.mp4",
+    "source_id": "Robbery005_x264",
+    "label": "Riesgo",
+    "start_sec": 9.5,
+    "end_sec": 14.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/b494b0562dd678a3_1.mp4",
+    "source_id": "Robbery005_x264",
+    "label": "Riesgo",
+    "start_sec": 14.5,
+    "end_sec": 19.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/b494b0562dd678a3_2.mp4",
+    "source_id": "Robbery005_x264",
+    "label": "Riesgo",
+    "start_sec": 19.5,
+    "end_sec": 24.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/val/Riesgo/0fa318410dd936fb_0.mp4",
+    "source_id": "Robbery008_x264",
+    "label": "Riesgo",
+    "start_sec": 0.0,
+    "end_sec": 5.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/val/Riesgo/0fa318410dd936fb_1.mp4",
+    "source_id": "Robbery008_x264",
+    "label": "Riesgo",
+    "start_sec": 10.0,
+    "end_sec": 15.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/val/Riesgo/0fa318410dd936fb_2.mp4",
+    "source_id": "Robbery008_x264",
+    "label": "Riesgo",
+    "start_sec": 25.0,
+    "end_sec": 30.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/val/Riesgo/0fa318410dd936fb_3.mp4",
+    "source_id": "Robbery008_x264",
+    "label": "Riesgo",
+    "start_sec": 35.0,
+    "end_sec": 40.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/val/Riesgo/0fa318410dd936fb_4.mp4",
+    "source_id": "Robbery008_x264",
+    "label": "Riesgo",
+    "start_sec": 50.0,
+    "end_sec": 55.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/val/Riesgo/0fa318410dd936fb_5.mp4",
+    "source_id": "Robbery008_x264",
+    "label": "Riesgo",
+    "start_sec": 60.0,
+    "end_sec": 65.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/val/Riesgo/1a8d151def80b562_0.mp4",
+    "source_id": "Robbery019_x264",
+    "label": "Riesgo",
+    "start_sec": 0.0,
+    "end_sec": 5.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/val/Riesgo/1a8d151def80b562_1.mp4",
+    "source_id": "Robbery019_x264",
+    "label": "Riesgo",
+    "start_sec": 30.0,
+    "end_sec": 35.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/val/Riesgo/1a8d151def80b562_2.mp4",
+    "source_id": "Robbery019_x264",
+    "label": "Riesgo",
+    "start_sec": 60.0,
+    "end_sec": 65.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/val/Riesgo/1a8d151def80b562_3.mp4",
+    "source_id": "Robbery019_x264",
+    "label": "Riesgo",
+    "start_sec": 95.0,
+    "end_sec": 100.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/val/Riesgo/1a8d151def80b562_4.mp4",
+    "source_id": "Robbery019_x264",
+    "label": "Riesgo",
+    "start_sec": 125.0,
+    "end_sec": 130.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/val/Riesgo/1a8d151def80b562_5.mp4",
+    "source_id": "Robbery019_x264",
+    "label": "Riesgo",
+    "start_sec": 155.0,
+    "end_sec": 160.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/val/Riesgo/0fec8deb84937261_0.mp4",
+    "source_id": "Robbery020_x264",
+    "label": "Riesgo",
+    "start_sec": 0.0,
+    "end_sec": 5.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/val/Riesgo/0fec8deb84937261_1.mp4",
+    "source_id": "Robbery020_x264",
+    "label": "Riesgo",
+    "start_sec": 20.0,
+    "end_sec": 25.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/val/Riesgo/0fec8deb84937261_2.mp4",
+    "source_id": "Robbery020_x264",
+    "label": "Riesgo",
+    "start_sec": 45.0,
+    "end_sec": 50.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/val/Riesgo/0fec8deb84937261_3.mp4",
+    "source_id": "Robbery020_x264",
+    "label": "Riesgo",
+    "start_sec": 70.0,
+    "end_sec": 75.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/val/Riesgo/0fec8deb84937261_4.mp4",
+    "source_id": "Robbery020_x264",
+    "label": "Riesgo",
+    "start_sec": 90.0,
+    "end_sec": 95.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/val/Riesgo/0fec8deb84937261_5.mp4",
+    "source_id": "Robbery020_x264",
+    "label": "Riesgo",
+    "start_sec": 115.0,
+    "end_sec": 120.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/fe2b1452252e6a98_0.mp4",
+    "source_id": "Robbery022_x264",
+    "label": "Riesgo",
+    "start_sec": 12.1,
+    "end_sec": 17.1,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/fe2b1452252e6a98_1.mp4",
+    "source_id": "Robbery022_x264",
+    "label": "Riesgo",
+    "start_sec": 27.1,
+    "end_sec": 32.1,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/fe2b1452252e6a98_2.mp4",
+    "source_id": "Robbery022_x264",
+    "label": "Riesgo",
+    "start_sec": 42.1,
+    "end_sec": 47.1,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/fe2b1452252e6a98_3.mp4",
+    "source_id": "Robbery022_x264",
+    "label": "Riesgo",
+    "start_sec": 62.1,
+    "end_sec": 67.1,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/fe2b1452252e6a98_4.mp4",
+    "source_id": "Robbery022_x264",
+    "label": "Riesgo",
+    "start_sec": 77.1,
+    "end_sec": 82.1,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/fe2b1452252e6a98_5.mp4",
+    "source_id": "Robbery022_x264",
+    "label": "Riesgo",
+    "start_sec": 92.1,
+    "end_sec": 97.1,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/bf9c435c8a53fc48_0.mp4",
+    "source_id": "Robbery046_x264",
+    "label": "Riesgo",
+    "start_sec": 3.93,
+    "end_sec": 8.93,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/bf9c435c8a53fc48_1.mp4",
+    "source_id": "Robbery046_x264",
+    "label": "Riesgo",
+    "start_sec": 8.93,
+    "end_sec": 13.93,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "exterior/train/Riesgo/f963e1854daaf096_0.mp4",
+    "source_id": "Robbery053_x264",
+    "label": "Riesgo",
+    "start_sec": 21.1,
+    "end_sec": 26.1,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente exterior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "exterior/train/Riesgo/f963e1854daaf096_1.mp4",
+    "source_id": "Robbery053_x264",
+    "label": "Riesgo",
+    "start_sec": 26.1,
+    "end_sec": 31.1,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente exterior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "exterior/train/Riesgo/f963e1854daaf096_2.mp4",
+    "source_id": "Robbery053_x264",
+    "label": "Riesgo",
+    "start_sec": 31.1,
+    "end_sec": 36.1,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente exterior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "exterior/train/Riesgo/f963e1854daaf096_3.mp4",
+    "source_id": "Robbery053_x264",
+    "label": "Riesgo",
+    "start_sec": 36.1,
+    "end_sec": 41.1,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente exterior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "exterior/train/Riesgo/f963e1854daaf096_4.mp4",
+    "source_id": "Robbery053_x264",
+    "label": "Riesgo",
+    "start_sec": 41.1,
+    "end_sec": 46.1,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente exterior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/9b0b67deecd4ab26_0.mp4",
+    "source_id": "Robbery055_x264",
+    "label": "Riesgo",
+    "start_sec": 10.97,
+    "end_sec": 15.97,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/9b0b67deecd4ab26_1.mp4",
+    "source_id": "Robbery055_x264",
+    "label": "Riesgo",
+    "start_sec": 55.97,
+    "end_sec": 60.97,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/9b0b67deecd4ab26_2.mp4",
+    "source_id": "Robbery055_x264",
+    "label": "Riesgo",
+    "start_sec": 105.97,
+    "end_sec": 110.97,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/9b0b67deecd4ab26_3.mp4",
+    "source_id": "Robbery055_x264",
+    "label": "Riesgo",
+    "start_sec": 155.97,
+    "end_sec": 160.97,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/9b0b67deecd4ab26_4.mp4",
+    "source_id": "Robbery055_x264",
+    "label": "Riesgo",
+    "start_sec": 205.97,
+    "end_sec": 210.97,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/9b0b67deecd4ab26_5.mp4",
+    "source_id": "Robbery055_x264",
+    "label": "Riesgo",
+    "start_sec": 255.97,
+    "end_sec": 260.97,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/val/Riesgo/88aed65d91e69a62_0.mp4",
+    "source_id": "Robbery059_x264",
+    "label": "Riesgo",
+    "start_sec": 0.0,
+    "end_sec": 5.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/val/Riesgo/88aed65d91e69a62_1.mp4",
+    "source_id": "Robbery059_x264",
+    "label": "Riesgo",
+    "start_sec": 50.0,
+    "end_sec": 55.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/val/Riesgo/88aed65d91e69a62_2.mp4",
+    "source_id": "Robbery059_x264",
+    "label": "Riesgo",
+    "start_sec": 105.0,
+    "end_sec": 110.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/val/Riesgo/88aed65d91e69a62_3.mp4",
+    "source_id": "Robbery059_x264",
+    "label": "Riesgo",
+    "start_sec": 160.0,
+    "end_sec": 165.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/val/Riesgo/88aed65d91e69a62_4.mp4",
+    "source_id": "Robbery059_x264",
+    "label": "Riesgo",
+    "start_sec": 210.0,
+    "end_sec": 215.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/val/Riesgo/88aed65d91e69a62_5.mp4",
+    "source_id": "Robbery059_x264",
+    "label": "Riesgo",
+    "start_sec": 265.0,
+    "end_sec": 270.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/8f4c5fdc9810013d_0.mp4",
+    "source_id": "Robbery060_x264",
+    "label": "Riesgo",
+    "start_sec": 7.27,
+    "end_sec": 12.27,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/8f4c5fdc9810013d_1.mp4",
+    "source_id": "Robbery060_x264",
+    "label": "Riesgo",
+    "start_sec": 12.27,
+    "end_sec": 17.27,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/8f4c5fdc9810013d_2.mp4",
+    "source_id": "Robbery060_x264",
+    "label": "Riesgo",
+    "start_sec": 22.27,
+    "end_sec": 27.27,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/8f4c5fdc9810013d_3.mp4",
+    "source_id": "Robbery060_x264",
+    "label": "Riesgo",
+    "start_sec": 32.27,
+    "end_sec": 37.27,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/8f4c5fdc9810013d_4.mp4",
+    "source_id": "Robbery060_x264",
+    "label": "Riesgo",
+    "start_sec": 37.27,
+    "end_sec": 42.27,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/8f4c5fdc9810013d_5.mp4",
+    "source_id": "Robbery060_x264",
+    "label": "Riesgo",
+    "start_sec": 47.27,
+    "end_sec": 52.27,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/8f1421f69ba6b3aa_0.mp4",
+    "source_id": "Robbery062_x264",
+    "label": "Riesgo",
+    "start_sec": 20.73,
+    "end_sec": 25.73,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/8f1421f69ba6b3aa_1.mp4",
+    "source_id": "Robbery062_x264",
+    "label": "Riesgo",
+    "start_sec": 30.73,
+    "end_sec": 35.73,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/8f1421f69ba6b3aa_2.mp4",
+    "source_id": "Robbery062_x264",
+    "label": "Riesgo",
+    "start_sec": 40.73,
+    "end_sec": 45.73,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/8f1421f69ba6b3aa_3.mp4",
+    "source_id": "Robbery062_x264",
+    "label": "Riesgo",
+    "start_sec": 50.73,
+    "end_sec": 55.73,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/8f1421f69ba6b3aa_4.mp4",
+    "source_id": "Robbery062_x264",
+    "label": "Riesgo",
+    "start_sec": 60.73,
+    "end_sec": 65.73,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/8f1421f69ba6b3aa_5.mp4",
+    "source_id": "Robbery062_x264",
+    "label": "Riesgo",
+    "start_sec": 70.73,
+    "end_sec": 75.73,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/84a9593b6a38f2da_0.mp4",
+    "source_id": "Robbery065_x264",
+    "label": "Riesgo",
+    "start_sec": 12.6,
+    "end_sec": 17.6,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/84a9593b6a38f2da_1.mp4",
+    "source_id": "Robbery065_x264",
+    "label": "Riesgo",
+    "start_sec": 17.6,
+    "end_sec": 22.6,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/84a9593b6a38f2da_2.mp4",
+    "source_id": "Robbery065_x264",
+    "label": "Riesgo",
+    "start_sec": 27.6,
+    "end_sec": 32.6,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/84a9593b6a38f2da_3.mp4",
+    "source_id": "Robbery065_x264",
+    "label": "Riesgo",
+    "start_sec": 37.6,
+    "end_sec": 42.6,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/84a9593b6a38f2da_4.mp4",
+    "source_id": "Robbery065_x264",
+    "label": "Riesgo",
+    "start_sec": 47.6,
+    "end_sec": 52.6,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/84a9593b6a38f2da_5.mp4",
+    "source_id": "Robbery065_x264",
+    "label": "Riesgo",
+    "start_sec": 57.6,
+    "end_sec": 62.6,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/val/Riesgo/5636d524132f4d67_0.mp4",
+    "source_id": "Robbery068_x264",
+    "label": "Riesgo",
+    "start_sec": 6.23,
+    "end_sec": 11.23,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/9cd57dd426b44842_0.mp4",
+    "source_id": "Robbery075_x264",
+    "label": "Riesgo",
+    "start_sec": 5.13,
+    "end_sec": 10.13,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/9cd57dd426b44842_1.mp4",
+    "source_id": "Robbery075_x264",
+    "label": "Riesgo",
+    "start_sec": 15.13,
+    "end_sec": 20.13,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/9cd57dd426b44842_2.mp4",
+    "source_id": "Robbery075_x264",
+    "label": "Riesgo",
+    "start_sec": 30.13,
+    "end_sec": 35.13,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/9cd57dd426b44842_3.mp4",
+    "source_id": "Robbery075_x264",
+    "label": "Riesgo",
+    "start_sec": 45.13,
+    "end_sec": 50.13,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/9cd57dd426b44842_4.mp4",
+    "source_id": "Robbery075_x264",
+    "label": "Riesgo",
+    "start_sec": 60.13,
+    "end_sec": 65.13,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/9cd57dd426b44842_5.mp4",
+    "source_id": "Robbery075_x264",
+    "label": "Riesgo",
+    "start_sec": 75.13,
+    "end_sec": 80.13,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/f0af6b62f83ff291_0.mp4",
+    "source_id": "Robbery085_x264",
+    "label": "Riesgo",
+    "start_sec": 0.0,
+    "end_sec": 5.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/f0af6b62f83ff291_1.mp4",
+    "source_id": "Robbery085_x264",
+    "label": "Riesgo",
+    "start_sec": 10.0,
+    "end_sec": 15.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/f0af6b62f83ff291_2.mp4",
+    "source_id": "Robbery085_x264",
+    "label": "Riesgo",
+    "start_sec": 20.0,
+    "end_sec": 25.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/f0af6b62f83ff291_3.mp4",
+    "source_id": "Robbery085_x264",
+    "label": "Riesgo",
+    "start_sec": 30.0,
+    "end_sec": 35.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/f0af6b62f83ff291_4.mp4",
+    "source_id": "Robbery085_x264",
+    "label": "Riesgo",
+    "start_sec": 40.0,
+    "end_sec": 45.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/f0af6b62f83ff291_5.mp4",
+    "source_id": "Robbery085_x264",
+    "label": "Riesgo",
+    "start_sec": 50.0,
+    "end_sec": 55.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/5e78a6dab9dd111c_0.mp4",
+    "source_id": "Robbery091_x264",
+    "label": "Riesgo",
+    "start_sec": 13.37,
+    "end_sec": 18.37,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/5e78a6dab9dd111c_1.mp4",
+    "source_id": "Robbery091_x264",
+    "label": "Riesgo",
+    "start_sec": 18.37,
+    "end_sec": 23.37,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/5e78a6dab9dd111c_2.mp4",
+    "source_id": "Robbery091_x264",
+    "label": "Riesgo",
+    "start_sec": 28.37,
+    "end_sec": 33.37,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/5e78a6dab9dd111c_3.mp4",
+    "source_id": "Robbery091_x264",
+    "label": "Riesgo",
+    "start_sec": 33.37,
+    "end_sec": 38.37,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/5e78a6dab9dd111c_4.mp4",
+    "source_id": "Robbery091_x264",
+    "label": "Riesgo",
+    "start_sec": 43.37,
+    "end_sec": 48.37,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/5e78a6dab9dd111c_5.mp4",
+    "source_id": "Robbery091_x264",
+    "label": "Riesgo",
+    "start_sec": 48.37,
+    "end_sec": 53.37,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/val/Riesgo/39a153d7e2ebaf20_0.mp4",
+    "source_id": "Robbery092_x264",
+    "label": "Riesgo",
+    "start_sec": 8.93,
+    "end_sec": 13.93,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/val/Riesgo/39a153d7e2ebaf20_1.mp4",
+    "source_id": "Robbery092_x264",
+    "label": "Riesgo",
+    "start_sec": 13.93,
+    "end_sec": 18.93,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "exterior/train/Riesgo/a714c0a69bfa7059_0.mp4",
+    "source_id": "Robbery095_x264",
+    "label": "Riesgo",
+    "start_sec": 15.5,
+    "end_sec": 20.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente exterior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "exterior/train/Riesgo/a714c0a69bfa7059_1.mp4",
+    "source_id": "Robbery095_x264",
+    "label": "Riesgo",
+    "start_sec": 20.5,
+    "end_sec": 25.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente exterior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "exterior/train/Riesgo/a714c0a69bfa7059_2.mp4",
+    "source_id": "Robbery095_x264",
+    "label": "Riesgo",
+    "start_sec": 25.5,
+    "end_sec": 30.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente exterior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/1f10825fd347738f_0.mp4",
+    "source_id": "Robbery097_x264",
+    "label": "Riesgo",
+    "start_sec": 43.43,
+    "end_sec": 48.43,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/1f10825fd347738f_1.mp4",
+    "source_id": "Robbery097_x264",
+    "label": "Riesgo",
+    "start_sec": 53.43,
+    "end_sec": 58.43,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/1f10825fd347738f_2.mp4",
+    "source_id": "Robbery097_x264",
+    "label": "Riesgo",
+    "start_sec": 63.43,
+    "end_sec": 68.43,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/1f10825fd347738f_3.mp4",
+    "source_id": "Robbery097_x264",
+    "label": "Riesgo",
+    "start_sec": 73.43,
+    "end_sec": 78.43,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/1f10825fd347738f_4.mp4",
+    "source_id": "Robbery097_x264",
+    "label": "Riesgo",
+    "start_sec": 83.43,
+    "end_sec": 88.43,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Riesgo/1f10825fd347738f_5.mp4",
+    "source_id": "Robbery097_x264",
+    "label": "Riesgo",
+    "start_sec": 93.43,
+    "end_sec": 98.43,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+  },
+  {
+    "clip": "interior/train/Normal/9b3069daf8603ee4_0.mp4",
+    "source_id": "Normal_Videos001_x264",
+    "label": "Normal",
+    "start_sec": 0.5,
+    "end_sec": 5.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/9b3069daf8603ee4_1.mp4",
+    "source_id": "Normal_Videos001_x264",
+    "label": "Normal",
+    "start_sec": 6.2,
+    "end_sec": 11.2,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/9b3069daf8603ee4_2.mp4",
+    "source_id": "Normal_Videos001_x264",
+    "label": "Normal",
+    "start_sec": 11.9,
+    "end_sec": 16.9,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/b51ad6284fa04852_0.mp4",
+    "source_id": "Normal_Videos037_x264",
+    "label": "Normal",
+    "start_sec": 0.5,
+    "end_sec": 5.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/b51ad6284fa04852_1.mp4",
+    "source_id": "Normal_Videos037_x264",
+    "label": "Normal",
+    "start_sec": 7.5,
+    "end_sec": 12.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/fc8a126d1a04ae62_0.mp4",
+    "source_id": "Normal_Videos043_x264",
+    "label": "Normal",
+    "start_sec": 0.5,
+    "end_sec": 5.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/fc8a126d1a04ae62_1.mp4",
+    "source_id": "Normal_Videos043_x264",
+    "label": "Normal",
+    "start_sec": 19.4,
+    "end_sec": 24.4,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/fc8a126d1a04ae62_2.mp4",
+    "source_id": "Normal_Videos043_x264",
+    "label": "Normal",
+    "start_sec": 38.3,
+    "end_sec": 43.3,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/80fc6b0bdeb7f761_0.mp4",
+    "source_id": "Normal_Videos054_x264",
+    "label": "Normal",
+    "start_sec": 0.5,
+    "end_sec": 5.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/80fc6b0bdeb7f761_1.mp4",
+    "source_id": "Normal_Videos054_x264",
+    "label": "Normal",
+    "start_sec": 22.13,
+    "end_sec": 27.13,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/80fc6b0bdeb7f761_2.mp4",
+    "source_id": "Normal_Videos054_x264",
+    "label": "Normal",
+    "start_sec": 43.77,
+    "end_sec": 48.77,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/val/Normal/77e93200d60a8aa6_0.mp4",
+    "source_id": "Normal_Videos057_x264",
+    "label": "Normal",
+    "start_sec": 0.5,
+    "end_sec": 5.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/val/Normal/77e93200d60a8aa6_1.mp4",
+    "source_id": "Normal_Videos057_x264",
+    "label": "Normal",
+    "start_sec": 42.23,
+    "end_sec": 47.23,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/val/Normal/77e93200d60a8aa6_2.mp4",
+    "source_id": "Normal_Videos057_x264",
+    "label": "Normal",
+    "start_sec": 83.97,
+    "end_sec": 88.97,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/val/Normal/1e43a2b9b527c687_0.mp4",
+    "source_id": "Normal_Videos058_x264",
+    "label": "Normal",
+    "start_sec": 0.5,
+    "end_sec": 5.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/val/Normal/1e43a2b9b527c687_1.mp4",
+    "source_id": "Normal_Videos058_x264",
+    "label": "Normal",
+    "start_sec": 11.17,
+    "end_sec": 16.17,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/val/Normal/1e43a2b9b527c687_2.mp4",
+    "source_id": "Normal_Videos058_x264",
+    "label": "Normal",
+    "start_sec": 21.83,
+    "end_sec": 26.83,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/210d0eb9f2e7fe43_0.mp4",
+    "source_id": "Normal_Videos065_x264",
+    "label": "Normal",
+    "start_sec": 0.5,
+    "end_sec": 5.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/210d0eb9f2e7fe43_1.mp4",
+    "source_id": "Normal_Videos065_x264",
+    "label": "Normal",
+    "start_sec": 9.8,
+    "end_sec": 14.8,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/210d0eb9f2e7fe43_2.mp4",
+    "source_id": "Normal_Videos065_x264",
+    "label": "Normal",
+    "start_sec": 19.1,
+    "end_sec": 24.1,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "exterior/train/Normal/ce6bc87f65aa993c_0.mp4",
+    "source_id": "Normal_Videos095_x264",
+    "label": "Normal",
+    "start_sec": 0.5,
+    "end_sec": 5.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente exterior"
+  },
+  {
+    "clip": "exterior/train/Normal/ce6bc87f65aa993c_1.mp4",
+    "source_id": "Normal_Videos095_x264",
+    "label": "Normal",
+    "start_sec": 11.8,
+    "end_sec": 16.8,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente exterior"
+  },
+  {
+    "clip": "exterior/train/Normal/ce6bc87f65aa993c_2.mp4",
+    "source_id": "Normal_Videos095_x264",
+    "label": "Normal",
+    "start_sec": 23.1,
+    "end_sec": 28.1,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente exterior"
+  },
+  {
+    "clip": "interior/train/Normal/5162770edcd86877_0.mp4",
+    "source_id": "Normal_Videos120_x264",
+    "label": "Normal",
+    "start_sec": 0.5,
+    "end_sec": 5.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/5162770edcd86877_1.mp4",
+    "source_id": "Normal_Videos120_x264",
+    "label": "Normal",
+    "start_sec": 16.63,
+    "end_sec": 21.63,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/5162770edcd86877_2.mp4",
+    "source_id": "Normal_Videos120_x264",
+    "label": "Normal",
+    "start_sec": 32.77,
+    "end_sec": 37.77,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/addc198916550bed_0.mp4",
+    "source_id": "Normal_Videos169_x264",
+    "label": "Normal",
+    "start_sec": 0.5,
+    "end_sec": 5.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/addc198916550bed_1.mp4",
+    "source_id": "Normal_Videos169_x264",
+    "label": "Normal",
+    "start_sec": 17.43,
+    "end_sec": 22.43,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/addc198916550bed_2.mp4",
+    "source_id": "Normal_Videos169_x264",
+    "label": "Normal",
+    "start_sec": 34.37,
+    "end_sec": 39.37,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/val/Normal/ed46331b55072c44_0.mp4",
+    "source_id": "Normal_Videos222_x264",
+    "label": "Normal",
+    "start_sec": 0.5,
+    "end_sec": 5.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/val/Normal/ed46331b55072c44_1.mp4",
+    "source_id": "Normal_Videos222_x264",
+    "label": "Normal",
+    "start_sec": 10.7,
+    "end_sec": 15.7,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/val/Normal/ed46331b55072c44_2.mp4",
+    "source_id": "Normal_Videos222_x264",
+    "label": "Normal",
+    "start_sec": 20.9,
+    "end_sec": 25.9,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/a41f7a1b02764d2a_0.mp4",
+    "source_id": "Normal_Videos229_x264",
+    "label": "Normal",
+    "start_sec": 0.5,
+    "end_sec": 5.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/a41f7a1b02764d2a_1.mp4",
+    "source_id": "Normal_Videos229_x264",
+    "label": "Normal",
+    "start_sec": 20.47,
+    "end_sec": 25.47,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/a41f7a1b02764d2a_2.mp4",
+    "source_id": "Normal_Videos229_x264",
+    "label": "Normal",
+    "start_sec": 40.43,
+    "end_sec": 45.43,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/8031d6fb321a1560_0.mp4",
+    "source_id": "Normal_Videos243_x264",
+    "label": "Normal",
+    "start_sec": 0.5,
+    "end_sec": 5.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/8031d6fb321a1560_1.mp4",
+    "source_id": "Normal_Videos243_x264",
+    "label": "Normal",
+    "start_sec": 20.47,
+    "end_sec": 25.47,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/8031d6fb321a1560_2.mp4",
+    "source_id": "Normal_Videos243_x264",
+    "label": "Normal",
+    "start_sec": 40.43,
+    "end_sec": 45.43,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/val/Normal/4be669b5fd2a4b5f_0.mp4",
+    "source_id": "Normal_Videos244_x264",
+    "label": "Normal",
+    "start_sec": 0.5,
+    "end_sec": 5.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/val/Normal/4be669b5fd2a4b5f_1.mp4",
+    "source_id": "Normal_Videos244_x264",
+    "label": "Normal",
+    "start_sec": 30.8,
+    "end_sec": 35.8,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/val/Normal/4be669b5fd2a4b5f_2.mp4",
+    "source_id": "Normal_Videos244_x264",
+    "label": "Normal",
+    "start_sec": 61.1,
+    "end_sec": 66.1,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/feb584b62f4b41c3_0.mp4",
+    "source_id": "Normal_Videos297_x264",
+    "label": "Normal",
+    "start_sec": 0.5,
+    "end_sec": 5.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/feb584b62f4b41c3_1.mp4",
+    "source_id": "Normal_Videos297_x264",
+    "label": "Normal",
+    "start_sec": 6.15,
+    "end_sec": 11.15,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/62da2ff5b9445b95_0.mp4",
+    "source_id": "Normal_Videos321_x264",
+    "label": "Normal",
+    "start_sec": 0.5,
+    "end_sec": 5.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/62da2ff5b9445b95_1.mp4",
+    "source_id": "Normal_Videos321_x264",
+    "label": "Normal",
+    "start_sec": 7.55,
+    "end_sec": 12.55,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/89e04bccc451f570_0.mp4",
+    "source_id": "Normal_Videos326_x264",
+    "label": "Normal",
+    "start_sec": 0.5,
+    "end_sec": 5.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/89e04bccc451f570_1.mp4",
+    "source_id": "Normal_Videos326_x264",
+    "label": "Normal",
+    "start_sec": 16.53,
+    "end_sec": 21.53,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/89e04bccc451f570_2.mp4",
+    "source_id": "Normal_Videos326_x264",
+    "label": "Normal",
+    "start_sec": 32.57,
+    "end_sec": 37.57,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/3f8bbbdc5291b292_0.mp4",
+    "source_id": "Normal_Videos328_x264",
+    "label": "Normal",
+    "start_sec": 0.5,
+    "end_sec": 5.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/3f8bbbdc5291b292_1.mp4",
+    "source_id": "Normal_Videos328_x264",
+    "label": "Normal",
+    "start_sec": 16.93,
+    "end_sec": 21.93,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/3f8bbbdc5291b292_2.mp4",
+    "source_id": "Normal_Videos328_x264",
+    "label": "Normal",
+    "start_sec": 33.37,
+    "end_sec": 38.37,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "exterior/val/Normal/a1027333758f116a_0.mp4",
+    "source_id": "Normal_Videos337_x264",
+    "label": "Normal",
+    "start_sec": 0.5,
+    "end_sec": 5.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente exterior"
+  },
+  {
+    "clip": "exterior/val/Normal/a1027333758f116a_1.mp4",
+    "source_id": "Normal_Videos337_x264",
+    "label": "Normal",
+    "start_sec": 6.5,
+    "end_sec": 11.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente exterior"
+  },
+  {
+    "clip": "interior/train/Normal/c935eee8736de855_0.mp4",
+    "source_id": "Normal_Videos343_x264",
+    "label": "Normal",
+    "start_sec": 0.5,
+    "end_sec": 5.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/c935eee8736de855_1.mp4",
+    "source_id": "Normal_Videos343_x264",
+    "label": "Normal",
+    "start_sec": 9.73,
+    "end_sec": 14.73,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/c935eee8736de855_2.mp4",
+    "source_id": "Normal_Videos343_x264",
+    "label": "Normal",
+    "start_sec": 18.97,
+    "end_sec": 23.97,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/e027fdd9dce34079_0.mp4",
+    "source_id": "Normal_Videos350_x264",
+    "label": "Normal",
+    "start_sec": 0.5,
+    "end_sec": 5.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/e027fdd9dce34079_1.mp4",
+    "source_id": "Normal_Videos350_x264",
+    "label": "Normal",
+    "start_sec": 16.3,
+    "end_sec": 21.3,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/e027fdd9dce34079_2.mp4",
+    "source_id": "Normal_Videos350_x264",
+    "label": "Normal",
+    "start_sec": 32.1,
+    "end_sec": 37.1,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/7febdd161373d2a8_0.mp4",
+    "source_id": "Normal_Videos361_x264",
+    "label": "Normal",
+    "start_sec": 0.5,
+    "end_sec": 5.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/7febdd161373d2a8_1.mp4",
+    "source_id": "Normal_Videos361_x264",
+    "label": "Normal",
+    "start_sec": 15.97,
+    "end_sec": 20.97,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/7febdd161373d2a8_2.mp4",
+    "source_id": "Normal_Videos361_x264",
+    "label": "Normal",
+    "start_sec": 31.43,
+    "end_sec": 36.43,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/val/Normal/5d21af2225fe73bc_0.mp4",
+    "source_id": "Normal_Videos362_x264",
+    "label": "Normal",
+    "start_sec": 0.5,
+    "end_sec": 5.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/val/Normal/5d21af2225fe73bc_1.mp4",
+    "source_id": "Normal_Videos362_x264",
+    "label": "Normal",
+    "start_sec": 7.9,
+    "end_sec": 12.9,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/val/Normal/5d21af2225fe73bc_2.mp4",
+    "source_id": "Normal_Videos362_x264",
+    "label": "Normal",
+    "start_sec": 15.3,
+    "end_sec": 20.3,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "exterior/train/Normal/95825c8e92b9a616_0.mp4",
+    "source_id": "Normal_Videos405_x264",
+    "label": "Normal",
+    "start_sec": 0.5,
+    "end_sec": 5.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente exterior"
+  },
+  {
+    "clip": "exterior/train/Normal/95825c8e92b9a616_1.mp4",
+    "source_id": "Normal_Videos405_x264",
+    "label": "Normal",
+    "start_sec": 12.0,
+    "end_sec": 17.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente exterior"
+  },
+  {
+    "clip": "exterior/train/Normal/95825c8e92b9a616_2.mp4",
+    "source_id": "Normal_Videos405_x264",
+    "label": "Normal",
+    "start_sec": 23.5,
+    "end_sec": 28.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente exterior"
+  },
+  {
+    "clip": "interior/train/Normal/c9f957e2e9350062_0.mp4",
+    "source_id": "Normal_Videos408_x264",
+    "label": "Normal",
+    "start_sec": 0.5,
+    "end_sec": 5.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/c9f957e2e9350062_1.mp4",
+    "source_id": "Normal_Videos408_x264",
+    "label": "Normal",
+    "start_sec": 9.0,
+    "end_sec": 14.0,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/c9f957e2e9350062_2.mp4",
+    "source_id": "Normal_Videos408_x264",
+    "label": "Normal",
+    "start_sec": 17.5,
+    "end_sec": 22.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/val/Normal/162bbe0187eed4bc_0.mp4",
+    "source_id": "Normal_Videos427_x264",
+    "label": "Normal",
+    "start_sec": 0.5,
+    "end_sec": 5.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/val/Normal/162bbe0187eed4bc_1.mp4",
+    "source_id": "Normal_Videos427_x264",
+    "label": "Normal",
+    "start_sec": 19.3,
+    "end_sec": 24.3,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/val/Normal/162bbe0187eed4bc_2.mp4",
+    "source_id": "Normal_Videos427_x264",
+    "label": "Normal",
+    "start_sec": 38.1,
+    "end_sec": 43.1,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/ddd0b105764dc30d_0.mp4",
+    "source_id": "Normal_Videos433_x264",
+    "label": "Normal",
+    "start_sec": 0.5,
+    "end_sec": 5.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/ddd0b105764dc30d_1.mp4",
+    "source_id": "Normal_Videos433_x264",
+    "label": "Normal",
+    "start_sec": 7.45,
+    "end_sec": 12.45,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/val/Normal/e3c2cf8fec17cf50_0.mp4",
+    "source_id": "Normal_Videos446_x264",
+    "label": "Normal",
+    "start_sec": 0.5,
+    "end_sec": 5.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/val/Normal/e3c2cf8fec17cf50_1.mp4",
+    "source_id": "Normal_Videos446_x264",
+    "label": "Normal",
+    "start_sec": 5.5,
+    "end_sec": 10.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/val/Normal/e3c2cf8fec17cf50_2.mp4",
+    "source_id": "Normal_Videos446_x264",
+    "label": "Normal",
+    "start_sec": 10.5,
+    "end_sec": 15.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "exterior/val/Normal/b56906e3208cbfee_0.mp4",
+    "source_id": "Normal_Videos488_x264",
+    "label": "Normal",
+    "start_sec": 0.5,
+    "end_sec": 5.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente exterior"
+  },
+  {
+    "clip": "exterior/val/Normal/b56906e3208cbfee_1.mp4",
+    "source_id": "Normal_Videos488_x264",
+    "label": "Normal",
+    "start_sec": 13.07,
+    "end_sec": 18.07,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente exterior"
+  },
+  {
+    "clip": "exterior/val/Normal/b56906e3208cbfee_2.mp4",
+    "source_id": "Normal_Videos488_x264",
+    "label": "Normal",
+    "start_sec": 25.63,
+    "end_sec": 30.63,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente exterior"
+  },
+  {
+    "clip": "interior/train/Normal/2fac7c222ab4b11a_0.mp4",
+    "source_id": "Normal_Videos495_x264",
+    "label": "Normal",
+    "start_sec": 0.5,
+    "end_sec": 5.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/2fac7c222ab4b11a_1.mp4",
+    "source_id": "Normal_Videos495_x264",
+    "label": "Normal",
+    "start_sec": 5.97,
+    "end_sec": 10.97,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/2fac7c222ab4b11a_2.mp4",
+    "source_id": "Normal_Videos495_x264",
+    "label": "Normal",
+    "start_sec": 11.43,
+    "end_sec": 16.43,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "exterior/train/Normal/0d753556e019e36e_0.mp4",
+    "source_id": "Normal_Videos505_x264",
+    "label": "Normal",
+    "start_sec": 0.5,
+    "end_sec": 5.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente exterior"
+  },
+  {
+    "clip": "exterior/train/Normal/0d753556e019e36e_1.mp4",
+    "source_id": "Normal_Videos505_x264",
+    "label": "Normal",
+    "start_sec": 6.4,
+    "end_sec": 11.4,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente exterior"
+  },
+  {
+    "clip": "exterior/train/Normal/0d753556e019e36e_2.mp4",
+    "source_id": "Normal_Videos505_x264",
+    "label": "Normal",
+    "start_sec": 12.3,
+    "end_sec": 17.3,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente exterior"
+  },
+  {
+    "clip": "interior/val/Normal/2c8e39cbb0a5cb5f_0.mp4",
+    "source_id": "Normal_Videos527_x264",
+    "label": "Normal",
+    "start_sec": 0.5,
+    "end_sec": 5.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/val/Normal/2c8e39cbb0a5cb5f_1.mp4",
+    "source_id": "Normal_Videos527_x264",
+    "label": "Normal",
+    "start_sec": 13.23,
+    "end_sec": 18.23,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/val/Normal/2c8e39cbb0a5cb5f_2.mp4",
+    "source_id": "Normal_Videos527_x264",
+    "label": "Normal",
+    "start_sec": 25.97,
+    "end_sec": 30.97,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/val/Normal/cf8ce9d625b9029f_0.mp4",
+    "source_id": "Normal_Videos586_x264",
+    "label": "Normal",
+    "start_sec": 0.5,
+    "end_sec": 5.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/val/Normal/cf8ce9d625b9029f_1.mp4",
+    "source_id": "Normal_Videos586_x264",
+    "label": "Normal",
+    "start_sec": 21.33,
+    "end_sec": 26.33,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/val/Normal/cf8ce9d625b9029f_2.mp4",
+    "source_id": "Normal_Videos586_x264",
+    "label": "Normal",
+    "start_sec": 42.17,
+    "end_sec": 47.17,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/3d9edd90aa599f40_0.mp4",
+    "source_id": "Normal_Videos653_x264",
+    "label": "Normal",
+    "start_sec": 0.5,
+    "end_sec": 5.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/3d9edd90aa599f40_1.mp4",
+    "source_id": "Normal_Videos653_x264",
+    "label": "Normal",
+    "start_sec": 11.9,
+    "end_sec": 16.9,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "interior/train/Normal/3d9edd90aa599f40_2.mp4",
+    "source_id": "Normal_Videos653_x264",
+    "label": "Normal",
+    "start_sec": 23.3,
+    "end_sec": 28.3,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente interior"
+  },
+  {
+    "clip": "exterior/train/Normal/0949271711dd2d41_0.mp4",
+    "source_id": "Normal_Videos658_x264",
+    "label": "Normal",
+    "start_sec": 0.5,
+    "end_sec": 5.5,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente exterior"
+  },
+  {
+    "clip": "exterior/train/Normal/0949271711dd2d41_1.mp4",
+    "source_id": "Normal_Videos658_x264",
+    "label": "Normal",
+    "start_sec": 7.75,
+    "end_sec": 12.75,
+    "rights": "ASHEN (UCF-Crime) CC BY-NC 4.0, uso academico",
+    "notes": "Normal; ambiente exterior"
+  }
+]

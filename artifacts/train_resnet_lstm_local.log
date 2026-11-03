@@ -1,0 +1,49 @@
+2026-11-02 15:55:48,642 INFO Argumentos: {'model': 'resnet_lstm', 'dataset_path': 'data/raw/rwf2000_ariany', 'train_size': 300, 'test_size': 100, 'batch_size': 4, 'epochs': 5, 'lr': 0.0001, 'patience': 2, 'seed': 42, 'output_dir': 'artifacts'}
+2026-11-02 15:55:48,643 INFO torch 2.3.1+cpu, 10 hilos, device=cpu
+2026-11-02 15:55:48,662 INFO Subset: 259 train, 41 val interno, 100 test (de 1348 y 333 disponibles)
+2026-11-02 15:56:21,854 INFO Epoch 1  batch 10/65  loss=0.7068  promedio=0.6884  33s transcurridos, faltan ~181s
+2026-11-02 15:56:54,713 INFO Epoch 1  batch 20/65  loss=0.6451  promedio=0.6869  66s transcurridos, faltan ~148s
+2026-11-02 15:57:29,945 INFO Epoch 1  batch 30/65  loss=0.7339  promedio=0.6979  101s transcurridos, faltan ~118s
+2026-11-02 15:58:04,443 INFO Epoch 1  batch 40/65  loss=0.7083  promedio=0.6976  135s transcurridos, faltan ~85s
+2026-11-02 15:58:40,099 INFO Epoch 1  batch 50/65  loss=0.7154  promedio=0.6942  171s transcurridos, faltan ~51s
+2026-11-02 15:59:14,921 INFO Epoch 1  batch 60/65  loss=0.6246  promedio=0.6858  206s transcurridos, faltan ~17s
+2026-11-02 15:59:31,068 INFO Epoch 1  batch 65/65  loss=0.6801  promedio=0.6860  222s transcurridos, faltan ~0s
+2026-11-02 16:00:03,254 INFO Epoch 1/5  train_loss=0.6860  val_loss=0.6885  val_acc=0.4878  val_f1_macro=0.4554  (254s)
+2026-11-02 16:00:03,361 INFO Nuevo mejor F1 del val interno: 0.4554. Checkpoint en artifacts\model_resnet_lstm.pt
+2026-11-02 16:00:36,978 INFO Epoch 2  batch 10/65  loss=0.6753  promedio=0.6665  34s transcurridos, faltan ~185s
+2026-11-02 16:01:11,328 INFO Epoch 2  batch 20/65  loss=0.6143  promedio=0.6538  68s transcurridos, faltan ~153s
+2026-11-02 16:01:44,822 INFO Epoch 2  batch 30/65  loss=0.7268  promedio=0.6502  101s transcurridos, faltan ~118s
+2026-11-02 16:02:19,855 INFO Epoch 2  batch 40/65  loss=0.5086  promedio=0.6407  136s transcurridos, faltan ~85s
+2026-11-02 16:02:53,298 INFO Epoch 2  batch 50/65  loss=0.6488  promedio=0.6398  170s transcurridos, faltan ~51s
+2026-11-02 16:03:26,645 INFO Epoch 2  batch 60/65  loss=0.5906  promedio=0.6374  203s transcurridos, faltan ~17s
+2026-11-02 16:03:42,706 INFO Epoch 2  batch 65/65  loss=0.6608  promedio=0.6338  219s transcurridos, faltan ~0s
+2026-11-02 16:04:14,377 INFO Epoch 2/5  train_loss=0.6338  val_loss=0.6617  val_acc=0.6829  val_f1_macro=0.6822  (251s)
+2026-11-02 16:04:14,476 INFO Nuevo mejor F1 del val interno: 0.6822. Checkpoint en artifacts\model_resnet_lstm.pt
+2026-11-02 16:04:46,978 INFO Epoch 3  batch 10/65  loss=0.4879  promedio=0.5683  33s transcurridos, faltan ~179s
+2026-11-02 16:05:19,988 INFO Epoch 3  batch 20/65  loss=0.6886  promedio=0.5495  66s transcurridos, faltan ~147s
+2026-11-02 16:05:53,240 INFO Epoch 3  batch 30/65  loss=0.5118  promedio=0.5415  99s transcurridos, faltan ~115s
+2026-11-02 16:06:26,569 INFO Epoch 3  batch 40/65  loss=0.5863  promedio=0.5535  132s transcurridos, faltan ~83s
+2026-11-02 16:07:01,078 INFO Epoch 3  batch 50/65  loss=0.4195  promedio=0.5421  167s transcurridos, faltan ~50s
+2026-11-02 16:07:35,916 INFO Epoch 3  batch 60/65  loss=0.4742  promedio=0.5515  201s transcurridos, faltan ~17s
+2026-11-02 16:07:53,864 INFO Epoch 3  batch 65/65  loss=0.6724  promedio=0.5478  219s transcurridos, faltan ~0s
+2026-11-02 16:08:25,107 INFO Epoch 3/5  train_loss=0.5478  val_loss=0.6534  val_acc=0.6585  val_f1_macro=0.6567  (251s)
+2026-11-02 16:08:58,011 INFO Epoch 4  batch 10/65  loss=0.3569  promedio=0.4085  33s transcurridos, faltan ~181s
+2026-11-02 16:09:31,529 INFO Epoch 4  batch 20/65  loss=0.4351  promedio=0.4658  66s transcurridos, faltan ~149s
+2026-11-02 16:10:05,344 INFO Epoch 4  batch 30/65  loss=0.4014  promedio=0.4713  100s transcurridos, faltan ~117s
+2026-11-02 16:10:38,828 INFO Epoch 4  batch 40/65  loss=0.6422  promedio=0.4659  134s transcurridos, faltan ~84s
+2026-11-02 16:11:14,487 INFO Epoch 4  batch 50/65  loss=0.3741  promedio=0.4615  169s transcurridos, faltan ~51s
+2026-11-02 16:11:48,558 INFO Epoch 4  batch 60/65  loss=0.5538  promedio=0.4747  203s transcurridos, faltan ~17s
+2026-11-02 16:12:04,157 INFO Epoch 4  batch 65/65  loss=0.3401  promedio=0.4713  219s transcurridos, faltan ~0s
+2026-11-02 16:12:35,378 INFO Epoch 4/5  train_loss=0.4713  val_loss=0.6642  val_acc=0.7073  val_f1_macro=0.6985  (250s)
+2026-11-02 16:12:35,485 INFO Nuevo mejor F1 del val interno: 0.6985. Checkpoint en artifacts\model_resnet_lstm.pt
+2026-11-02 16:13:09,089 INFO Epoch 5  batch 10/65  loss=0.2454  promedio=0.2679  34s transcurridos, faltan ~185s
+2026-11-02 16:13:42,918 INFO Epoch 5  batch 20/65  loss=0.2389  promedio=0.3314  67s transcurridos, faltan ~152s
+2026-11-02 16:14:17,023 INFO Epoch 5  batch 30/65  loss=0.5172  promedio=0.3748  102s transcurridos, faltan ~118s
+2026-11-02 16:14:49,736 INFO Epoch 5  batch 40/65  loss=0.3647  promedio=0.3813  134s transcurridos, faltan ~84s
+2026-11-02 16:15:23,910 INFO Epoch 5  batch 50/65  loss=0.2244  promedio=0.3705  168s transcurridos, faltan ~51s
+2026-11-02 16:15:58,043 INFO Epoch 5  batch 60/65  loss=0.3408  promedio=0.3717  203s transcurridos, faltan ~17s
+2026-11-02 16:16:14,220 INFO Epoch 5  batch 65/65  loss=0.3105  promedio=0.3770  219s transcurridos, faltan ~0s
+2026-11-02 16:16:45,579 INFO Epoch 5/5  train_loss=0.3770  val_loss=0.7032  val_acc=0.6585  val_f1_macro=0.6483  (250s)
+2026-11-02 16:18:10,954 INFO TEST  acc=0.6900  f1_macro=0.6885  recall_sospechoso=0.6200  matriz=[[38, 12], [19, 31]]
+2026-11-02 16:18:10,955 INFO Tiempo real: entrenamiento 20.9 min, test 1.4 min, total 22.4 min
+2026-11-02 16:18:10,955 INFO Metricas en artifacts\metrics_resnet_lstm.json, log en artifacts\train_resnet_lstm_local.log

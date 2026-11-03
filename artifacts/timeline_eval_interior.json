@@ -1,0 +1,139 @@
+{
+  "mode": "interior",
+  "protocol": "un evento anotado por clip positivo recortado",
+  "n_test_clips": 62,
+  "n_events": 35,
+  "event_recall": 0.7142857142857143,
+  "false_alerts": 7,
+  "confusion_matrix": [
+    [
+      20,
+      7
+    ],
+    [
+      10,
+      25
+    ]
+  ],
+  "errors": [
+    {
+      "clip": "interior/val/Riesgo/89fd95650d2af474_0.mp4",
+      "source_id": "Assault073_x264",
+      "type": "missed_event",
+      "peak_score": 0.1141,
+      "notes": "Assault; ambiente interior; intervalo de anotacion ASHEN"
+    },
+    {
+      "clip": "interior/val/Riesgo/28ce698ad865f081_0.mp4",
+      "source_id": "Assault100_x264",
+      "type": "missed_event",
+      "peak_score": 0.6806,
+      "notes": "Assault; ambiente interior; intervalo de anotacion ASHEN"
+    },
+    {
+      "clip": "interior/val/Riesgo/0fa318410dd936fb_0.mp4",
+      "source_id": "Robbery008_x264",
+      "type": "missed_event",
+      "peak_score": 0.8282,
+      "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+    },
+    {
+      "clip": "interior/val/Riesgo/0fa318410dd936fb_1.mp4",
+      "source_id": "Robbery008_x264",
+      "type": "missed_event",
+      "peak_score": 0.5099,
+      "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+    },
+    {
+      "clip": "interior/val/Riesgo/0fa318410dd936fb_2.mp4",
+      "source_id": "Robbery008_x264",
+      "type": "missed_event",
+      "peak_score": 0.7956,
+      "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+    },
+    {
+      "clip": "interior/val/Riesgo/0fa318410dd936fb_3.mp4",
+      "source_id": "Robbery008_x264",
+      "type": "missed_event",
+      "peak_score": 0.5748,
+      "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+    },
+    {
+      "clip": "interior/val/Riesgo/0fa318410dd936fb_4.mp4",
+      "source_id": "Robbery008_x264",
+      "type": "missed_event",
+      "peak_score": 0.4976,
+      "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+    },
+    {
+      "clip": "interior/val/Riesgo/0fa318410dd936fb_5.mp4",
+      "source_id": "Robbery008_x264",
+      "type": "missed_event",
+      "peak_score": 0.405,
+      "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+    },
+    {
+      "clip": "interior/val/Riesgo/88aed65d91e69a62_0.mp4",
+      "source_id": "Robbery059_x264",
+      "type": "missed_event",
+      "peak_score": 0.5077,
+      "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+    },
+    {
+      "clip": "interior/val/Riesgo/88aed65d91e69a62_2.mp4",
+      "source_id": "Robbery059_x264",
+      "type": "missed_event",
+      "peak_score": 0.376,
+      "notes": "Robbery; ambiente interior; intervalo de anotacion ASHEN"
+    },
+    {
+      "clip": "interior/val/Normal/ed46331b55072c44_0.mp4",
+      "source_id": "Normal_Videos222_x264",
+      "type": "false_alert",
+      "peak_score": 0.7136,
+      "notes": "Normal; ambiente interior"
+    },
+    {
+      "clip": "interior/val/Normal/5d21af2225fe73bc_0.mp4",
+      "source_id": "Normal_Videos362_x264",
+      "type": "false_alert",
+      "peak_score": 0.87,
+      "notes": "Normal; ambiente interior"
+    },
+    {
+      "clip": "interior/val/Normal/5d21af2225fe73bc_1.mp4",
+      "source_id": "Normal_Videos362_x264",
+      "type": "false_alert",
+      "peak_score": 0.9022,
+      "notes": "Normal; ambiente interior"
+    },
+    {
+      "clip": "interior/val/Normal/162bbe0187eed4bc_0.mp4",
+      "source_id": "Normal_Videos427_x264",
+      "type": "false_alert",
+      "peak_score": 0.8274,
+      "notes": "Normal; ambiente interior"
+    },
+    {
+      "clip": "interior/val/Normal/162bbe0187eed4bc_1.mp4",
+      "source_id": "Normal_Videos427_x264",
+      "type": "false_alert",
+      "peak_score": 0.8015,
+      "notes": "Normal; ambiente interior"
+    },
+    {
+      "clip": "interior/val/Normal/162bbe0187eed4bc_2.mp4",
+      "source_id": "Normal_Videos427_x264",
+      "type": "false_alert",
+      "peak_score": 0.6888,
+      "notes": "Normal; ambiente interior"
+    },
+    {
+      "clip": "interior/val/Normal/2c8e39cbb0a5cb5f_0.mp4",
+      "source_id": "Normal_Videos527_x264",
+      "type": "false_alert",
+      "peak_score": 0.6803,
+      "notes": "Normal; ambiente interior"
+    }
+  ]
+}
