@@ -28,6 +28,7 @@ body { background: var(--paper); color: var(--ink); font-family: 'Segoe UI', Ari
 .kicker i, .optical figcaption i { display: inline-block; width: 8px; height: 8px; background: var(--lime); border-radius: 50%; }
 .hero h1, .method h2, .evidence h2, .studio-title h1 { font-weight: 520; letter-spacing: -.07em; line-height: .98; margin: 24px 0; }
 .hero h1 { font-size: clamp(60px, 6.9vw, 104px); }
+.hero .hero-headline { font-size: clamp(38px, 4.3vw, 70px); line-height: 1.05; }
 .hero em, .method em, .evidence em { font-family: Georgia, serif; font-weight: 400; letter-spacing: -.065em; }
 .hero em { color: var(--lime); }
 .hero-copy > p { color: #ccd5c9; font-size: clamp(16px,1.45vw,20px); max-width: 41ch; line-height: 1.55; margin: 25px 0 31px; }

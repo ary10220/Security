@@ -20,10 +20,10 @@ class Mode:
 MODES = {
     "peleas": Mode("Peleas · RWF-2000", "mobilenet_lstm",
                    "Patrón visual similar a clips Fight de RWF-2000; requiere revisión humana."),
-    "interior": Mode("Interior / joyería", "interior",
-                     "Patrón visual similar a eventos observables de riesgo en interior; revisar el contexto."),
-    "exterior": Mode("Exterior", "exterior",
-                     "Patrón visual similar a eventos observables de riesgo en exterior; revisar el contexto."),
+    "interior": Mode("Riesgo observable en interiores · ASHEN", "interior",
+                      "Similitud con clips Riesgo de ASHEN (Robbery y Assault agrupados); revisar el contexto."),
+    "exterior": Mode("Riesgo observable en exteriores · ASHEN", "exterior",
+                      "Similitud con clips Riesgo de ASHEN; evaluación exterior no concluyente. Revisar el contexto."),
 }
 
 
