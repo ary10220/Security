@@ -383,3 +383,40 @@ Fase de correcciones tras la revisión del EDA (rama `fix/eda-cifras-grageda`):
 
 Pendiente de mi parte: integración del frontend con la API real y revisión del
 trabajo conjunto con Diego.
+
+Fase de comparación de frames y revisión del PR #32 (2 de noviembre, tras el
+reparto con Diego; él entrenó los modelos de peleas, interior y exterior):
+
+- **`--num-frames` en `src/models/train.py`** (rama `feat/train-num-frames`,
+  PR #33): permite entrenar con 8, 16 o 32 frames; el mismo valor se aplica a
+  train, validación interna y test, y el JSON de métricas guarda `num_frames`.
+  Con el valor por defecto (16) el comportamiento no cambia. `train.py` es de
+  Ariany: el cambio queda como propuesta para su revisión.
+- **Comparación de 8, 16 y 32 frames** (rama `docs/comparacion-frames`):
+  `mobilenet_lstm` con RWF-2000 completo, el comando y split de Diego (1.393
+  train, 207 validación interna, 400 test, semilla 42), en mi GTX 1050 Ti, una
+  corrida por configuración. Exactitud en test: 72,5 % (8), 75,25 % (16) y
+  74,0 % (32). Los intervalos de confianza se solapan y la corrida de 16 frames
+  de Diego dio 73,0 %, así que la diferencia no se distingue del ruido; 32
+  frames cuesta ~2,5 veces más de inferencia sin mejora medible. Detalle,
+  límites y archivos en `docs/comparacion-frames.md` y `artifacts/frames/`.
+- **Regla de resolución contra los modelos** (rama `feat/analisis-resolucion`,
+  PR #34): `scripts/analisis_resolucion.py` con 3 tests. La regla `alto > 251`
+  acierta 75,0 % en los mismos 400 clips; los tres modelos de peleas, 73,0 a
+  74,25 %. En 320x240 (126 clips) los modelos quedan por debajo de contestar
+  siempre NonFight (0,94).
+- **Auditoría de las etiquetas de ASHEN** (`docs/auditoria-ashen.md`, PR #34):
+  descargué los 78 videos y clasifiqué a ciegas 24 (los 12 exteriores y 12
+  interiores al azar); coincido con Diego en 23, 1 dudoso. Sin fuga de fuentes
+  entre train y test. Medí el atajo por metadatos (56–61 % en interior, 4 videos
+  en exterior) y encontré un sesgo de selección: los normales son los más
+  livianos de `test_normal.txt`. La revisión la hizo un asistente a partir de 2
+  fotogramas por video, no una persona.
+- **Revisión del PR #32** de Diego: comentario con lo verificado (matrices,
+  mismos 400 clips, sin fuga por fuente) y los hallazgos anteriores. No aprobé ni
+  rechacé; queda pendiente su respuesta.
+- Hecho con asistencia de Claude Code (declarar en el informe). Los `.pt` de las
+  tres corridas (15 MB cada uno) no están en el repo.
+
+Pendiente de mi parte: subir los `.pt` a la carpeta compartida, repetir la
+comparación con más semillas si hay tiempo y la revisión de los PR de Ariany.
