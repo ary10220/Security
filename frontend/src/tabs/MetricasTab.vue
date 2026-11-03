@@ -2,6 +2,7 @@
 import { computed, onMounted, ref } from 'vue'
 import PrCurve from '../components/PrCurve.vue'
 import { useApi } from '../composables/useApi.js'
+import { MIN_TEST_CLIPS, isInconclusive } from '../lib/metrics.js'
 
 const api = useApi()
 const modelNames = ['mobilenet_lstm', 'mobilenet_baseline', 'resnet_lstm', 'interior', 'exterior']
@@ -12,6 +13,7 @@ const error = ref('')
 const available = computed(() => modelNames.filter((name) => reports.value[name]))
 const report = computed(() => reports.value[selected.value])
 const final = computed(() => report.value?.final)
+const inconclusive = computed(() => isInconclusive(report.value))
 const classLabels = { NonFight: 'Sin pelea', Fight: 'Pelea', Normal: 'Normal', Riesgo: 'Riesgo observable' }
 const displayName = {
   mobilenet_lstm: 'Peleas · MobileNet + BiLSTM',
@@ -45,7 +47,7 @@ onMounted(async () => {
     </div>
     <p v-if="loading" class="muted">Cargando métricas…</p>
     <p v-if="error" class="error" role="alert">{{ error }}</p>
-    <template v-if="report && final">
+    <template v-if="report && final && !inconclusive">
       <p class="muted">{{ report.mode === 'interior' || report.mode === 'exterior' ? 'Evaluación específica del escenario' : 'Evaluación de peleas en RWF-2000' }} · {{ report.evaluated_on }}.</p>
       <p v-if="!reports.interior || !reports.exterior" class="muted">Interior / joyería: {{ reports.interior ? 'evaluado' : 'Modelo no disponible' }} · Exterior: {{ reports.exterior ? 'evaluado' : 'Modelo no disponible' }}.</p>
       <div class="metrics-summary">
@@ -92,5 +94,17 @@ onMounted(async () => {
         <ul><li v-for="item in report.test_errors.slice(0, 20)" :key="item.clip">{{ item.type === 'false_alert' ? 'Falsa alerta' : 'Evento omitido' }} · {{ item.clip }} · puntuación {{ pct(item.score) }}</li></ul>
       </section>
     </template>
+    <!-- Evaluación con muy pocos clips: se explica en vez de mostrar porcentajes. -->
+    <section v-else-if="report && final" class="card" role="status">
+      <h3>No concluyente</h3>
+      <p>
+        El test de este escenario tiene solo {{ report.n_test }} clips (de muy pocos videos distintos).
+        Con tan pocos casos cualquier porcentaje sería ruido, así que no se muestran cifras.
+      </p>
+      <p class="muted">
+        El flujo completo (etiquetado, recorte, entrenamiento y evaluación) funciona; para poder
+        concluir hacen falta al menos {{ MIN_TEST_CLIPS }} clips de test y más videos fuente.
+      </p>
+    </section>
   </section>
 </template>
