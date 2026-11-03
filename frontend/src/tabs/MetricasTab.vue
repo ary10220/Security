@@ -10,17 +10,19 @@ const reports = ref({})
 const selected = ref('mobilenet_lstm')
 const loading = ref(true)
 const error = ref('')
-const available = computed(() => modelNames.filter((name) => reports.value[name]))
+const available = computed(() => modelNames.filter((name) => reports.value[name]?.model_size_mb != null))
 const report = computed(() => reports.value[selected.value])
 const final = computed(() => report.value?.final)
-const inconclusive = computed(() => isInconclusive(report.value))
+const riskMode = computed(() => report.value?.mode === 'interior' || report.value?.mode === 'exterior')
+const inconclusive = computed(() => report.value?.mode === 'exterior')
+const sourceCount = computed(() => report.value?.mode === 'interior' ? 18 : report.value?.mode === 'exterior' ? 4 : null)
 const classLabels = { NonFight: 'Sin pelea', Fight: 'Pelea', Normal: 'Normal', Riesgo: 'Riesgo observable' }
 const displayName = {
   mobilenet_lstm: 'Peleas · MobileNet + BiLSTM',
   mobilenet_baseline: 'Peleas · MobileNet un frame',
   resnet_lstm: 'Peleas · ResNet + BiLSTM',
-  interior: 'Interior / joyería',
-  exterior: 'Exterior',
+  interior: 'Riesgo observable en interiores · ASHEN',
+  exterior: 'Riesgo observable en exteriores · ASHEN',
 }
 const pct = (value) => value == null ? 'Sin medir' : `${(value * 100).toFixed(1)} %`
 
@@ -31,8 +33,9 @@ onMounted(async () => {
     if (result.status === 'fulfilled') next[modelNames[index]] = result.value
   })
   reports.value = next
-  if (!next[selected.value]) selected.value = Object.keys(next)[0] ?? ''
-  if (!Object.keys(next).length) error.value = 'No se pudieron cargar las métricas desde la API.'
+  const usable = modelNames.filter((name) => next[name]?.model_size_mb != null)
+  if (!usable.includes(selected.value)) selected.value = usable[0] ?? ''
+  if (!usable.length) error.value = 'Modelo no disponible: faltan checkpoints o métricas en la API.'
   loading.value = false
 })
 </script>
@@ -47,12 +50,16 @@ onMounted(async () => {
     </div>
     <p v-if="loading" class="muted">Cargando métricas…</p>
     <p v-if="error" class="error" role="alert">{{ error }}</p>
-    <template v-if="report && final && !inconclusive">
-      <p class="muted">{{ report.mode === 'interior' || report.mode === 'exterior' ? 'Evaluación específica del escenario' : 'Evaluación de peleas en RWF-2000' }} · {{ report.evaluated_on }}.</p>
-      <p v-if="!reports.interior || !reports.exterior" class="muted">Interior / joyería: {{ reports.interior ? 'evaluado' : 'Modelo no disponible' }} · Exterior: {{ reports.exterior ? 'evaluado' : 'Modelo no disponible' }}.</p>
+    <template v-if="report && final">
+      <p class="muted">{{ riskMode ? 'Normal / Riesgo · ASHEN' : 'Fight / NonFight · RWF-2000' }} · {{ report.n_test }} clips de test<span v-if="sourceCount"> de {{ sourceCount }} videos fuente</span><span v-else> · fuentes no registradas en el JSON</span> · {{ report.evaluated_on }}.</p>
+      <p v-if="riskMode" class="muted">Riesgo agrupa Robbery y Assault; el checkpoint no predice una clase Robbery ni reconoce armas. Los datos ASHEN son de uso no comercial.</p>
+      <p v-else class="muted">Corrida {{ report.device?.toUpperCase() ?? 'sin dispositivo registrado' }} de {{ report.n_test }} clips de test. Las corridas CPU de 100 clips y GPU de 400 tienen protocolos distintos; no representan una mejora comparable. La comparación 8/16/32 frames corresponde a otros pesos.</p>
+      <p v-if="!reports.interior?.model_size_mb || !reports.exterior?.model_size_mb" class="muted">Interiores: {{ reports.interior?.model_size_mb ? 'evaluado' : 'Modelo no disponible' }} · Exteriores: {{ reports.exterior?.model_size_mb ? 'evaluado' : 'Modelo no disponible' }}.</p>
+      <p v-if="inconclusive" class="banner" role="status"><strong>No concluyente.</strong> Exterior sí se entrenó, pero no hubo tiempo de ampliar los datos ni validarlo más. Se muestran los resultados observados en 13 clips de solo 4 videos fuente; no estiman un rendimiento confiable.</p>
       <div class="metrics-summary">
-        <div class="card stat"><span>Accuracy</span><strong>{{ pct(final.accuracy) }}</strong></div>
+        <div class="card stat"><span>Exactitud{{ inconclusive ? ' observada · no concluyente' : '' }}</span><strong>{{ pct(final.accuracy) }}</strong></div>
         <div class="card stat"><span>F1 macro</span><strong>{{ pct(final.f1_macro) }}</strong></div>
+        <div class="card stat"><span>Recall {{ riskMode ? 'Riesgo' : 'Fight' }}</span><strong>{{ pct(final.recall_per_class[riskMode ? 'Riesgo' : 'Fight']) }}</strong></div>
         <div class="card stat"><span>AP</span><strong>{{ pct(report.pr_curve?.average_precision) }}</strong></div>
         <div class="card stat"><span>Tiempo / clip</span><strong>{{ report.inference_ms == null ? 'Sin medir' : report.inference_ms.toFixed(1) + ' ms' }}</strong></div>
         <div class="card stat"><span>Tamaño</span><strong>{{ report.model_size_mb == null ? 'Sin medir' : report.model_size_mb + ' MB' }}</strong></div>
@@ -63,11 +70,11 @@ onMounted(async () => {
           <h3>Matriz de confusión</h3>
           <p class="muted">Filas: clase real · columnas: predicción</p>
           <div class="confusion-grid">
-            <div></div><div>Normal</div><div>Sospechoso</div>
-            <div>Normal</div>
+            <div></div><div>{{ riskMode ? 'Normal' : 'NonFight' }}</div><div>{{ riskMode ? 'Riesgo' : 'Fight' }}</div>
+            <div>{{ riskMode ? 'Normal' : 'NonFight' }}</div>
             <div class="confusion-cell correct">{{ final.confusion_matrix[0][0] }}<small>TN</small></div>
             <div class="confusion-cell wrong">{{ final.confusion_matrix[0][1] }}<small>FP</small></div>
-            <div>Sospechoso</div>
+            <div>{{ riskMode ? 'Riesgo' : 'Fight' }}</div>
             <div class="confusion-cell wrong">{{ final.confusion_matrix[1][0] }}<small>FN</small></div>
             <div class="confusion-cell correct">{{ final.confusion_matrix[1][1] }}<small>TP</small></div>
           </div>
