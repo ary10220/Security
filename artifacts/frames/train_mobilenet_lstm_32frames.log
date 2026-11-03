@@ -1,0 +1,22 @@
+2026-11-02 20:10:23,890 INFO Dataset: <RWF-2000>
+2026-11-02 20:10:24,287 INFO Modelo 'mobilenet_lstm' en cuda
+2026-11-02 20:10:24,287 INFO Split: 1393 train, 207 val interno, 400 test
+2026-11-02 20:17:20,073 INFO Epoch 1/15  train_loss=0.6438  val_loss=0.5698  val_acc=0.7391  val_f1_macro=0.7386
+2026-11-02 20:17:20,154 INFO Nuevo mejor F1 macro: 0.7386. Checkpoint en <runs>/frames_32\model_mobilenet_lstm.pt
+2026-11-02 20:24:01,795 INFO Epoch 2/15  train_loss=0.5528  val_loss=0.5556  val_acc=0.7440  val_f1_macro=0.7437
+2026-11-02 20:24:01,859 INFO Nuevo mejor F1 macro: 0.7437. Checkpoint en <runs>/frames_32\model_mobilenet_lstm.pt
+2026-11-02 20:30:41,147 INFO Epoch 3/15  train_loss=0.5236  val_loss=0.5095  val_acc=0.7391  val_f1_macro=0.7359
+2026-11-02 20:37:25,515 INFO Epoch 4/15  train_loss=0.4886  val_loss=0.5338  val_acc=0.7440  val_f1_macro=0.7439
+2026-11-02 20:37:25,607 INFO Nuevo mejor F1 macro: 0.7439. Checkpoint en <runs>/frames_32\model_mobilenet_lstm.pt
+2026-11-02 20:44:04,479 INFO Epoch 5/15  train_loss=0.4721  val_loss=0.5190  val_acc=0.7391  val_f1_macro=0.7374
+2026-11-02 20:50:43,592 INFO Epoch 6/15  train_loss=0.4412  val_loss=0.5308  val_acc=0.7488  val_f1_macro=0.7481
+2026-11-02 20:50:43,668 INFO Nuevo mejor F1 macro: 0.7481. Checkpoint en <runs>/frames_32\model_mobilenet_lstm.pt
+2026-11-02 20:57:26,655 INFO Epoch 7/15  train_loss=0.4321  val_loss=0.5487  val_acc=0.7150  val_f1_macro=0.7071
+2026-11-02 21:04:05,868 INFO Epoch 8/15  train_loss=0.4187  val_loss=0.5897  val_acc=0.6908  val_f1_macro=0.6769
+2026-11-02 21:10:47,405 INFO Epoch 9/15  train_loss=0.3895  val_loss=0.5299  val_acc=0.7150  val_f1_macro=0.7080
+2026-11-02 21:17:26,949 INFO Epoch 10/15  train_loss=0.3639  val_loss=0.5521  val_acc=0.7391  val_f1_macro=0.7364
+2026-11-02 21:24:09,906 INFO Epoch 11/15  train_loss=0.3075  val_loss=0.5976  val_acc=0.7198  val_f1_macro=0.7169
+2026-11-02 21:24:09,906 INFO Early stopping: 5 epocas sin mejorar (mejor epoca 6).
+2026-11-02 21:24:09,919 INFO Metricas del val interno guardadas en <runs>/frames_32\metrics_mobilenet_lstm_internal_val.json
+2026-11-02 21:25:53,204 INFO Metricas de test guardadas en <runs>/frames_32\metrics_mobilenet_lstm.json
+2026-11-02 21:25:53,204 INFO Resumen: val_interno_f1=0.7481  test_acc=0.7400  test_f1_macro=0.7396  entrenamiento=4425.6s
