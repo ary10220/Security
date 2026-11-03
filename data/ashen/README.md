@@ -27,9 +27,10 @@ Resultado: interior 31 fuentes de Riesgo y 29 Normal; exterior 6 y 6.
 
 ## Límites
 
-- Exterior tiene solo 4 fuentes en test: sus métricas son casi inconclusas.
+- Exterior tiene solo 4 fuentes en test (13 clips): **no se reporta ninguna exactitud** para ese modo; el flujo solo sirve para mostrar el proceso.
 - Se usan videos del split de test de ASHEN como datos propios; los números **no** son comparables con los publicados para ASHEN.
-- Los videos normales suelen tener otro estilo de imagen que los de robos y asaltos; el modelo podría aprender esa diferencia en vez del comportamiento. No se midió.
+- **Sesgo de selección en los normales.** Los 40 normales se eligieron como los más livianos de `test_normal.txt`. Tras las exclusiones quedan 35 normales (todos 320x240, mediana de 6,4 MB y 35 s) frente a 37 de riesgo (26 de 320x240, 10 de 1280x720 y 1 de 640x480; mediana de 10,8 MB y 63 s). `prepare_risk_data` conserva la resolución original, así que el modelo puede aprender esa diferencia en vez del comportamiento. Un umbral de un solo atributo del video acierta 55–64 % (revisión del PR #32): no es un atajo fuerte, pero con 18 videos de test no se descarta.
+- **Auditoría de etiquetas:** en la revisión del PR #32 se clasificaron a ciegas 24 de los 78 videos (los 12 exteriores y 12 interiores al azar) y coincidieron 23. La hizo un asistente de IA con 2 fotogramas por video, no una persona, y no cubre los otros 48 interiores.
 
 ## Reproducir
 

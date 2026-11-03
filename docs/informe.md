@@ -16,7 +16,7 @@ El entrenamiento local en CPU tomó **400 clips balanceados**, 200 Fight y 200 N
 
 La segunda corrida usó **RWF-2000 completo** con `src/models/train.py` en una GPU NVIDIA RTX 3060 Laptop. Los 1.600 clips de `train/` se dividieron por video fuente (semilla 42): **1.393 para entrenamiento** y **207 para validación interna**, que elige el mejor checkpoint y activa la parada temprana. Los **400 clips de `val/`** (200 Fight y 200 NonFight) son el test, se evaluaron una sola vez al final y no se usaron para escoger épocas. Esta corrida evaluó los tres modelos (`mobilenet_lstm`, `mobilenet_baseline` y `resnet_lstm`) con exactamente la misma partición. Sus resultados no son comparables con los de la primera corrida: cambian el tamaño del entrenamiento (1.393 contra 259 clips) y del test (400 contra 100 clips).
 
-Los modos `interior` y `exterior` usan otro conjunto: 78 videos del [dataset ASHEN](https://huggingface.co/datasets/mtastan/ASHEN-Dataset) (videos de vigilancia de UCF-Crime con el intervalo del evento anotado, licencia CC BY-NC 4.0). Se tomaron los 38 videos de Robbery y Assault que tienen anotación temporal (clase Riesgo) y 40 videos normales (clase Normal). Cada video se clasificó a mano como interior o exterior mirando sus fotogramas, y se excluyeron 6 por ambiguos o por no ser vigilancia. De cada evento anotado se recortaron clips de 5 s (máximo 6 por video) y de cada video normal hasta 3. El 30 % de los videos fuente de cada ambiente y clase se reservó para test, sorteado con semilla 42. El detalle por video, las etiquetas por clip y los comandos para reproducirlo están en `data/ashen/`.
+Los modos `interior` y `exterior` usan otro conjunto: 78 videos del [dataset ASHEN](https://huggingface.co/datasets/mtastan/ASHEN-Dataset) (videos de vigilancia de UCF-Crime con el intervalo del evento anotado, licencia CC BY-NC 4.0). Se tomaron los 38 videos de Robbery y Assault que tienen anotación temporal (clase Riesgo) y 40 videos normales (clase Normal), elegidos como los más livianos de la lista de normales de test; esa elección los hace distintos de los de riesgo (ver 5.4). Cada video se clasificó a mano como interior o exterior mirando sus fotogramas, y se excluyeron 6 por ambiguos o por no ser vigilancia. De cada evento anotado se recortaron clips de 5 s (máximo 6 por video) y de cada video normal hasta 3. El 30 % de los videos fuente de cada ambiente y clase se reservó para test, sorteado con semilla 42. El detalle por video, las etiquetas por clip y los comandos para reproducirlo están en `data/ashen/`.
 
 El EDA de `notebooks/02_eda_datasets.ipynb` encontró que los clips de RWF-2000 duran 5,0 s y tienen 30 fps, pero las resoluciones varían. Una regla basada solo en resolución separó las clases con aproximadamente 75 % de exactitud en la exploración; por tanto, una buena puntuación de un clasificador visual **no prueba por sí sola** que aprendió a reconocer una pelea. Los 2.000 clips provienen de cerca de 961 videos fuente según el prefijo del nombre. La separación por fuente evita que secuencias relacionadas caigan en entrenamiento y validación interna. Se deben examinar errores y rendimiento por resolución antes de cualquier uso fuera de la demo.
 
@@ -209,6 +209,16 @@ Los tres modelos quedan en 73–74 % de exactitud y sus intervalos se solapan ca
 - `mobilenet_baseline` es el más sensible: omite solo **38 peleas** (recall 0,81) a costa de **68 falsas alarmas**.
 - `resnet_lstm` queda en un punto intermedio: 48 peleas omitidas y 55 falsas alarmas.
 
+**Los modelos no superan a la regla de resolución.** La regla `alto > 251`, fijada con el EDA sobre `train/`, acierta 75,0 % en estos mismos 400 clips; los modelos, 73,0–74,3 %. Los CSV de predicciones traen el ancho y el alto de cada clip, así que se puede ver cómo se reparte el acierto por resolución (los tres grupos más grandes, 309 de los 400 clips; la última columna es la exactitud de responder siempre la clase mayoritaria del grupo):
+
+| Resolución | Clips | % pelea | `mobilenet_lstm` | `mobilenet_baseline` | `resnet_lstm` | Siempre la mayoritaria |
+|---|---:|---:|---:|---:|---:|---:|
+| 320x240 | 126 | 6 % | 92 % | 84 % | 87 % | 94 % |
+| 1280x720 | 147 | 67 % | 56 % | 69 % | 67 % | 67 % |
+| 480x360 | 36 | 64 % | 64 % | 67 % | 64 % | 64 % |
+
+En el grupo de 320x240, casi sin peleas, los modelos aciertan menos que decir siempre "NonFight"; en el de 1280x720, con dos tercios de peleas, quedan en torno a decir siempre "Fight". Los grupos son pequeños y esto no prueba que los modelos usen la resolución, pero es compatible con eso. Por tanto **73–74 % no debe presentarse como evidencia de que los modelos reconocen peleas**: el resultado es consistente con que aprovechen la resolución, y solo un test con la resolución controlada podría separarlo.
+
 El `mobilenet_lstm` tiene el AP más alto (0,845), lo que indica que ordena mejor los clips por probabilidad de pelea, y su umbral 0,5 resulta alto para él. El archivo registra un mejor F1 de 0,797 con un umbral de 0,07, pero ese umbral se calculó sobre el propio test: **no es un resultado válido**, solo una señal de que el umbral debe elegirse con la validación interna y volver a evaluarse en un test no usado.
 
 **Decisión pendiente del equipo.** El criterio declarado para la demo es reducir falsos negativos de Fight. Con ese criterio, esta corrida favorece a `mobilenet_baseline` (recall 0,81) y a `resnet_lstm` (0,76) sobre `mobilenet_lstm` (0,62). La demo actual carga el checkpoint de `mobilenet_lstm` porque el modo `peleas` de la API está asociado a ese artefacto y es la arquitectura propuesta por el proyecto (MobileNetV2 + BiLSTM). Mantenerlo o cambiarlo debe decidirlo el equipo. Esta elección no representa una validación para operar una alarma de seguridad real. Un falso negativo podría dejar un incidente sin priorizar; un falso positivo consume atención humana y puede generar una intervención indebida. El umbral y la ventana temporal deben acordarse y probarse según el contexto.
@@ -221,7 +231,7 @@ Los JSON de métricas son **agregados**: contienen métricas y matriz, pero no p
 2. **TODO — falso negativo 2:** registrar un segundo Fight omitido, preferentemente con condiciones visuales distintas, y verificar si la pelea ocurre fuera de los 16 frames muestreados.
 3. **TODO — falso positivo 1:** registrar un clip NonFight marcado Fight; comprobar si contiene juego, deporte de contacto, empujones o movimiento brusco sin pelea.
 
-En la primera corrida hay **14 falsos negativos y 22 falsos positivos** del LSTM entre los que elegir esos ejemplos; en la segunda hay **76 y 32**. Los CSV de predicciones permiten elegirlos ordenando por `score`: los errores con score más lejano a 0,5 son los que el modelo cometió con más convicción. Para la corrida en CPU no hay CSV, porque su checkpoint ya no es el de `artifacts/`.
+En la primera corrida hay **14 falsos negativos y 22 falsos positivos** del LSTM entre los que elegir esos ejemplos; en la segunda hay **76 y 32**. Los CSV de predicciones permiten elegirlos ordenando por `score`: los errores con score más lejano a 0,5 son los que el modelo cometió con más convicción. Para la corrida en CPU no hay CSV, porque su checkpoint ya no es el de `artifacts/`. El notebook `notebooks/03_model_comparison.ipynb` dibuja las matrices, curvas precisión–recall y la comparación de precisión/recall a partir de los JSON.
 
 ### 5.4 Modos interior y exterior (ASHEN)
 
@@ -230,15 +240,24 @@ Los números siguientes proceden de `artifacts/metrics_interior.json`, `artifact
 | Modo | Clips de test (videos fuente) | Accuracy | IC95 % | F1 macro | Recall Riesgo | Precisión Riesgo | AP | Matriz [[TN, FP], [FN, TP]] |
 |---|---:|---:|---:|---:|---:|---:|---:|---|
 | interior | 62 (18) | 0,758 | 64–85 % | 0,750 | 0,83 | 0,76 | 0,914 | [[18, 9], [6, 29]] |
-| exterior | 13 (4) | 0,692 | 42–87 % | 0,675 | 0,75 | 0,75 | 0,726 | [[3, 2], [2, 6]] |
+| exterior | 13 (4) | no se reporta | — | — | — | — | — | — |
 
-La evaluación temporal (`scripts/evaluate_event_timeline.py`) aplica la misma regla de la API: tramos de 2 s y alerta solo si el riesgo dura más de 3 s seguidos. En interior detectó 25 de 35 eventos (recall 0,71) con 7 falsas alertas en 27 clips normales; en exterior, 6 de 8 eventos con 2 falsas alertas en 5 clips normales.
+**Exterior no tiene cifras.** Con 13 clips de 4 videos de test (5 normales y 8 de riesgo) cualquier porcentaje sería ruido, así que no se publica una exactitud. El flujo completo de exterior (etiquetado, recorte, entrenamiento y evaluación) funciona y sus resultados crudos están en `artifacts/metrics_exterior.json`, pero solo sirve para mostrar el proceso.
+
+La evaluación temporal de interior (`scripts/evaluate_event_timeline.py`) aplica la misma regla de la API: tramos de 2 s y alerta solo si el riesgo dura más de 3 s seguidos. Detectó 25 de 35 eventos (recall 0,71) con 7 falsas alertas en 27 clips normales.
 
 Estas cifras tienen límites fuertes:
 
-- Los clips de un mismo video se parecen, así que la muestra efectiva es el número de videos fuente (18 en interior, 4 en exterior). El intervalo real es más ancho que el calculado sobre clips.
-- **Exterior es prácticamente inconcluso**: con 4 videos de test, sirve para mostrar el flujo completo, no para afirmar que el modelo funciona.
-- Los videos normales de ASHEN suelen tener otro estilo de imagen que los de robos y asaltos. Como pasó con la resolución en RWF-2000, el modelo podría aprender esa diferencia y no el comportamiento; no se midió.
+- Los clips de un mismo video se parecen, así que la muestra efectiva es el número de videos fuente (18 en interior). El intervalo real es más ancho que el calculado sobre clips.
+- **Los videos normales y los de riesgo no son comparables entre sí.** Los 40 normales se eligieron como los más livianos de `test_normal.txt`, y eso los separa de los de riesgo por tamaño y resolución. Tras excluir 6 videos quedan 35 normales y 37 de riesgo:
+
+  | | Videos | Resolución | Mediana de tamaño | Mediana de duración |
+  |---|---:|---|---:|---:|
+  | Normal | 35 | todos 320x240 | 6,4 MB | 35 s |
+  | Riesgo | 37 | 26 de 320x240, 10 de 1280x720, 1 de 640x480 | 10,8 MB | 63 s |
+
+  Los clips recortados conservan la resolución original del video (`prepare_risk_data` no la iguala), por lo que el modelo puede aprender esa diferencia en vez del comportamiento. Un umbral de un solo atributo del video, elegido en train y evaluado en test, acierta 55–64 % (revisión del PR #32); no es un atajo fuerte, pero con 18 videos de test no se puede descartar.
+- **Auditoría de etiquetas.** En la revisión del PR #32 se clasificaron a ciegas 24 de los 78 videos (los 12 exteriores y 12 interiores al azar) y coincidieron 23. La hizo un asistente de IA con 2 fotogramas por video, no una persona, y no cubre los otros 48 interiores.
 - Se usaron videos del split de test de ASHEN como datos propios, así que estas cifras no son comparables con las publicadas para ASHEN.
 - La clase Riesgo agrupa robos y asaltos observables. El modelo no distingue un arma real de un juguete ni confirma un delito: marca tramos para revisión humana.
 
