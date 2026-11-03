@@ -156,10 +156,33 @@ Revisión del EDA (`notebooks/02_eda_datasets.ipynb` y
   intervalos al 95 % se solapan (54-73 % y 56-75 % contra 71-79 %), así que no
   prueba que sean peores, pero tampoco hay evidencia de que sean mejores.
 
-Hecho con asistencia de Claude Code.
+Entrenamiento de `resnet_lstm` en la corrida de CPU (con la lista de archivos que
+me pasó Ariany):
 
-Pendiente de mi parte: entrenar y evaluar `resnet_lstm` con los mismos clips que
-los otros dos modelos (la copia de Ariany, de 1348 y 333 clips).
+- **Corrida:** `scripts/train_local_cpu.py --model resnet_lstm` en CPU, en mi
+  máquina. La lanzó Claude Code a pedido mío. Ejecutó 5 épocas, eligió la época
+  4 y tardó 22,4 min. Evidencia: `artifacts/cpu/metrics_resnet_lstm.json` y
+  `artifacts/train_resnet_lstm_local.log`.
+- **Mismos clips:** la lista de Ariany (1348 y 333 clips) da 259, 41 y 100, igual
+  que sus logs. Se bajaron del Drive solo esos 400 clips (2,60 GB) y los demás
+  quedaron como archivos vacíos, que el script no lee. Los 400 se leen bien con
+  `VideoPreprocessor`.
+- **Resultado:** exactitud 0,690, F1 macro 0,688, recall Fight 0,620, AP 0,761 y
+  matriz `[[38, 12], [19, 31]]`. En esta corrida es el mejor en exactitud, F1,
+  precisión y AP, pero detecta 5 peleas menos que `mobilenet_lstm`. Tampoco hay
+  evidencia de que supere a la regla de metadatos (intervalo de 59-77 % contra
+  71-79 %).
+- **Límites:** su tiempo de 850,9 ms/clip se midió en otra máquina y no se compara
+  con los demás. Los logs anteriores no guardan los nombres de los clips, así que
+  no está comprobado que la lista sea idéntica a la copia del 30 de octubre.
+- **Lugar en el informe:** Diego entrenó los tres modelos con RWF-2000 completo en
+  GPU (PR #32), que es la corrida que respalda la demo. La mía queda como
+  antecedente en la sección 5.1, con el JSON en `artifacts/cpu/` para no pisar el
+  de GPU.
+- **Notebook:** `notebooks/03_model_comparison.ipynb` ahora muestra las dos
+  corridas, con las cifras leídas de los JSON.
+
+Hecho con asistencia de Claude Code.
 
 ## P3 — Diego
 

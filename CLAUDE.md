@@ -87,8 +87,9 @@ si algo cambia, actualizar esta sección en el mismo PR.
   están en `CONTRIBUCIONES.md`.
 - **Modelos, API y frontend:** `src/models/`, `api/` y `frontend/` implementados.
 - **Entrenamiento:** dos corridas, ambas en `docs/informe.md`. (1) CPU, subset de
-  una copia parcial de RWF-2000, con `scripts/train_local_cpu.py`: 
-  `mobilenet_lstm` y `mobilenet_baseline`, métricas en `artifacts/cpu/`. (2) GPU,
+  una copia parcial de RWF-2000, con `scripts/train_local_cpu.py`: los tres
+  modelos, métricas en `artifacts/cpu/`. La semilla elige los clips según la
+  lista de archivos, así que con otra copia salen otros clips. (2) GPU,
   RWF-2000 completo, con `src/models/train.py`: los tres modelos, 400 clips de
   test, 73,0 % / 73,5 % / 74,3 % (`mobilenet_lstm` / `mobilenet_baseline` /
   `resnet_lstm`), métricas en `artifacts/`. La regla de resolución acierta 75 %
