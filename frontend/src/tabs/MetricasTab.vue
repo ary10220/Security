@@ -2,6 +2,7 @@
 import { computed, onMounted, ref } from 'vue'
 import PrCurve from '../components/PrCurve.vue'
 import { useApi } from '../composables/useApi.js'
+import { MIN_TEST_CLIPS, isInconclusive } from '../lib/metrics.js'
 
 const api = useApi()
 const modelNames = ['mobilenet_lstm', 'mobilenet_baseline', 'resnet_lstm', 'interior', 'exterior']
@@ -100,5 +101,17 @@ onMounted(async () => {
         <ul><li v-for="item in report.test_errors.slice(0, 20)" :key="item.clip">{{ item.type === 'false_alert' ? 'Falsa alerta' : 'Evento omitido' }} · {{ item.clip }} · puntuación {{ pct(item.score) }}</li></ul>
       </section>
     </template>
+    <!-- Evaluación con muy pocos clips: se explica en vez de mostrar porcentajes. -->
+    <section v-else-if="report && final" class="card" role="status">
+      <h3>No concluyente</h3>
+      <p>
+        El test de este escenario tiene solo {{ report.n_test }} clips (de muy pocos videos distintos).
+        Con tan pocos casos cualquier porcentaje sería ruido, así que no se muestran cifras.
+      </p>
+      <p class="muted">
+        El flujo completo (etiquetado, recorte, entrenamiento y evaluación) funciona; para poder
+        concluir hacen falta al menos {{ MIN_TEST_CLIPS }} clips de test y más videos fuente.
+      </p>
+    </section>
   </section>
 </template>
