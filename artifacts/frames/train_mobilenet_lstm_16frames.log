@@ -1,0 +1,16 @@
+2026-11-02 19:20:32,877 INFO Dataset: <RWF-2000>
+2026-11-02 19:20:33,249 INFO Modelo 'mobilenet_lstm' en cuda
+2026-11-02 19:20:33,249 INFO Split: 1393 train, 207 val interno, 400 test
+2026-11-02 19:24:07,458 INFO Epoch 1/15  train_loss=0.6414  val_loss=0.5700  val_acc=0.7343  val_f1_macro=0.7337
+2026-11-02 19:24:07,514 INFO Nuevo mejor F1 macro: 0.7337. Checkpoint en <runs>/frames_16\model_mobilenet_lstm.pt
+2026-11-02 19:28:48,668 INFO Epoch 2/15  train_loss=0.5485  val_loss=0.5352  val_acc=0.7633  val_f1_macro=0.7633
+2026-11-02 19:28:48,720 INFO Nuevo mejor F1 macro: 0.7633. Checkpoint en <runs>/frames_16\model_mobilenet_lstm.pt
+2026-11-02 19:32:20,213 INFO Epoch 3/15  train_loss=0.5124  val_loss=0.5329  val_acc=0.7198  val_f1_macro=0.7169
+2026-11-02 19:35:44,580 INFO Epoch 4/15  train_loss=0.4803  val_loss=0.5626  val_acc=0.7198  val_f1_macro=0.7183
+2026-11-02 19:39:02,941 INFO Epoch 5/15  train_loss=0.4612  val_loss=0.5420  val_acc=0.7343  val_f1_macro=0.7334
+2026-11-02 19:42:24,371 INFO Epoch 6/15  train_loss=0.4257  val_loss=0.5328  val_acc=0.7488  val_f1_macro=0.7488
+2026-11-02 19:45:37,561 INFO Epoch 7/15  train_loss=0.3932  val_loss=0.5699  val_acc=0.7295  val_f1_macro=0.7224
+2026-11-02 19:45:37,561 INFO Early stopping: 5 epocas sin mejorar (mejor epoca 2).
+2026-11-02 19:45:37,610 INFO Metricas del val interno guardadas en <runs>/frames_16\metrics_mobilenet_lstm_internal_val.json
+2026-11-02 19:46:18,681 INFO Metricas de test guardadas en <runs>/frames_16\metrics_mobilenet_lstm.json
+2026-11-02 19:46:18,681 INFO Resumen: val_interno_f1=0.7633  test_acc=0.7525  test_f1_macro=0.7523  entrenamiento=1504.3s
